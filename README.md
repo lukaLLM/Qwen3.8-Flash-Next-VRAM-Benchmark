@@ -11,7 +11,10 @@ to decode. The largest free speed lever is not the card, it is
 model reaches **36 tok/s on an 8 GB card** and **8.5 tok/s with no GPU**. A
 larger microbatch buys **+30.8% prefill for about 1 GiB of VRAM**.
 
-![One 125B model, from no GPU to 96 GiB](assets/ladder_decode.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_decode_dark.png">
+  <img alt="One 125B model, from no GPU to 96 GiB" src="assets/ladder_decode.png">
+</picture>
 
 The full write-up, with a diagram per result and every limit stated, is
 [`report.html`](report.html) — open it in a browser.
@@ -173,7 +176,10 @@ flowchart LR
 at a 2,048-token prompt, context 32,768 in both arms (the GPU placement does not
 fit 262,144 with all expert layers on the card).
 
-![The faster memory loses this one](assets/ple_placement.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ple_placement_dark.png">
+  <img alt="The faster memory loses this one" src="assets/ple_placement.png">
+</picture>
 
 | PLE placement | GPU memory | Host memory | Prefill tok/s | Decode tok/s |
 |---|---|---|---|---|
@@ -211,7 +217,10 @@ machine has, so they use mmap. Only 48 and 96 GiB run `--load-mode none`.
 decodes 2.8× faster than the 24 GiB tier; at 245,760 tokens the lead is 1.45×.
 Long context costs every tier, and the fastest tier most.
 
-![The tiers converge as the prompt grows](assets/ladder_vs_context.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_vs_context_dark.png">
+  <img alt="The tiers converge as the prompt grows" src="assets/ladder_vs_context.png">
+</picture>
 
 `report.html` has the per-tier charts, all 38 measured points with TTFT, and the
 llama-bench cross-check. `results/tier_full/`, `results/cpu_only/`
@@ -286,7 +295,10 @@ Tensor-pipe activity runs 0.9% (8 GiB) to 13.3% (96 GiB); SM activity reaches
 same 16 slots — one shared pool, or 8,192 tokens per slot. Two server starts per
 layout, three sweeps each, so every cell is the mean of six samples.
 
-![Unified peaks at 4, non-unified climbs to 16](assets/concurrency.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/concurrency_dark.png">
+  <img alt="Unified peaks at 4, non-unified climbs to 16" src="assets/concurrency.png">
+</picture>
 
 | Requests at once | Unified KV | Non-unified KV |
 |---|---|---|

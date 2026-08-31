@@ -25,7 +25,7 @@ We discuss it here: [reddit thread - link TBD]
 
 LOCAL AI SERIES:
 
-- **NEW:** Qwen3.8-Flash-Next 125B on one RTX PRO 6000 — and on an 8 GB card [link TBD]
+- **NEW:**  Why Qwen3 8 Flash Is So Cheap to Run 0 to 96GB VRAM Explained and Tested!  https://youtu.be/L4XyWM6IrBc 
 - DeepSeek V4 Flash 284B on a single RTX 6000 PRO with DSpark https://youtu.be/EDls1Popv1o
 - Fastest Qwen 3.8 27B in Llama.cpp? DFlash 2 + n-gram Explained & Benchmarked! https://youtu.be/RBlRTUwJMI4
 - Up to 8x Faster AI N-gram Explained, Deployed & Benchmarked on Qwen 3.6 27B llama.cpp! https://youtu.be/zNUoHONUHGk

@@ -1,0 +1,9 @@
+  turn    tokens   chars  tool  code   rep
+  01       16039    4868     -   yes  0.14
+  02       23161   15899     -   yes   0.3
+  03       35460   21623     -   yes  0.35
+
+  median 23161 tok/turn | total 74660 | 0 turns used tool calls | 3 contained code
+  VERDICT: USABLE - the model did the workload.
+
+  first turn excerpt: 'Below is a complete single-file Gradio app that uses the `openai` Python client against a local llama.cpp OpenAI-compatible server and streams responses token-by-token.  ## 1. Create a separate venv a'

@@ -1,0 +1,81 @@
+{
+  "sampler": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0
+  },
+  "method_note": "One run per arm. Repeat and counterbalance before publication.",
+  "on": {
+    "preserve_thinking": true,
+    "turns_completed": 5,
+    "rows": [
+      {
+        "turn": 1,
+        "prompt_tokens": 119,
+        "prefilled_n": 119,
+        "cached_n": 0,
+        "prefill_ms": 259.705,
+        "completion_tokens": 2998,
+        "reasoning_chars": 12282,
+        "decode_tps": 110.18681720801165,
+        "wall": 27.5,
+        "finish": "stop"
+      },
+      {
+        "turn": 2,
+        "prompt_tokens": 3157,
+        "prefilled_n": 41,
+        "cached_n": 3116,
+        "prefill_ms": 152.323,
+        "completion_tokens": 25583,
+        "reasoning_chars": 93256,
+        "decode_tps": 88.00653044096074,
+        "wall": 290.8,
+        "finish": "stop"
+      },
+      {
+        "turn": 3,
+        "prompt_tokens": 28777,
+        "prefilled_n": 38,
+        "cached_n": 28739,
+        "prefill_ms": 171.297,
+        "completion_tokens": 9154,
+        "reasoning_chars": 21916,
+        "decode_tps": 71.10236459757569,
+        "wall": 128.9,
+        "finish": "stop"
+      },
+      {
+        "turn": 4,
+        "prompt_tokens": 37963,
+        "prefilled_n": 33,
+        "cached_n": 37930,
+        "prefill_ms": 174.179,
+        "completion_tokens": 25225,
+        "reasoning_chars": 85240,
+        "decode_tps": 59.70508514132371,
+        "wall": 422.7,
+        "finish": "stop"
+      },
+      {
+        "turn": 5,
+        "prompt_tokens": 63223,
+        "prefilled_n": 36,
+        "cached_n": 63187,
+        "prefill_ms": 191.622,
+        "completion_tokens": 21118,
+        "reasoning_chars": 65293,
+        "decode_tps": 48.92693672675262,
+        "wall": 431.8,
+        "finish": "stop"
+      }
+    ],
+    "total_wall_s": 1301.7,
+    "total_prefilled": 267,
+    "total_cached": 132972,
+    "final_prompt_tokens": 63223
+  }
+}

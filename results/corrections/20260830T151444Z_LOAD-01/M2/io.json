@@ -1,0 +1,12 @@
+{
+  "pid": 224734,
+  "seconds": 465.2,
+  "nvme_read_mb": 2511.0,
+  "nvme_read_mbs": 5.4,
+  "major_faults": 42232,
+  "major_faults_per_s": 90.8,
+  "void_threshold_mbs": 50.0,
+  "void_threshold_faults_per_s": 50.0,
+  "verdict": "VOID - weights were being paged from disk",
+  "samples": null
+}

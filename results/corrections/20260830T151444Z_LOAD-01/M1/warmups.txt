@@ -1,0 +1,3 @@
+     2048 tok | warmup ... prefill 355.1 t/s | decode 52.7 t/s (discarded)
+     8192 tok | warmup ... prefill 397.8 t/s | decode 49.3 t/s (discarded)
+    32768 tok | warmup ... prefill 395.0 t/s | decode 40.9 t/s (discarded)

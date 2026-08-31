@@ -1,0 +1,148 @@
+CONC-01 | levels 1,2,4,8,16 | 3 repeats per server | order unified,non,non,unified
+evidence -> results/corrections/20260830T193552Z_CONC-01
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 33 C
+  --- p1_kvtrue (KV_UNIFIED=true) ---
+  cooldown: 30s  ->  15MiB / 32C
+      repeat 1/3
+          c=1   aggregate    58.94 tok/s   per-request  105.10 tok/s   wall    4.3s
+          c=2   aggregate    68.94 tok/s   per-request   75.42 tok/s   wall    7.4s
+          c=4   aggregate    74.23 tok/s   per-request   45.43 tok/s   wall   13.8s
+          c=8   aggregate    74.19 tok/s   per-request   23.05 tok/s   wall   27.6s
+          c=16  aggregate    66.34 tok/s   per-request   10.14 tok/s   wall   61.7s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.17x   efficiency  58.5%
+            c=4    1.26x   efficiency  31.5%
+            c=8    1.26x   efficiency  15.7%
+            c=16   1.13x   efficiency   7.0%
+      repeat 2/3
+          c=1   aggregate    58.15 tok/s   per-request  104.07 tok/s   wall    4.4s
+          c=2   aggregate    68.59 tok/s   per-request   73.58 tok/s   wall    7.5s
+          c=4   aggregate    70.80 tok/s   per-request   45.03 tok/s   wall   14.5s
+          c=8   aggregate    68.97 tok/s   per-request   22.73 tok/s   wall   29.7s
+          c=16  aggregate    60.24 tok/s   per-request    9.95 tok/s   wall   68.0s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.18x   efficiency  59.0%
+            c=4    1.22x   efficiency  30.4%
+            c=8    1.19x   efficiency  14.8%
+            c=16   1.04x   efficiency   6.5%
+      repeat 3/3
+          c=1   aggregate    58.02 tok/s   per-request  103.92 tok/s   wall    4.4s
+          c=2   aggregate    68.57 tok/s   per-request   73.74 tok/s   wall    7.5s
+          c=4   aggregate    70.69 tok/s   per-request   45.23 tok/s   wall   14.5s
+          c=8   aggregate    68.86 tok/s   per-request   22.75 tok/s   wall   29.7s
+          c=16  aggregate    60.17 tok/s   per-request    9.94 tok/s   wall   68.1s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.18x   efficiency  59.1%
+            c=4    1.22x   efficiency  30.5%
+            c=8    1.19x   efficiency  14.8%
+            c=16   1.04x   efficiency   6.5%
+  --- p1_kvfalse (KV_UNIFIED=false) ---
+  cooldown: 30s  ->  15MiB / 48C
+      repeat 1/3
+          c=1   aggregate    58.83 tok/s   per-request  104.64 tok/s   wall    4.4s
+          c=2   aggregate    72.38 tok/s   per-request   74.93 tok/s   wall    7.1s
+          c=4   aggregate    83.81 tok/s   per-request   46.40 tok/s   wall   12.2s
+          c=8   aggregate    90.20 tok/s   per-request   24.87 tok/s   wall   22.7s
+          c=16  aggregate    91.22 tok/s   per-request   11.95 tok/s   wall   44.9s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.23x   efficiency  61.5%
+            c=4    1.42x   efficiency  35.6%
+            c=8    1.53x   efficiency  19.2%
+            c=16   1.55x   efficiency   9.7%
+      repeat 2/3
+          c=1   aggregate    57.00 tok/s   per-request  100.57 tok/s   wall    4.5s
+          c=2   aggregate    71.08 tok/s   per-request   73.02 tok/s   wall    7.2s
+          c=4   aggregate    81.08 tok/s   per-request   44.56 tok/s   wall   12.6s
+          c=8   aggregate    84.89 tok/s   per-request   24.14 tok/s   wall   24.1s
+          c=16  aggregate    89.30 tok/s   per-request   11.98 tok/s   wall   45.9s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.25x   efficiency  62.4%
+            c=4    1.42x   efficiency  35.6%
+            c=8    1.49x   efficiency  18.6%
+            c=16   1.57x   efficiency   9.8%
+      repeat 3/3
+          c=1   aggregate    55.27 tok/s   per-request   99.14 tok/s   wall    4.6s
+          c=2   aggregate    70.64 tok/s   per-request   72.27 tok/s   wall    7.2s
+          c=4   aggregate    81.22 tok/s   per-request   44.12 tok/s   wall   12.6s
+          c=8   aggregate    84.78 tok/s   per-request   23.90 tok/s   wall   24.2s
+          c=16  aggregate    88.97 tok/s   per-request   11.83 tok/s   wall   46.0s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.28x   efficiency  63.9%
+            c=4    1.47x   efficiency  36.7%
+            c=8    1.53x   efficiency  19.2%
+            c=16   1.61x   efficiency  10.1%
+  --- p2_kvfalse (KV_UNIFIED=false) ---
+  cooldown: 30s  ->  15MiB / 48C
+      repeat 1/3
+          c=1   aggregate    59.03 tok/s   per-request  104.80 tok/s   wall    4.3s
+          c=2   aggregate    73.77 tok/s   per-request   78.03 tok/s   wall    6.9s
+          c=4   aggregate    83.92 tok/s   per-request   46.40 tok/s   wall   12.2s
+          c=8   aggregate    90.28 tok/s   per-request   24.85 tok/s   wall   22.7s
+          c=16  aggregate    91.85 tok/s   per-request   12.07 tok/s   wall   44.6s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.25x   efficiency  62.5%
+            c=4    1.42x   efficiency  35.5%
+            c=8    1.53x   efficiency  19.1%
+            c=16   1.56x   efficiency   9.7%
+      repeat 2/3
+          c=1   aggregate    56.01 tok/s   per-request  101.15 tok/s   wall    4.6s
+          c=2   aggregate    71.22 tok/s   per-request   73.24 tok/s   wall    7.2s
+          c=4   aggregate    82.18 tok/s   per-request   45.06 tok/s   wall   12.5s
+          c=8   aggregate    85.96 tok/s   per-request   24.28 tok/s   wall   23.8s
+          c=16  aggregate    90.63 tok/s   per-request   11.92 tok/s   wall   45.2s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.27x   efficiency  63.6%
+            c=4    1.47x   efficiency  36.7%
+            c=8    1.53x   efficiency  19.2%
+            c=16   1.62x   efficiency  10.1%
+      repeat 3/3
+          c=1   aggregate    51.13 tok/s   per-request   99.57 tok/s   wall    5.0s
+          c=2   aggregate    70.73 tok/s   per-request   72.36 tok/s   wall    7.2s
+          c=4   aggregate    81.07 tok/s   per-request   44.61 tok/s   wall   12.6s
+          c=8   aggregate    86.41 tok/s   per-request   23.98 tok/s   wall   23.7s
+          c=16  aggregate    89.61 tok/s   per-request   11.90 tok/s   wall   45.7s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.38x   efficiency  69.2%
+            c=4    1.59x   efficiency  39.6%
+            c=8    1.69x   efficiency  21.1%
+            c=16   1.75x   efficiency  11.0%
+  --- p2_kvtrue (KV_UNIFIED=true) ---
+  cooldown: 31s  ->  15MiB / 48C
+      repeat 1/3
+          c=1   aggregate    58.82 tok/s   per-request  104.65 tok/s   wall    4.4s
+          c=2   aggregate    68.17 tok/s   per-request   74.05 tok/s   wall    7.5s
+          c=4   aggregate    73.79 tok/s   per-request   45.20 tok/s   wall   13.9s
+          c=8   aggregate    72.07 tok/s   per-request   22.97 tok/s   wall   28.4s
+          c=16  aggregate    66.05 tok/s   per-request   10.10 tok/s   wall   62.0s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.16x   efficiency  57.9%
+            c=4    1.25x   efficiency  31.4%
+            c=8    1.23x   efficiency  15.3%
+            c=16   1.12x   efficiency   7.0%
+      repeat 2/3
+          c=1   aggregate    58.15 tok/s   per-request  103.89 tok/s   wall    4.4s
+          c=2   aggregate    68.82 tok/s   per-request   73.84 tok/s   wall    7.4s
+          c=4   aggregate    70.48 tok/s   per-request   44.53 tok/s   wall   14.5s
+          c=8   aggregate    69.09 tok/s   per-request   22.76 tok/s   wall   29.6s
+          c=16  aggregate    60.51 tok/s   per-request    9.95 tok/s   wall   67.7s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.18x   efficiency  59.2%
+            c=4    1.21x   efficiency  30.3%
+            c=8    1.19x   efficiency  14.9%
+            c=16   1.04x   efficiency   6.5%
+      repeat 3/3
+          c=1   aggregate    58.10 tok/s   per-request  103.97 tok/s   wall    4.4s
+          c=2   aggregate    68.57 tok/s   per-request   73.70 tok/s   wall    7.5s
+          c=4   aggregate    70.29 tok/s   per-request   44.33 tok/s   wall   14.6s
+          c=8   aggregate    69.02 tok/s   per-request   22.81 tok/s   wall   29.7s
+          c=16  aggregate    60.34 tok/s   per-request    9.90 tok/s   wall   67.9s
+            c=1    1.00x   efficiency 100.0%
+            c=2    1.18x   efficiency  59.0%
+            c=4    1.21x   efficiency  30.2%
+            c=8    1.19x   efficiency  14.8%
+            c=16   1.04x   efficiency   6.5%
+
+########## unified vs non-unified KV, 3 repeats, counterbalanced ##########
+DONE -> results/corrections/20260830T193552Z_CONC-01

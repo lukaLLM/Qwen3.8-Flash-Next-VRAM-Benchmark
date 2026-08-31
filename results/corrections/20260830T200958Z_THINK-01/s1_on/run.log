@@ -1,0 +1,15 @@
+
+  === preserve_thinking = True ===
+    turn 1: prompt     119 prefilled     119 cached       0  gen   3256  110.1 t/s  30s
+    turn 2: prompt    3415 prefilled      41 cached    3374  gen  20659  90.8 t/s  228s
+    turn 3: prompt   24114 prefilled      41 cached   24073  gen   2395  78.0 t/s  31s
+    turn 4: prompt   26544 prefilled      36 cached   26508  gen  22501  67.8 t/s  332s
+    turn 5: prompt   49080 prefilled      36 cached   49044  gen  42469  50.5 t/s  841s
+Traceback (most recent call last):
+  File "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/benchmark/preserve_thinking.py", line 228, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/benchmark/preserve_thinking.py", line 202, in main
+    on, off = out["on"], out["off"]
+                         ~~~^^^^^^^
+KeyError: 'off'

@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     0.39%   max     1.91%
+  DRAM active          mean    30.76%   max    36.55%
+  SM active            mean    53.54%   max    60.88%
+  VRAM                 mean 72385.62 MiB   max 72392.00 MiB
+  GPU temp             mean    64.89 C   max    68.00 C
+  power                mean   323.29 W   max   360.26 W
+  SM clock             mean  2777.14 MHz   max  2827.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    78.9x  (memory bound)
+    tensor 0.39%  DRAM 30.76%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/corrections/20260830T171252Z_SPEC-01-rate/p2_ngram-mod/gpu.json

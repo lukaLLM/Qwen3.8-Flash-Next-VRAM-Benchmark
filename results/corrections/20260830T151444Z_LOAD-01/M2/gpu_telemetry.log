@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     2.19%   max     2.94%
+  DRAM active          mean     4.97%   max     7.29%
+  SM active            mean    13.85%   max    16.00%
+  VRAM                 mean 44664.51 MiB   max 45648.00 MiB
+  GPU temp             mean    51.32 C   max    58.00 C
+  power                mean   176.29 W   max   198.99 W
+  SM clock             mean  2749.78 MHz   max  2820.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    2.3x  (HOST-PATH BOUND - 16.8 GB/s over PCIe, GPU idle)
+    tensor 2.19%  DRAM 4.97%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/corrections/20260830T151444Z_LOAD-01/M2/gpu.json

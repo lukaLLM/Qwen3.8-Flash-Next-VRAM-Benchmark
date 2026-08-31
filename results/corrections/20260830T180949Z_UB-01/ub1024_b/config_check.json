@@ -1,0 +1,25 @@
+{
+  "mode": "thinking",
+  "verdict": "WARN",
+  "faults": [],
+  "notes": [
+    "template supports --reasoning-preserve; set it explicitly so history behaviour is a decision and not a default"
+  ],
+  "server_params": {
+    "temperature": 1.0,
+    "top_p": 0.949999988079071,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0
+  },
+  "card": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0
+  },
+  "n_ctx": 32768
+}

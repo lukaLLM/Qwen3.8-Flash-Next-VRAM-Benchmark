@@ -1,0 +1,60 @@
+# local environment
+.env
+.venv/
+.claude/
+__pycache__/
+*.pyc
+.git-old-*/
+
+# working documents (kept locally, not part of the published repo)
+TODO.md
+PLAN.md
+NOTES.md
+FINDINGS.md
+FUTURE_TESTS.md
+add_report.md
+
+# local engine builder (the repo uses the upstream image)
+scripts/build_llamacpp.sh
+
+# raw outputs and scratch
+artifacts/
+benchmark/bench_results/
+benchmark/results_speed_v2.csv
+
+# superseded or out-of-path harness scripts (kept locally)
+benchmark/after_queue.sh
+benchmark/cleanup.sh
+benchmark/correction_run.sh
+benchmark/final_runs.sh
+benchmark/kv_ladder.sh
+benchmark/lcb_pass1.py
+benchmark/mmap_control.sh
+benchmark/needle_test.py
+benchmark/queue_rest.sh
+benchmark/rerun_slot_long.sh
+benchmark/run_all.sh
+benchmark/run_flashnext_baseline.sh
+benchmark/thinking_vs_instruct.py
+benchmark/tier_ladder.sh
+benchmark/ub_sweep.sh
+benchmark/stream_triad.c
+
+# results: ship only the evidence directories the report cites
+results/*
+!results/CONFIGS.md
+!results/tier_full/
+!results/cpu_only/
+!results/mmap_control_p1/
+!results/mmap_control_p2/
+!results/slot_reuse/
+!results/q4kxl/
+!results/corrections/
+results/corrections/*
+!results/corrections/20260830T145932Z_PLE-01/
+!results/corrections/20260830T151444Z_LOAD-01/
+!results/corrections/20260830T171252Z_SPEC-01-rate/
+!results/corrections/20260830T180949Z_UB-01/
+!results/corrections/20260830T182917Z_SPEC-01-rate/
+!results/corrections/20260830T193552Z_CONC-01/
+!results/corrections/20260830T200958Z_THINK-01/

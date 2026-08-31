@@ -1,0 +1,26 @@
+THINK-01 | thinking mode both arms | 5 turns | cap 49152 | order on,off,off,on
+  sampler: temp 1.0 top-p 0.95 top-k 20 min-p 0.0 (model card THINKING)
+evidence -> results/corrections/20260830T200958Z_THINK-01
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 31 C
+  --- s1_on (preserve_thinking=on) ---
+  cooldown: 30s  ->  15MiB / 31C
+      card:   CONFIG CHECK: WARN
+          turn 1: prompt     119 prefilled     119 cached       0  gen   3256  110.1 t/s  30s
+          turn 2: prompt    3415 prefilled      41 cached    3374  gen  20659  90.8 t/s  228s
+          turn 3: prompt   24114 prefilled      41 cached   24073  gen   2395  78.0 t/s  31s
+          turn 4: prompt   26544 prefilled      36 cached   26508  gen  22501  67.8 t/s  332s
+          turn 5: prompt   49080 prefilled      36 cached   49044  gen  42469  50.5 t/s  841s
+      Traceback (most recent call last):
+      KeyError: 'off'
+  --- s1_off (preserve_thinking=off) ---
+  cooldown: 30s  ->  15MiB / 45C
+      card:   CONFIG CHECK: WARN
+          turn 1: prompt     119 prefilled     119 cached       0  gen  19568  96.0 t/s  204s
+          turn 2: prompt    1501 prefilled    1386 cached     115  gen  36609  83.5 t/s  440s
+          turn 3: prompt    5766 prefilled    4269 cached    1497  gen  15541  90.7 t/s  174s
+          turn 4: prompt   10813 prefilled    5051 cached    5762  gen  30690  77.2 t/s  401s
+          turn 5: prompt   18387 prefilled    7578 cached   10809  gen  45806  65.5 t/s  704s
+        single arm 'off' - an external controller pools the arms
+  --- s2_off (preserve_thinking=off) ---

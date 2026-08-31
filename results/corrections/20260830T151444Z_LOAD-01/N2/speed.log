@@ -1,0 +1,23 @@
+server=http://127.0.0.1:8000 alias=qwen3.8-flash-next tag=corr_LOAD-01_N2 n_ctx=262144 build=b10666-4e97ac86e
+lengths=[2048, 8192, 32768] n_predict=128 num_prompts=3 source=lcb
+tokenizing 101 LCB problems ... done (52441 tokens total)
+     2048 tok | warmup ... prefill 772.4 t/s | decode 54.0 t/s (discarded)
+     2048 tok | prompt 1/3 ... prefill 808.9 t/s | decode 54.6 t/s
+     2048 tok | prompt 2/3 ... prefill 782.4 t/s | decode 54.7 t/s
+     2048 tok | prompt 3/3 ... prefill 761.5 t/s | decode 53.6 t/s
+     2048 tok | prefill 782.41 t/s (min 761.52, max 808.86) | TTFT 2617.56 ms | decode 54.59 t/s | accept -
+     8192 tok | warmup ... prefill 756.2 t/s | decode 51.7 t/s (discarded)
+     8192 tok | prompt 1/3 ... prefill 735.5 t/s | decode 49.3 t/s
+     8192 tok | prompt 2/3 ... prefill 721.0 t/s | decode 47.4 t/s
+     8192 tok | prompt 3/3 ... prefill 750.3 t/s | decode 48.8 t/s
+     8192 tok | prefill 735.52 t/s (min 721.03, max 750.33) | TTFT 11137.72 ms | decode 48.78 t/s | accept -
+    32768 tok | warmup ... prefill 714.1 t/s | decode 39.5 t/s (discarded)
+    32768 tok | prompt 1/3 ... prefill 726.8 t/s | decode 39.8 t/s
+    32768 tok | prompt 2/3 ... prefill 721.5 t/s | decode 40.0 t/s
+    32768 tok | prompt 3/3 ... prefill 720.9 t/s | decode 39.3 t/s
+    32768 tok | prefill 721.5 t/s (min 720.88, max 726.77) | TTFT 45416.26 ms | decode 39.82 t/s | accept -
+WARN: no draft_n in any response - is the intended spec-decoding server actually the one running?
+
+saved /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/corr_LOAD-01_N2/speed_v2/run_20260830_173116.json
+--no-ledger: 3 rows NOT appended to /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/benchmark/results_speed_v2.csv
+next: run the other configs, then `uv run benchmark/speed_bench_v2_summary.py`

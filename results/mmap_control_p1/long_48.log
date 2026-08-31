@@ -1,0 +1,14 @@
+server=http://127.0.0.1:8000 alias=qwen3.8-flash-next tag=full48l n_ctx=262144 build=b10666-4e97ac86e
+lengths=[65536, 131072] n_predict=256 num_prompts=1 source=lcb
+tokenizing 101 LCB problems ... done (52441 tokens total)
+    65536 tok | warmup ... prefill 389.7 t/s | decode 32.3 t/s (discarded)
+    65536 tok | prompt 1/1 ... prefill 389.9 t/s | decode 32.6 t/s
+    65536 tok | prefill 389.9 t/s (min 389.9, max 389.9) | TTFT 168083.98 ms | decode 32.58 t/s | accept -
+   131072 tok | warmup ... prefill 365.8 t/s | decode 24.4 t/s (discarded)
+   131072 tok | prompt 1/1 ... prefill 365.5 t/s | decode 24.0 t/s
+   131072 tok | prefill 365.47 t/s (min 365.47, max 365.47) | TTFT 358637.98 ms | decode 23.96 t/s | accept -
+WARN: no draft_n in any response - is the intended spec-decoding server actually the one running?
+
+saved /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/full48l/speed_v2/run_20260829_023315.json
+appended 2 rows to /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/benchmark/results_speed_v2.csv
+next: run the other configs, then `uv run benchmark/speed_bench_v2_summary.py`

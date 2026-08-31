@@ -1,0 +1,14 @@
+  source: http://localhost:9402/metrics  (no tensor/DRAM ratios)
+  hint: ./benchmark/dcgm_exporter.sh up   for tensor-pipe and DRAM activity
+  tensor pipe          mean     2.30%   max     2.89%
+  DRAM active          mean     5.23%   max     6.70%
+  SM active            mean    14.53%   max    16.41%
+  VRAM                 mean 45035.61 MiB   max 45648.00 MiB
+  GPU temp             mean    48.54 C   max    52.00 C
+  power                mean   170.15 W   max   195.79 W
+  SM clock             mean  2793.00 MHz   max  2835.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    2.3x  (HOST-PATH BOUND - 17.6 GB/s over PCIe, GPU idle)
+    tensor 2.30%  DRAM 5.23%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/corrections/20260830T151444Z_LOAD-01/M1/gpu.json

@@ -1,0 +1,12 @@
+
+  === preserve_thinking = False ===
+    turn 1: prompt     119 prefilled     119 cached       0  gen  19568  96.0 t/s  204s
+    turn 2: prompt    1501 prefilled    1386 cached     115  gen  36609  83.5 t/s  440s
+    turn 3: prompt    5766 prefilled    4269 cached    1497  gen  15541  90.7 t/s  174s
+    turn 4: prompt   10813 prefilled    5051 cached    5762  gen  30690  77.2 t/s  401s
+    turn 5: prompt   18387 prefilled    7578 cached   10809  gen  45806  65.5 t/s  704s
+
+  wrote results/corrections/20260830T200958Z_THINK-01/s1_off/preserve_thinking.json
+
+  === summary ===
+  single arm 'off' - an external controller pools the arms

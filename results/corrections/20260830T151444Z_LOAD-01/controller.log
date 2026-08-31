@@ -1,0 +1,33 @@
+CORRECTION-R1 controller v2 | test LOAD-01 | 2026-08-30T15:14:44Z
+command: ./benchmark/correction_run_v2.sh --execute --plan-id CORRECTION-R1 --only LOAD-01
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 34 C | disk 908 GiB | download none | other server 'none'
+dcgm-exporter did not start - telemetry falls back to nvidia-smi only
+LOAD-01: ctx 262144, n-cpu-moe 23, order mmap-none-none-mmap
+  --- arm M1 : ot=per_layer_token_embd=CPU ctx=262144 load-mode=mmap n-cpu-moe=23 ---
+  cooldown: 30s  ->  15MiB / 32C
+           2048 tok | prefill 413.01 t/s (min 394.6, max 426.74) | TTFT 4958.76 ms | decode 53.0 t/s | accept -
+           8192 tok | prefill 406.67 t/s (min 379.83, max 406.98) | TTFT 20144.21 ms | decode 48.77 t/s | accept -
+          32768 tok | prefill 398.61 t/s (min 398.1, max 400.01) | TTFT 82205.86 ms | decode 39.83 t/s | accept -
+      telemetry verdict: ok
+  --- arm N1 : ot=per_layer_token_embd=CPU ctx=262144 load-mode=none n-cpu-moe=23 ---
+  cooldown: 30s  ->  15MiB / 42C
+           2048 tok | prefill 751.12 t/s (min 746.13, max 776.98) | TTFT 2726.58 ms | decode 52.37 t/s | accept -
+           8192 tok | prefill 749.42 t/s (min 748.19, max 751.23) | TTFT 10931.17 ms | decode 50.35 t/s | accept -
+          32768 tok | prefill 726.67 t/s (min 723.16, max 727.51) | TTFT 45093.5 ms | decode 41.06 t/s | accept -
+      telemetry verdict: ok
+  --- arm N2 : ot=per_layer_token_embd=CPU ctx=262144 load-mode=none n-cpu-moe=23 ---
+  cooldown: 30s  ->  15MiB / 44C
+           2048 tok | prefill 782.41 t/s (min 761.52, max 808.86) | TTFT 2617.56 ms | decode 54.59 t/s | accept -
+           8192 tok | prefill 735.52 t/s (min 721.03, max 750.33) | TTFT 11137.72 ms | decode 48.78 t/s | accept -
+          32768 tok | prefill 721.5 t/s (min 720.88, max 726.77) | TTFT 45416.26 ms | decode 39.82 t/s | accept -
+      telemetry verdict: ok
+  --- arm M2 : ot=per_layer_token_embd=CPU ctx=262144 load-mode=mmap n-cpu-moe=23 ---
+  cooldown: 30s  ->  15MiB / 44C
+           2048 tok | prefill 404.25 t/s (min 402.4, max 412.76) | TTFT 5066.2 ms | decode 51.95 t/s | accept -
+           8192 tok | prefill 409.61 t/s (min 409.21, max 410.14) | TTFT 19999.58 ms | decode 48.58 t/s | accept -
+          32768 tok | prefill 401.26 t/s (min 399.97, max 402.89) | TTFT 81663.3 ms | decode 40.96 t/s | accept -
+      telemetry verdict: ok
+DONE LOAD-01 -> results/corrections/20260830T151444Z_LOAD-01
+controller exiting - stopping server and monitors

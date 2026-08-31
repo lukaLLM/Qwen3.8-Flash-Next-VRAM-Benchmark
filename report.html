@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Big Part Is The Cheap Part</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --ground:#F6F8F7; --surface:#FFFFFF; --surface-2:#EFF3F1;
+  --ink:#141D1C; --ink-2:#3A4A48; --muted:#61716E;
+  --rule:#DBE3E0; --rule-strong:#C3CFCC;
+  --accent:#A65A2E; --accent-soft:#F3E6DC;
+  --verify:#2E6B63; --verify-soft:#E2EEEB;
+  --warn:#8A5A00; --warn-soft:#F7EEDC;
+  --t8:#DEA36F; --t16:#C98653; --t24:#B26C3B; --t32:#965427; --t48:#763F1B; --t96:#542D12;
+  --num:#7A4A00; --num-bg:#FBF3DF;
+  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --measure:68ch;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1413; --surface:#161E1D; --surface-2:#1C2625;
+    --ink:#E7EEEC; --ink-2:#BFCDCA; --muted:#8FA09D;
+    --rule:#283432; --rule-strong:#3A4846;
+    --accent:#DB8F5F; --accent-soft:#2E2018;
+    --verify:#68B3A8; --verify-soft:#152825;
+    --warn:#D9A441; --warn-soft:#2A2213;
+    --t8:#8A5530; --t16:#A56A3F; --t24:#BE7F50; --t32:#D69564; --t48:#E9AC7C; --t96:#F7C899;
+    --num:#F2C14E; --num-bg:#26200F;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1413; --surface:#161E1D; --surface-2:#1C2625;
+  --ink:#E7EEEC; --ink-2:#BFCDCA; --muted:#8FA09D;
+  --rule:#283432; --rule-strong:#3A4846;
+  --accent:#DB8F5F; --accent-soft:#2E2018;
+  --verify:#68B3A8; --verify-soft:#152825;
+  --warn:#D9A441; --warn-soft:#2A2213;
+  --t8:#8A5530; --t16:#A56A3F; --t24:#BE7F50; --t32:#D69564; --t48:#E9AC7C; --t96:#F7C899;
+  --num:#F2C14E; --num-bg:#26200F;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--serif);
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px 96px}
+.col{max-width:none}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+a:hover{border-bottom-color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* ---------- masthead ---------- */
+header.top{border-bottom:1px solid var(--rule);padding:64px 0 34px;margin-bottom:44px}
+.eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 20px}
+h1{font-family:var(--sans);font-weight:700;font-size:clamp(2.3rem,5.2vw,3.5rem);
+  line-height:1.04;letter-spacing:-.028em;margin:0 0 20px;text-wrap:balance;max-width:19ch}
+.standfirst{font-size:1.19rem;line-height:1.58;color:var(--ink-2);margin:0}
+.standfirst strong{color:var(--ink);font-weight:600}
+
+/* ---------- spec strip ---------- */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);margin:40px 0 0}
+.spec div{background:var(--surface);padding:14px 16px}
+.spec dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 5px}
+.spec dd{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--ink);margin:0;
+  font-variant-numeric:tabular-nums}
+
+/* ---------- headline readouts ---------- */
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin:36px 0 8px}
+.ro{background:var(--surface);border:1px solid var(--rule);border-top:2px solid var(--accent);padding:18px 18px 16px}
+.ro .n{font-family:var(--mono);font-weight:600;font-size:2rem;letter-spacing:-.02em;
+  color:var(--accent);display:block;line-height:1.1;font-variant-numeric:tabular-nums}
+.ro .n small{font-size:1rem;font-weight:500;color:var(--muted)}
+.ro p{font-family:var(--sans);font-size:13.5px;line-height:1.45;color:var(--ink-2);margin:8px 0 0}
+
+/* ---------- explainers / how-run ---------- */
+.explainer{margin:24px 0;padding:20px 22px;background:var(--surface);border:1px solid var(--rule)}
+.explainer-title{font-family:var(--sans);font-size:14px;font-weight:600;margin:0 0 15px}
+.concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.concept{background:var(--surface-2);border:1px solid var(--rule);padding:15px 16px}
+.concept .tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.concept strong{font-family:var(--sans);font-size:14px;display:block;margin-bottom:5px}
+.concept p{font-family:var(--sans);font-size:13.5px;line-height:1.48;color:var(--ink-2);margin:0}
+.takeaway{font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  border-top:1px solid var(--rule);padding-top:13px;margin:14px 0 0}
+.takeaway strong{color:var(--ink)}
+.how{border-left:2px solid var(--rule-strong);background:var(--surface);padding:14px 20px;margin:22px 0}
+.how .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 7px;font-weight:500}
+.how p{margin:0;font-family:var(--sans);font-size:14.5px;line-height:1.55;color:var(--ink-2)}
+.how p+p{margin-top:8px}
+.how code{font-size:.9em}
+.evid{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:2px 0 0}
+
+/* ---------- sections ---------- */
+section{padding-top:52px}
+h2{font-family:var(--sans);font-weight:600;font-size:1.62rem;letter-spacing:-.018em;
+  line-height:1.2;margin:0 0 6px;text-wrap:balance;display:flex;gap:14px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);
+  letter-spacing:.06em;flex:none;padding-top:3px}
+h3{font-family:var(--sans);font-weight:600;font-size:1.06rem;letter-spacing:-.008em;
+  margin:34px 0 10px;color:var(--ink)}
+.sub{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 22px;padding-left:calc(12px + 14px)}
+p{margin:0 0 16px}
+ul{margin:0 0 16px;padding-left:20px}
+li{margin-bottom:9px}
+strong{font-weight:600}
+b.v{font-family:var(--mono);font-weight:600;font-style:normal;color:var(--num);
+  background:var(--num-bg);padding:.04em .32em;border-radius:3px;font-size:.92em;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+code{font-family:var(--mono);font-size:.855em;background:var(--surface-2);
+  padding:.13em .38em;border-radius:3px;color:var(--ink);overflow-wrap:anywhere}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:24px 0 26px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13.5px;
+  font-variant-numeric:tabular-nums}
+caption{text-align:left;padding:12px 15px;background:var(--surface);border-bottom:1px solid var(--rule);
+  font-family:var(--sans);font-size:13px;line-height:1.45;color:var(--ink-2)}
+th,td{text-align:right;padding:9px 15px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  font-weight:500;background:var(--surface-2);border-bottom:1px solid var(--rule-strong)}
+tbody tr:last-child td{border-bottom:0}
+td.hi{color:var(--accent);font-weight:600}
+td.dim{color:var(--muted)}
+tr.rule-top td{border-top:1px solid var(--rule-strong)}
+.table-key{font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  margin:-12px 0 26px}
+.table-key strong{color:var(--ink)}
+
+/* ---------- data diagrams ---------- */
+figure{margin:26px 0}
+.memory-bar{display:flex;height:42px;border:1px solid var(--rule-strong);overflow:hidden;background:var(--surface)}
+.memory-bar span{display:flex;align-items:center;justify-content:center;min-width:0;padding:0 8px;
+  font-family:var(--mono);font-size:11px;font-weight:600;white-space:nowrap}
+.memory-bar .kv{width:58.1%;background:var(--accent);color:var(--surface)}
+.memory-bar .index{width:29.1%;background:var(--verify);color:var(--surface)}
+.memory-bar .other{width:12.8%;background:var(--surface-2);color:var(--ink-2)}
+.figcap{font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--muted);margin-top:9px}
+.figcap strong{color:var(--ink-2)}
+.load-paths{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.load-card{border:1px solid var(--rule);background:var(--surface);padding:18px}
+.load-card.fast{border-top:3px solid var(--accent)}
+.load-card h3{font-family:var(--sans);font-size:15px;margin:0 0 5px}
+.load-card .flag{font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 14px}
+.path{display:flex;align-items:stretch;gap:8px;margin:0 0 13px}
+.path-step{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:48px;padding:8px;background:var(--surface-2);border:1px solid var(--rule);
+  font-family:var(--sans);font-size:12px;line-height:1.25}
+.path-arrow{align-self:center;color:var(--muted);font-family:var(--mono)}
+.load-card p:last-child{font-family:var(--sans);font-size:13px;line-height:1.45;color:var(--ink-2);margin:0}
+.chart{border:1px solid var(--rule);background:var(--surface);padding:18px 20px 16px}
+.chart-head{display:flex;justify-content:space-between;gap:14px;align-items:baseline;margin-bottom:14px}
+.chart-head h3{font-size:15px;margin:0}
+.chart-head span{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.chart-legend{display:flex;flex-wrap:wrap;gap:12px 18px;margin:0 0 16px;
+  font-family:var(--sans);font-size:12px;color:var(--ink-2)}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:18px;height:8px;background:var(--accent);display:inline-block}
+.swatch.mmap{background:var(--verify)}
+.chart-row{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:start;margin:0 0 14px}
+.chart-row:last-of-type{margin-bottom:0}
+.chart-label{font-family:var(--mono);font-size:11px;color:var(--muted);padding-top:5px}
+.bar-pair{display:grid;gap:5px}
+.bar-line{height:24px;background:var(--surface-2);position:relative;overflow:visible}
+.bar{height:100%;width:calc(var(--w) * 1%);min-width:48px;display:flex;align-items:center;
+  justify-content:flex-end;padding:0 7px;background:var(--accent);color:var(--surface);font-family:var(--mono);
+  font-size:10.5px;font-weight:600;white-space:nowrap}
+.bar.mmap{background:var(--verify)}
+.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;
+  gap:10px;margin:24px 0}
+.equation .factor{border:1px solid var(--rule);background:var(--surface);padding:15px;text-align:center}
+.equation .factor.result{border-color:var(--accent);background:var(--accent-soft)}
+.equation .n{display:block;font-family:var(--mono);font-size:1.45rem;font-weight:600;color:var(--accent)}
+.equation .desc{display:block;font-family:var(--sans);font-size:12.5px;line-height:1.35;color:var(--ink-2);margin-top:4px}
+.equation .op{align-self:center;font-family:var(--mono);font-size:1.2rem;color:var(--muted)}
+
+/* ---------- callouts ---------- */
+.note{border-left:2px solid var(--verify);background:var(--verify-soft);
+  padding:16px 20px;margin:24px 0}
+.note .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--verify);margin:0 0 7px;font-weight:500}
+.note p{margin:0;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
+.note p+p{margin-top:10px}
+.note strong{color:var(--ink)}
+
+/* ---------- code ---------- */
+pre{background:var(--surface);border:1px solid var(--rule);padding:16px 18px;
+  overflow-x:auto;margin:20px 0;font-size:13px;line-height:1.62}
+pre code{background:none;padding:0;font-size:inherit;overflow-wrap:normal}
+.cm{color:var(--muted)}
+
+/* ---------- lists of limits ---------- */
+.limits{list-style:none;padding:0;margin:22px 0 0}
+.limits li{border-top:1px solid var(--rule);padding:14px 0 14px 0;margin:0;font-size:15.5px;
+  line-height:1.55;color:var(--ink-2)}
+.limits li strong{color:var(--ink)}
+
+/* ---------- footer / refs ---------- */
+footer{margin-top:64px;padding-top:26px;border-top:1px solid var(--rule)}
+footer ul{list-style:none;padding:0;font-family:var(--mono);font-size:13px}
+footer li{margin-bottom:8px;color:var(--muted)}
+.vid{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.vid li{margin:0}
+.vid a{font-family:var(--mono);font-size:12.5px;display:inline-block;padding:7px 12px;
+  border:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--surface);color:var(--ink-2)}
+.vid a:hover{border-color:var(--accent);color:var(--accent)}
+.vid a.new{border-color:var(--accent);color:var(--accent)}
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:0 18px 64px}
+  h2{gap:9px}
+  .sub{padding-left:0}
+  .concept-grid,.load-paths{grid-template-columns:1fr}
+  .equation{grid-template-columns:1fr}
+  .equation .op{text-align:center;line-height:1}
+  .chart{padding:15px 12px}
+}
+@media print{
+  body{font-size:11.5px;background:#fff;color:#111}
+  .wrap{max-width:none;padding:0}
+  .vid{display:none}
+  a{border-bottom:none;color:inherit}
+  section{padding-top:26px}
+  section,.tw,.note,.how,figure,.chart,.ro,.explainer,.equation,.load-paths,.spec{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  pre{white-space:pre-wrap;overflow-x:visible}
+  b.v{background:none;color:inherit}
+  .tw{overflow-x:visible}
+  th,td{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">llama.cpp · one RTX PRO 6000 · measured 2026-08-27→30</p>
+  <h1>The big part is the cheap part</h1>
+  <p class="standfirst">Qwen3.8-Flash-Next is a 125B-parameter MoE model.
+  <strong>51.2B of those parameters are a lookup table, not matrix weights.</strong>
+  Put that table in system RAM, and the model runs on an 8 GB card — or on no GPU at all.</p>
+
+  <dl class="spec">
+    <div><dt>GPU</dt><dd>RTX PRO 6000</dd></div>
+    <div><dt>VRAM</dt><dd>96 GB</dd></div>
+    <div><dt>CPU</dt><dd>Ryzen 9950X</dd></div>
+    <div><dt>RAM</dt><dd>96 GB DDR5</dd></div>
+    <div><dt>Quant</dt><dd>UD-IQ4_XS</dd></div>
+    <div><dt>On disk</dt><dd>87.2 GiB</dd></div>
+    <div><dt>Params</dt><dd>176.94 B</dd></div>
+    <div><dt>Engine</dt><dd>b10666</dd></div>
+  </dl>
+
+  <ul class="vid">
+    <li><a class="new" href="#">▶ NEW — Qwen3.8-Flash-Next on one RTX PRO 6000 (link TBD)</a></li>
+    <li><a href="https://youtu.be/EDls1Popv1o">DeepSeek V4 Flash 284B + DSpark</a></li>
+    <li><a href="https://youtu.be/RBlRTUwJMI4">DFlash 2 + n-gram on Qwen 3.8 27B</a></li>
+    <li><a href="https://youtu.be/zNUoHONUHGk">N-gram, up to 8× faster</a></li>
+    <li><a href="https://www.youtube.com/watch?v=TUdihA_dJjo">DFlash on Qwen 3.6 27B</a></li>
+  </ul>
+</header>
+
+<div class="readouts">
+  <div class="ro"><span class="n">55.6<small>×</small></span>
+    <p>slower decode if you put the lookup table on the GPU instead of in system RAM</p></div>
+  <div class="ro"><span class="n">1.87<small>×</small></span>
+    <p>faster prefill when host-side weights are copied into RAM instead of memory-mapped</p></div>
+  <div class="ro"><span class="n">8.5<small> t/s</small></span>
+    <p>decode with no GPU at all, on a desktop CPU</p></div>
+  <div class="ro"><span class="n">30.8<small>%</small></span>
+    <p>more prefill from microbatch 2048 versus 512, for <b class="v">1,058 MiB</b> more VRAM</p></div>
+</div>
+
+<section>
+  <h2><span class="num">01</span>How we run every test</h2>
+  <p class="sub">The rules come first, because a number without its method is not a result</p>
+
+  <div class="col">
+  <p>Two words appear in every table. <strong>Prefill</strong> is the speed at which the server
+  reads the input prompt. <strong>Decode</strong> is the speed at which it generates the answer,
+  one token at a time. Both are in tokens per second (tok/s). <strong>VRAM</strong> is GPU memory.
+  <strong>System RAM</strong> is the computer's main memory.</p>
+  </div>
+
+  <h3>The workloads</h3>
+  <div class="col">
+  <p>No test uses live user traffic. Each test uses one of five fixed workloads, so every run of a
+  test sees the same input.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>The five workloads, and the sections that use them. Prompt lengths are in
+    tokens.</caption>
+    <thead><tr><th>Workload</th><th>What the model receives</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td>Speed sweep</td><td>Real code-problem text (101 LiveCodeBench problems), concatenated
+        and cut to exact prompt lengths from 256 to 245,760. Greedy sampling, a fixed output
+        length, prompt cache off.</td><td>02, 03, 04, 05, 10</td></tr>
+      <tr><td>llama-bench</td><td>The tool's own built-in prompt and generation tests (pp512,
+        pp4096, tg128).</td><td>03</td></tr>
+      <tr><td>Coding conversation</td><td>Fixed coding requests that build one application step by
+        step, served as one growing conversation. Three turns for speculation; five for preserved
+        reasoning. Model-card sampler.</td><td>06, 08</td></tr>
+      <tr><td>Concurrent load</td><td>Unique prompts of about 4,000 tokens each, exactly 256
+        output tokens, prompt cache off, 1 to 16 requests at once.</td><td>07</td></tr>
+      <tr><td>Recall document</td><td>A generated log-style document of up to 245,760 tokens with
+        three planted facts at three depths, graded by exact checkers.</td><td>09</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Scores come from saved files</h3>
+  <div class="col">
+  <p>Every request writes a result row to disk. We compute each score from those rows with a
+  recorded command. We do not copy scores from terminal output. Each test links its evidence
+  directory.</p>
+  </div>
+
+  <h3>We read the logs and check the generated text</h3>
+  <div class="col">
+  <p>After each run we read the server log and the model's output. A checker flags runs where the
+  model did not do the workload: tool calls with no executor, stub answers, missing code, or
+  truncated turns. This matters. Three early runs reported plausible speeds — 158, 98, and
+  <b class="v">105 tok/s</b> — while the model only emitted tool-call syntax and wrote no code. Speed alone cannot
+  show that.</p>
+  </div>
+
+  <h3>One fresh server for each arm, with a cooldown</h3>
+  <div class="col">
+  <p>Each test arm gets its own server start. Before each start, a settle routine waits until the GPU releases the previous arm's memory. It then waits for the card to cool
+  to <b class="v">42 °C</b> or less, and holds a floor delay.
+  A hot card clocks lower, so back-to-back arms would measure order, not configuration.</p>
+  </div>
+
+  <h3>We repeat, and we reverse the order</h3>
+  <div class="col">
+  <p>Two-configuration tests run in A-B-B-A order. Each configuration gets one early and one late
+  position. We report the order effect — for the placement test it was <b class="v">0.56%</b>. Where sampling adds
+  noise, we run more pairs and report the spread.</p>
+  </div>
+
+  <h3>We monitor the GPU during every arm</h3>
+  <div class="col">
+  <p>A telemetry watcher samples temperature, power, clock speed, and throttle flags for each arm.
+  DCGM profiling counters record tensor-pipe activity, GPU-memory traffic, and PCIe transfer
+  rates. A thermal throttle voids the arm. A resident arm that swaps to disk also voids. An mmap
+  arm is judged on sustained disk bandwidth instead, because page faults are normal for mmap.</p>
+  </div>
+
+  <h3>The sampler must match the mode</h3>
+  <div class="col">
+  <p>This model has a thinking mode and a non-thinking mode. The model card gives one sampler for
+  each. Before a workload test, a checker compares the live server against the card for the mode
+  under test, and a mismatch fails the arm.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Sampler values from the official model card, by mode. All parameters are
+    dimensionless.</caption>
+    <thead><tr><th>Parameter</th><th>Thinking</th><th>Non-thinking</th></tr></thead>
+    <tbody>
+      <tr><td>Temperature</td><td>1.0</td><td>0.7</td></tr>
+      <tr><td>top-p</td><td>0.95</td><td>0.80</td></tr>
+      <tr><td>top-k</td><td>20</td><td>20</td></tr>
+      <tr><td>min-p</td><td>0.0</td><td>0.0</td></tr>
+      <tr><td>Presence penalty</td><td>0.0</td><td>1.5</td></tr>
+      <tr><td>Repetition penalty</td><td>1.0</td><td>1.0</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Every option is checked before the run</h3>
+  <div class="col">
+  <p>Before a server starts, the controller renders the resolved configuration. It compares each
+  option against the arm's intent: tensor placement, context, expert offload, microbatch, batch,
+  parallel slots, GPU layers, loading mode, lazy reads, and KV layout. A mismatch fails the arm
+  before any request is sent.</p>
+  </div>
+
+  <h3>Why we do not benchmark workloads with greedy sampling</h3>
+  <div class="col">
+  <p>Greedy sampling (temperature 0, top-k 1) promises identical output between arms. On this
+  engine it does not deliver that: with speculation as the only difference, output diverged on the
+  first turn. Speculation verifies several tokens per forward pass, so the arithmetic batches
+  differently, and a near-tie token choice can flip. We therefore compare decode rates under the
+  model-card sampler, and we do not compare total wall time between arms that generate different
+  amounts of text. Fixed-length synthetic sweeps still use greedy with a pinned output length,
+  because there the sampler cannot change how much work is done.</p>
+  </div>
+
+  <h3>What each run saves</h3>
+  <div class="col">
+  <p>Each arm's directory holds the resolved configuration, the full server log, and the server's
+  reported settings. It also holds GPU and process memory after load, every request row, and the
+  warm-up rows (saved, excluded from scores). Telemetry with a pass/fail verdict and the command
+  that recomputes the score complete the set.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>Why a 125B model fits</h2>
+  <p class="sub">51B parameters are a lookup table, not matrix-multiply weights</p>
+  <div class="col">
+  <p>From the GGUF metadata: 512 experts, 48 blocks, and a <strong>per-layer token-embedding
+  (PLE) table</strong> with 16 heads of roughly 20 million entries each. That unusually large
+  table explains how the model fits.</p></div>
+
+  <div class="tw"><table>
+    <caption>Preferred placement in the full 96 GiB run. Context memory is additional to the
+    87.2 GiB model file; GiB means binary gigabytes.</caption>
+    <thead><tr><th>Part</th><th>Params</th><th>Size</th><th>Fast placement</th></tr></thead>
+    <tbody>
+      <tr><td>Expert weights</td><td>~120 B</td><td>60.7 GiB</td><td>GPU VRAM</td></tr>
+      <tr><td>PLE lookup table</td><td class="hi">~51 B</td><td class="hi">27.2 GiB</td><td>System RAM (CPU)</td></tr>
+      <tr><td>262,144-token context</td><td class="dim">—</td><td>10.3 GiB</td><td>GPU VRAM</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p>Most model weights feed large matrix multiplications. GPUs are built for that work. The PLE
+  table is different. For each token, the model fetches a small set of rows by address, like
+  records from a very large index. It does not multiply the whole table.</p>
+  </div>
+
+  <div class="explainer" aria-label="Why the PLE table belongs in system RAM">
+    <p class="explainer-title">The important placement choice</p>
+    <div class="concept-grid">
+      <div class="concept">
+        <span class="tag">Expert weights · 60.7 GiB</span>
+        <strong>Keep the arithmetic on the GPU</strong>
+        <p>These weights drive matrix multiplications, so GPU compute and VRAM bandwidth help.</p>
+      </div>
+      <div class="concept">
+        <span class="tag">PLE table · 27.2 GiB</span>
+        <strong>Keep the lookup table in system RAM</strong>
+        <p>The CPU fetches selected rows. This frees <b class="v">27.2 GiB</b> of VRAM without moving heavy matrix math to the CPU.</p>
+      </div>
+    </div>
+    <p class="takeaway"><strong>The PLE table is a random-access lookup with no matrix
+    multiply.</strong> It is the one part of the model that is cheap to move off the card. It is
+    also the biggest part.</p>
+  </div>
+
+  <h3>The placement test: 55.6× slower on the GPU</h3>
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>We start the server four times, in A-B-B-A order. The only change between arms is where the
+    PLE table lives: system RAM (<code>per_layer_token_embd=CPU</code>) or GPU
+    (<code>=CUDA0</code>). Each start serves one warm-up and three measured requests at a
+    2,048-token prompt. Both placements use context 32,768, because the GPU placement does not fit
+    context 262,144 with all expert layers on the card. The resolved placement string is verified
+    before each start, and memory is recorded after each load.</p>
+    <p><strong>Settings:</strong> speed-sweep workload — greedy sampling (temperature 0),
+    <b class="v">128</b>-token output, prompt cache off.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Placement test at a 2,048-token prompt. Prefill and decode are tokens per second
+    (tok/s). Memory is measured after model load. Each speed is the median of six requests across
+    two starts.</caption>
+    <thead><tr><th>PLE placement</th><th>GPU memory</th><th>Host memory<br>(model data)</th>
+      <th>Prefill<br>tok/s</th><th>Decode<br>tok/s</th></tr></thead>
+    <tbody>
+      <tr><td>System RAM / CPU</td><td>63,407 MiB</td><td>27.2 GiB</td><td>1,967.9</td><td class="hi">108.5</td></tr>
+      <tr><td>CUDA0 / GPU</td><td>90,927 MiB</td><td>0.4 GiB</td><td>575.7</td><td>1.95</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p>With the table in system RAM, decode is <b class="v">108.5 tok/s</b>. With the table on the
+  GPU, decode is <b class="v">1.95 tok/s</b> — <b class="v">55.6×</b> slower. Prefill is <b class="v">3.4×</b> slower. The memory
+  columns prove the placement moved. The GPU arm holds <b class="v">27.5 GiB</b> more VRAM, and its host-side model
+  memory falls from <b class="v">27.2 GiB</b> to <b class="v">0.4 GiB</b>. The order effect between repeated arms was <b class="v">0.56%</b>.</p>
+  </div>
+
+  <h3>Why the fast card loses this one</h3>
+  <div class="col">
+  <p>The result looks wrong at first, because VRAM is faster memory than system RAM. But a lookup
+  gives the GPU nothing to accelerate. Each token fetches a few small rows from the <b class="v">27.2 GiB</b>
+  table. That is a few kilobytes of useful data and no matrix multiplication. Speed here is set by two things: how far the fetched rows travel, and how often the two
+  processors wait for each other. Bandwidth and compute do not set it.</p>
+  <p>The prefill and decode columns show the shape of the cost. With the table on the GPU, one
+  decode step takes <b class="v">513 ms</b> (1 ÷ <b class="v">1.95 tok/s</b>). That is far longer than any arithmetic in this model
+  needs.
+  Prefill slows only <b class="v">3.4×</b>, because prefill batches many tokens into one step and pays the per-step
+  cost once. Decode pays it on every single token and slows <b class="v">55.6×</b>. A per-step transfer and
+  synchronization cost between the CPU and the GPU matches this pattern; a bandwidth or compute
+  limit does not.</p>
+  <p>This is why the flag matters. The engine stores the table as an ordinary weight tensor. On a
+  card with enough VRAM, a plain <code>-ngl 999</code> launch can place it on the GPU. The
+  <code>-ot per_layer_token_embd=CPU</code> override exists to prevent exactly that
+  configuration.</p>
+  <p class="evid">Evidence: results/corrections/20260830T145932Z_PLE-01/</p>
+  </div>
+
+  <h3>Why long prompts stay cheap</h3>
+  <div class="col">
+  <p>Long prompts also use less memory than a conventional 48-layer transformer. Only 12 layers
+  use attention and need a growing key–value (KV) cache. The other 36 use a gated delta network
+  whose roughly <b class="v">113 MiB</b> state stays the same size as the prompt grows.</p>
+  </div>
+
+  <figure aria-labelledby="context-memory-caption">
+    <div class="memory-bar" role="img" aria-label="Each prompt token uses 41.3 KiB: 24 KiB for the KV cache, about 12 KiB for the sparse-attention indexer, and about 5.3 KiB for other context data">
+      <span class="kv">KV · 24 KiB</span>
+      <span class="index">Indexer · ~12 KiB</span>
+      <span class="other">Other</span>
+    </div>
+    <figcaption class="figcap" id="context-memory-caption"><strong>GPU memory added per prompt token: 41.3 KiB.</strong>
+    The KV cache accounts for 24 KiB; the sparse-attention indexer adds about 12 KiB; the remaining
+    roughly 5.3 KiB covers other context data. Counting only KV would understate the measured total.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="num">03</span>What it runs like on the card you own</h2>
+  <p class="sub">Seven hardware tiers × up to seven prompt lengths — the main result</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>A helper program holds GPU memory so the 96 GB card presents a smaller pool. This
+    reproduces the memory capacity of smaller cards, not their exact bandwidth. For each tier we
+    move expert layers to system RAM (<code>--n-cpu-moe</code>) until the model and the largest
+    context that tier can serve both fit. Short prompts run one warm-up and two measured requests;
+    long prompts run one warm-up and one measured request. Telemetry with a throttle check runs
+    for every tier, and the card cools between tiers.</p>
+    <p><strong>Not every tier can use the same loading mode.</strong> The 8–<b class="v">32 GiB</b> tiers offload
+    so many expert layers that resident loading would need more system RAM than this machine has,
+    so they use mmap. The 48 and <b class="v">96 GiB</b> tiers fit and run RAM resident
+    (<code>--load-mode none</code>). Section 04 measures how much that difference is worth.</p>
+    <p><strong>Settings:</strong> same speed-sweep workload as section 02, with a
+    <b class="v">256</b>-token output.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Throughput by usable GPU memory. All speed columns are tokens per second (tok/s).
+    Each tier runs at the largest context it can serve.</caption>
+    <thead><tr><th>Usable VRAM</th><th>Closest setup</th><th>Expert layers<br>in system RAM</th>
+      <th>Weight loading</th><th>Prefill<br>2K prompt</th><th>Decode<br>2K prompt</th>
+      <th>Long-context<br>decode</th></tr></thead>
+    <tbody>
+      <tr><td>None</td><td>CPU only</td><td>All model layers</td><td>mmap</td><td>183</td>
+        <td class="hi">8.5</td><td class="dim">—</td></tr>
+      <tr class="rule-top"><td>8 GiB</td><td>3060 / 4060</td><td>48 of 48</td><td>mmap</td>
+        <td>232</td><td>35.7</td><td class="dim">— (16K max)</td></tr>
+      <tr><td>16 GiB</td><td>4060 Ti / 5060 Ti</td><td>45 of 48</td><td>mmap</td>
+        <td>249</td><td>37.9</td><td>20.6 @ 123K</td></tr>
+      <tr><td>24 GiB</td><td>3090 / 4090</td><td>42 of 48</td><td>mmap</td>
+        <td>260</td><td>39.0</td><td>14.9 @ 245K</td></tr>
+      <tr><td>32 GiB</td><td>5090</td><td>36 of 48</td><td>mmap</td>
+        <td>292</td><td>42.2</td><td>15.4 @ 245K</td></tr>
+      <tr><td>48 GiB</td><td>2× 3090</td><td>23 of 48</td><td>RAM resident</td>
+        <td>747</td><td>51.7</td><td>17.0 @ 245K</td></tr>
+      <tr><td>96 GiB</td><td>This card</td><td>0 of 48</td><td>RAM resident</td>
+        <td class="hi">1,955</td><td class="hi">109.1</td><td>21.6 @ 245K</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="table-key"><strong>How to read the middle columns:</strong> "23 of 48" means 23 expert
+  layers run from slower system RAM. The other 25 stay in GPU VRAM. "RAM resident" means
+  <code>--load-mode none</code>; "mmap" means file-backed loading. A dash means the tier cannot
+  reach that prompt length.</p>
+
+  <figure class="chart" aria-labelledby="ladder-prefill-caption">
+    <div class="chart-head"><h3>Prompt-processing speed by usable VRAM</h3>
+      <span>Prefill at a 2,048-token prompt · tok/s</span></div>
+    <div class="chart-legend" aria-hidden="true">
+      <span><i class="swatch"></i>RAM resident (<code>--load-mode none</code>)</span>
+      <span><i class="swatch mmap"></i>mmap</span>
+    </div>
+    <div role="img" aria-label="Bar chart of prefill speed at a 2,048-token prompt: CPU 183; 8 GiB 232; 16 GiB 249; 24 GiB 260; 32 GiB 292; 48 GiB 747; 96 GiB 1,955 tokens per second.">
+      <div class="chart-row"><span class="chart-label">CPU</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar mmap" style="--w:9.3">183</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">8 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar mmap" style="--w:11.9">232</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">16 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar mmap" style="--w:12.7">249</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">24 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar mmap" style="--w:13.3">260</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">32 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar mmap" style="--w:14.9">292</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">48 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:38.2">747</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">96 GiB</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:100.0">1,955</span></div>
+      </div></div>
+    </div>
+    <figcaption class="figcap" id="ladder-prefill-caption">Speed rises slowly from 8 GiB to 32 GiB
+    while every tier uses mmap. The two RAM-resident tiers are much faster. Section 04 measures
+    how much of that step comes from the loading method.</figcaption>
+  </figure>
+
+  <figure class="chart" aria-labelledby="ladder-decode-caption">
+    <div class="chart-head"><h3>Decode speed falls as the prompt grows, on every tier</h3>
+      <span>Decode · tok/s · one line per VRAM tier</span></div>
+    <div class="chart-legend"><span><i class="swatch" style="background:var(--t8)"></i>8 GiB</span> <span><i class="swatch" style="background:var(--t16)"></i>16 GiB</span> <span><i class="swatch" style="background:var(--t24)"></i>24 GiB</span> <span><i class="swatch" style="background:var(--t32)"></i>32 GiB</span> <span><i class="swatch" style="background:var(--t48)"></i>48 GiB</span> <span><i class="swatch" style="background:var(--t96)"></i>96 GiB</span></div>
+    <div role="img" aria-label="Line chart of decode speed against prompt length: 8 GiB falls from 35.69 at 2K to 33.28 at 12K; 16 GiB falls from 37.93 at 2K to 20.57 at 123K; 24 GiB falls from 39.01 at 2K to 14.89 at 245K; 32 GiB falls from 42.24 at 2K to 15.41 at 245K; 48 GiB falls from 51.73 at 2K to 16.96 at 245K; 96 GiB falls from 109.07 at 2K to 21.61 at 245K tokens per second.">
+<svg viewBox="0 0 880 380" width="100%" height="auto" font-family="IBM Plex Mono,monospace" font-size="11">
+<line x1="52" y1="340.0" x2="772" y2="340.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="44" y="343.5" text-anchor="end" fill="var(--muted)">0</text>
+<line x1="52" y1="270.0" x2="772" y2="270.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="44" y="273.5" text-anchor="end" fill="var(--muted)">25</text>
+<line x1="52" y1="200.0" x2="772" y2="200.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="44" y="203.5" text-anchor="end" fill="var(--muted)">50</text>
+<line x1="52" y1="130.0" x2="772" y2="130.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="44" y="133.5" text-anchor="end" fill="var(--muted)">75</text>
+<line x1="52" y1="60.0" x2="772" y2="60.0" stroke="var(--rule)" stroke-width="1"/>
+<text x="44" y="63.5" text-anchor="end" fill="var(--muted)">100</text>
+<text x="52.0" y="366" text-anchor="middle" fill="var(--muted)">256</text>
+<text x="270.0" y="366" text-anchor="middle" fill="var(--muted)">2K</text>
+<text x="415.4" y="366" text-anchor="middle" fill="var(--muted)">8K</text>
+<text x="560.7" y="366" text-anchor="middle" fill="var(--muted)">32K</text>
+<text x="706.1" y="366" text-anchor="middle" fill="var(--muted)">131K</text>
+<text x="772.0" y="366" text-anchor="middle" fill="var(--muted)">245K</text>
+<text x="52" y="379" fill="var(--muted)" font-size="10.5">Prompt length, tokens (log scale)</text>
+<text x="14" y="28" fill="var(--muted)" font-size="10.5">tok/s</text>
+<path d="M52.0,240.9 L270.0,240.1 L415.4,244.5 L457.9,246.8" fill="none" stroke="var(--t8)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="240.9" r="4" fill="var(--t8)" stroke="var(--surface)" stroke-width="2"><title>8 GiB · 256 prompt · 35.41 tok/s</title></circle>
+<circle cx="270.0" cy="240.1" r="4" fill="var(--t8)" stroke="var(--surface)" stroke-width="2"><title>8 GiB · 2K prompt · 35.69 tok/s</title></circle>
+<circle cx="415.4" cy="244.5" r="4" fill="var(--t8)" stroke="var(--surface)" stroke-width="2"><title>8 GiB · 8K prompt · 34.11 tok/s</title></circle>
+<circle cx="457.9" cy="246.8" r="4" fill="var(--t8)" stroke="var(--surface)" stroke-width="2"><title>8 GiB · 12K prompt · 33.28 tok/s</title></circle>
+<path d="M52.0,233.2 L270.0,233.8 L415.4,240.3 L560.7,254.3 L633.4,270.0 L699.3,282.4" fill="none" stroke="var(--t16)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="233.2" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 256 prompt · 38.15 tok/s</title></circle>
+<circle cx="270.0" cy="233.8" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 2K prompt · 37.93 tok/s</title></circle>
+<circle cx="415.4" cy="240.3" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 8K prompt · 35.59 tok/s</title></circle>
+<circle cx="560.7" cy="254.3" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 32K prompt · 30.59 tok/s</title></circle>
+<circle cx="633.4" cy="270.0" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 65K prompt · 25.01 tok/s</title></circle>
+<circle cx="699.3" cy="282.4" r="4" fill="var(--t16)" stroke="var(--surface)" stroke-width="2"><title>16 GiB · 123K prompt · 20.57 tok/s</title></circle>
+<path d="M52.0,230.0 L270.0,230.8 L415.4,235.4 L560.7,252.6 L633.4,269.1 L706.1,282.3 L772.0,298.3" fill="none" stroke="var(--t24)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="230.0" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 256 prompt · 39.3 tok/s</title></circle>
+<circle cx="270.0" cy="230.8" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 2K prompt · 39.01 tok/s</title></circle>
+<circle cx="415.4" cy="235.4" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 8K prompt · 37.34 tok/s</title></circle>
+<circle cx="560.7" cy="252.6" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 32K prompt · 31.22 tok/s</title></circle>
+<circle cx="633.4" cy="269.1" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 65K prompt · 25.33 tok/s</title></circle>
+<circle cx="706.1" cy="282.3" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 131K prompt · 20.62 tok/s</title></circle>
+<circle cx="772.0" cy="298.3" r="4" fill="var(--t24)" stroke="var(--surface)" stroke-width="2"><title>24 GiB · 245K prompt · 14.89 tok/s</title></circle>
+<path d="M52.0,220.0 L270.0,221.7 L415.4,229.2 L560.7,247.0 L633.4,261.2 L706.1,278.1 L772.0,296.9" fill="none" stroke="var(--t32)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="220.0" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 256 prompt · 42.84 tok/s</title></circle>
+<circle cx="270.0" cy="221.7" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 2K prompt · 42.24 tok/s</title></circle>
+<circle cx="415.4" cy="229.2" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 8K prompt · 39.57 tok/s</title></circle>
+<circle cx="560.7" cy="247.0" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 32K prompt · 33.21 tok/s</title></circle>
+<circle cx="633.4" cy="261.2" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 65K prompt · 28.14 tok/s</title></circle>
+<circle cx="706.1" cy="278.1" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 131K prompt · 22.1 tok/s</title></circle>
+<circle cx="772.0" cy="296.9" r="4" fill="var(--t32)" stroke="var(--surface)" stroke-width="2"><title>32 GiB · 245K prompt · 15.41 tok/s</title></circle>
+<path d="M52.0,190.6 L270.0,195.2 L415.4,203.4 L560.7,225.5 L706.1,272.0 L772.0,292.5" fill="none" stroke="var(--t48)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="190.6" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 256 prompt · 53.37 tok/s</title></circle>
+<circle cx="270.0" cy="195.2" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 2K prompt · 51.73 tok/s</title></circle>
+<circle cx="415.4" cy="203.4" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 8K prompt · 48.79 tok/s</title></circle>
+<circle cx="560.7" cy="225.5" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 32K prompt · 40.91 tok/s</title></circle>
+<circle cx="706.1" cy="272.0" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 131K prompt · 24.3 tok/s</title></circle>
+<circle cx="772.0" cy="292.5" r="4" fill="var(--t48)" stroke="var(--surface)" stroke-width="2"><title>48 GiB · 245K prompt · 16.96 tok/s</title></circle>
+<path d="M52.0,23.3 L270.0,34.6 L415.4,63.0 L560.7,137.4 L633.4,190.8 L706.1,242.3 L772.0,279.5" fill="none" stroke="var(--t96)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="52.0" cy="23.3" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 256 prompt · 113.09 tok/s</title></circle>
+<circle cx="270.0" cy="34.6" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 2K prompt · 109.07 tok/s</title></circle>
+<circle cx="415.4" cy="63.0" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 8K prompt · 98.94 tok/s</title></circle>
+<circle cx="560.7" cy="137.4" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 32K prompt · 72.37 tok/s</title></circle>
+<circle cx="633.4" cy="190.8" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 65K prompt · 53.28 tok/s</title></circle>
+<circle cx="706.1" cy="242.3" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 131K prompt · 34.91 tok/s</title></circle>
+<circle cx="772.0" cy="279.5" r="4" fill="var(--t96)" stroke="var(--surface)" stroke-width="2"><title>96 GiB · 245K prompt · 21.61 tok/s</title></circle>
+<text x="474.9" y="250.3" fill="var(--ink-2)" font-weight="600" font-size="11.5">8 GiB</text>
+<text x="789.0" y="283.0" fill="var(--ink-2)" font-weight="600" font-size="11.5">96 GiB</text>
+<line x1="703.3" y1="282.4" x2="713.3" y2="292.5" stroke="var(--muted)" stroke-width="1"/>
+<text x="716.3" y="296.0" fill="var(--ink-2)" font-weight="600" font-size="11.5">16 GiB</text>
+<line x1="776.0" y1="292.5" x2="786.0" y2="305.5" stroke="var(--muted)" stroke-width="1"/>
+<text x="789.0" y="309.0" fill="var(--ink-2)" font-weight="600" font-size="11.5">48 GiB</text>
+<line x1="776.0" y1="296.9" x2="786.0" y2="318.5" stroke="var(--muted)" stroke-width="1"/>
+<text x="789.0" y="322.0" fill="var(--ink-2)" font-weight="600" font-size="11.5">32 GiB</text>
+<line x1="776.0" y1="298.3" x2="786.0" y2="331.5" stroke="var(--muted)" stroke-width="1"/>
+<text x="789.0" y="335.0" fill="var(--ink-2)" font-weight="600" font-size="11.5">24 GiB</text>
+</svg>
+    </div>
+    <figcaption class="figcap" id="ladder-decode-caption">Larger tiers start faster but lose more:
+    at a 2,048-token prompt the 96 GiB tier decodes 2.8× faster than the 24 GiB tier; at 245,760
+    tokens the lead is 1.45×. Hover a point for its exact value. The full table below has every
+    number.</figcaption>
+  </figure>
+
+  <div class="col">
+  <p><strong>The tiers converge as the prompt grows.</strong> At a 2,048-token prompt, the <b class="v">96 GiB</b>
+  tier decodes <b class="v">2.8×</b> faster than the <b class="v">24 GiB</b> tier. At 245,760 tokens the lead is <b class="v">1.45×</b>. Long context
+  costs every tier, and it costs the fastest tier the most.</p>
+  <p><strong>The model runs with no GPU at all, at 8.5 tok/s</strong> — faster than most people
+  read. This is the strongest demonstration of section 02. The largest part of the model is a
+  lookup table, and a CPU can serve a lookup table.</p>
+  </div>
+
+  <div class="note">
+    <p class="lab">Practical consequence</p>
+    <p>A larger context setting costs prefill at every prompt length. The same <b class="v">16 GiB</b> tier reaches
+    <b class="v">482 tok/s</b> at context 8,192 and <b class="v">249 tok/s</b> at context 131,072.
+    The KV cache displaces expert layers from VRAM. Set <code>--ctx</code> to what you need.</p>
+  </div>
+
+  <h3>Every measured point</h3>
+  <div class="tw"><table>
+    <caption>All measured points, every tier and prompt length. Prefill and decode are tokens per
+    second (tok/s). TTFT is the time to the first output token. Context is the server limit in
+    tokens.</caption>
+    <thead><tr><th>Tier</th><th>Context</th><th>Loading</th><th>Prompt<br>tokens</th>
+      <th>Prefill<br>tok/s</th><th>Decode<br>tok/s</th><th>TTFT</th></tr></thead>
+    <tbody>
+      <tr><td>CPU only</td><td>8,192</td><td>mmap</td><td>256</td><td>111</td><td>8.5</td><td>2.3 s</td></tr>
+      <tr><td>CPU only</td><td>8,192</td><td>mmap</td><td>2,048</td><td>183</td><td>8.34</td><td>11.2 s</td></tr>
+      <tr class="rule-top"><td>8 GiB</td><td>16,384</td><td>mmap</td><td>256</td><td>119</td><td>35.41</td><td>2.2 s</td></tr>
+      <tr><td></td><td>16,384</td><td>mmap</td><td>2,048</td><td>232</td><td>35.69</td><td>8.8 s</td></tr>
+      <tr><td></td><td>16,384</td><td>mmap</td><td>8,192</td><td>236</td><td>34.11</td><td>34.7 s</td></tr>
+      <tr><td></td><td>16,384</td><td>mmap</td><td>12,288</td><td>235</td><td>33.28</td><td>52.3 s</td></tr>
+      <tr class="rule-top"><td>16 GiB</td><td>131,072</td><td>mmap</td><td>256</td><td>143</td><td>38.15</td><td>1.8 s</td></tr>
+      <tr><td></td><td>131,072</td><td>mmap</td><td>2,048</td><td>249</td><td>37.93</td><td>8.2 s</td></tr>
+      <tr><td></td><td>131,072</td><td>mmap</td><td>8,192</td><td>246</td><td>35.59</td><td>33.3 s</td></tr>
+      <tr><td></td><td>131,072</td><td>mmap</td><td>32,768</td><td>239</td><td>30.59</td><td>2.3 min</td></tr>
+      <tr><td></td><td>131,072</td><td>mmap</td><td>65,536</td><td>233</td><td>25.01</td><td>4.7 min</td></tr>
+      <tr><td></td><td>131,072</td><td>mmap</td><td>122,880</td><td>225</td><td>20.57</td><td>9.1 min</td></tr>
+      <tr class="rule-top"><td>24 GiB</td><td>262,144</td><td>mmap</td><td>256</td><td>152</td><td>39.3</td><td>1.7 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>2,048</td><td>260</td><td>39.01</td><td>7.9 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>8,192</td><td>257</td><td>37.34</td><td>31.9 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>32,768</td><td>252</td><td>31.22</td><td>2.2 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>65,536</td><td>246</td><td>25.33</td><td>4.4 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>131,072</td><td>234</td><td>20.62</td><td>9.3 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>245,760</td><td>220</td><td>14.89</td><td>18.6 min</td></tr>
+      <tr class="rule-top"><td>32 GiB</td><td>262,144</td><td>mmap</td><td>256</td><td>161</td><td>42.84</td><td>1.6 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>2,048</td><td>292</td><td>42.24</td><td>7.0 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>8,192</td><td>290</td><td>39.57</td><td>28.2 s</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>32,768</td><td>286</td><td>33.21</td><td>1.9 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>65,536</td><td>277</td><td>28.14</td><td>3.9 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>131,072</td><td>263</td><td>22.1</td><td>8.3 min</td></tr>
+      <tr><td></td><td>262,144</td><td>mmap</td><td>245,760</td><td>245</td><td>15.41</td><td>16.7 min</td></tr>
+      <tr class="rule-top"><td>48 GiB</td><td>262,144</td><td>resident</td><td>256</td><td>458</td><td>53.37</td><td>0.6 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>2,048</td><td>747</td><td>51.73</td><td>2.7 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>8,192</td><td>747</td><td>48.79</td><td>11.0 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>32,768</td><td>724</td><td>40.91</td><td>45.3 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>131,072</td><td>618</td><td>24.3</td><td>3.5 min</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>245,760</td><td>535</td><td>16.96</td><td>7.7 min</td></tr>
+      <tr class="rule-top"><td>96 GiB</td><td>262,144</td><td>resident</td><td>256</td><td>1,305</td><td>113.09</td><td>0.2 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>2,048</td><td>1,955</td><td>109.07</td><td>1.0 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>8,192</td><td>1,875</td><td>98.94</td><td>4.4 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>32,768</td><td>1,706</td><td>72.37</td><td>19.2 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>65,536</td><td>1,531</td><td>53.28</td><td>42.8 s</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>131,072</td><td>1,267</td><td>34.91</td><td>1.7 min</td></tr>
+      <tr><td></td><td>262,144</td><td>resident</td><td>245,760</td><td>975</td><td>21.61</td><td>4.2 min</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Cross-check with llama-bench</h3>
+  <div class="col">
+  <p>We also ran <code>llama-bench</code> at each tier with the same tensor placement. Its
+  generation rate (tg128) agrees with the server decode rate at every tier. Its prompt rates
+  differ from the server path, because llama-bench uses its own batching and does not run the
+  server code.</p>
+  </div>
+  <div class="tw"><table>
+    <caption>llama-bench cross-check per tier. Values are tokens per second, mean ± standard
+    deviation. pp512 and pp4096 are prompt processing at those prompt lengths; tg128 is text
+    generation over 128 tokens. The last column repeats the server decode rate at a 2,048-token
+    prompt for comparison.</caption>
+    <thead><tr><th>Tier</th><th>pp512</th><th>pp4096</th><th>tg128</th><th>Server decode<br>@2K, tok/s</th></tr></thead>
+    <tbody>
+      <tr><td>CPU only</td><td>72.15 ± 0.00</td><td class="dim">—</td><td>8.98 ± 0.00 (tg64)</td><td>8.5</td></tr>
+      <tr><td>8 GiB</td><td>372 ± 20</td><td>386 ± 4</td><td>36.48 ± 0.14</td><td>35.69</td></tr>
+      <tr><td>16 GiB</td><td>382 ± 24</td><td>397 ± 5</td><td>37.85 ± 0.19</td><td>37.93</td></tr>
+      <tr><td>24 GiB</td><td>402 ± 27</td><td>416 ± 4</td><td>39.25 ± 0.42</td><td>39.01</td></tr>
+      <tr><td>32 GiB</td><td>392 ± 34</td><td>402 ± 5</td><td>42.87 ± 0.18</td><td>42.24</td></tr>
+      <tr><td>48 GiB</td><td>405 ± 62</td><td>493 ± 13</td><td>52.65 ± 0.05</td><td>51.73</td></tr>
+      <tr><td>96 GiB</td><td>983 ± 192</td><td>1,121 ± 28</td><td>107.26 ± 0.53</td><td>109.07</td></tr>
+    </tbody>
+  </table></div>
+  <p class="evid">Evidence: results/tier_full/ · results/cpu_only/</p>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Loading mode: mmap or RAM resident</h2>
+  <p class="sub">One flag is worth 1.87× prefill where the RAM allows it</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>The <b class="v">48 GiB</b> tier runs again with one change: the loading method for host-side weights.
+    Tensor placement (23 of 48 expert layers in system RAM), context 262,144, and the 512-token
+    microbatch stay identical. mmap runs twice — a first ("cold") pass and a second ("warm") pass —
+    to test whether the operating system's file cache closes the gap. Prompt lengths 2,048 to
+    131,072; one warm-up plus measured requests per length.</p>
+    <p><code>--load-mode none</code> does <strong>not</strong> mean "do not load the model." It
+    means "use no file mapping." In this report, <strong>resident</strong> is the short name for
+    this mode: host-side model data is copied into ordinary system RAM.</p>
+    <p><strong>Settings:</strong> same as section 03.</p>
+  </div>
+
+  <div class="load-paths" aria-label="Comparison of mmap and RAM-resident model loading">
+    <div class="load-card">
+      <h3>File-backed mapping: mmap</h3>
+      <p class="flag">default / mapped mode</p>
+      <div class="path" aria-hidden="true">
+        <span class="path-step">Model file</span><span class="path-arrow">→</span>
+        <span class="path-step">OS-mapped pages</span><span class="path-arrow">→</span>
+        <span class="path-step">Model</span>
+      </div>
+      <p>The operating system supplies file pages on demand. Startup is quick and pages can be
+      reclaimed, but measured prefill was slower here.</p>
+    </div>
+    <div class="load-card fast">
+      <h3>Copied into RAM: resident</h3>
+      <p class="flag"><code>--load-mode none</code> = do not use mmap</p>
+      <div class="path" aria-hidden="true">
+        <span class="path-step">Model file</span><span class="path-arrow">→</span>
+        <span class="path-step">Startup copy</span><span class="path-arrow">→</span>
+        <span class="path-step">Allocated RAM</span>
+      </div>
+      <p>Host-side weights are copied into ordinary system RAM and kept there. It needs enough
+      free RAM, but delivered much faster prefill.</p>
+    </div>
+  </div>
+
+  <div class="tw"><table>
+    <caption>48 GiB tier: prompt-processing speed at identical tensor placement. Speed columns are
+    tokens per second (tok/s).</caption>
+    <thead><tr><th>Prompt length<br>(tokens)</th><th>RAM resident<br><code>load-mode none</code></th>
+      <th>mmap<br>first pass</th><th>mmap<br>second pass</th><th>Second-pass mmap<br>vs resident</th></tr></thead>
+    <tbody>
+      <tr><td>2,048</td><td>746.7</td><td>394.9</td><td>405.8</td><td class="hi">54%</td></tr>
+      <tr><td>8,192</td><td>747.2</td><td>407.4</td><td>392.3</td><td class="hi">52%</td></tr>
+      <tr><td>32,768</td><td>723.9</td><td>405.9</td><td>404.3</td><td>56%</td></tr>
+      <tr><td>131,072</td><td>618.5</td><td>365.5</td><td>366.2</td><td>59%</td></tr>
+    </tbody>
+  </table></div>
+
+  <figure class="chart" aria-labelledby="load-chart-caption">
+    <div class="chart-head"><h3>Resident loading is faster at every tested prompt length</h3>
+      <span>Prefill · tok/s</span></div>
+    <div class="chart-legend" aria-hidden="true">
+      <span><i class="swatch"></i>RAM resident (<code>none</code>)</span>
+      <span><i class="swatch mmap"></i>mmap, second pass</span>
+    </div>
+    <div role="img" aria-label="Bar chart. At prompt lengths 2048, 8192, 32768, and 131072, resident prefill measured 746.7, 747.2, 723.9, and 618.5 tokens per second; second-pass mmap measured 405.8, 392.3, 404.3, and 366.2 tokens per second.">
+      <div class="chart-row"><span class="chart-label">2K</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:99.9">746.7</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:54.3">405.8</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">8K</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:100">747.2</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:52.5">392.3</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">32K</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:96.9">723.9</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:54.1">404.3</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">131K</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:82.8">618.5</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:49.0">366.2</span></div>
+      </div></div>
+    </div>
+    <figcaption class="figcap" id="load-chart-caption">The second mmap pass reaches only 52–59%
+    of the RAM-resident prefill rate. Repeating mmap after the first pass does not close the gap;
+    the two mmap passes agree within 0.5%.</figcaption>
+  </figure>
+
+  <div class="col">
+  <p>The ladder in section 03 shows a <b class="v">2.6×</b> prefill step between the 32 and <b class="v">48 GiB</b> tiers. Two
+  settings change at that step: the VRAM amount and the loading mode. This test separates them.
+  At the same placement, resident loading makes prefill <b class="v">1.87×</b> faster. More VRAM
+  by itself contributes <b class="v">1.39×</b>. Together they account for the whole step.</p>
+  </div>
+
+  <div class="equation" role="img" aria-label="The 2.6 times step equals a measured 1.39 times gain from more VRAM multiplied by a measured 1.87 times gain from resident loading">
+    <div class="factor"><span class="n">1.39×</span><span class="desc">more VRAM<br>32 → 48 GiB</span></div>
+    <span class="op">×</span>
+    <div class="factor"><span class="n">1.87×</span><span class="desc">resident loading<br>instead of mmap</span></div>
+    <span class="op">=</span>
+    <div class="factor result"><span class="n">2.60×</span><span class="desc">the whole step<br>in the ladder</span></div>
+  </div>
+
+  <div class="col">
+  <p><strong>Decode behaves differently.</strong> Second-pass mmap and resident loading produce
+  almost the same decode speed: a ratio of 0.998. The decode gain from 32 to <b class="v">48 GiB</b> comes from the
+  changed tensor placement that more VRAM permits, not from the loading method.</p>
+  <p>More VRAM helps twice. It keeps more expert layers on the GPU, and it leaves fewer weights in
+  system RAM, which can make resident loading fit. Before you buy more VRAM, check whether your
+  machine has enough free system RAM to use <code>--load-mode none</code>.</p>
+  <p class="evid">Evidence: results/mmap_control_p1/ · results/mmap_control_p2/ ·
+  results/corrections/20260830T151444Z_LOAD-01/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Microbatch size</h2>
+  <p class="sub">+30.8% prefill for about 1 GiB of VRAM</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Only the microbatch flag (<code>-ub</code>) changes between arms: 256, 512, 1,024, and
+    2,048 tokens. Context 32,768, no expert offload, RAM-resident loading. The four values run in
+    ascending order and again in descending order, with a fresh server and one warm-up plus three
+    measured requests each time. The resolved microbatch is verified before every start.</p>
+    <p><strong>Settings:</strong> same speed-sweep workload as section 02
+    (greedy, <b class="v">128</b>-token output), at a <b class="v">2,048</b>-token prompt.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Microbatch sweep. Prefill and decode are tokens per second (tok/s) at a 2,048-token
+    prompt; memory is MiB after model load. Each speed is the mean of the two order-position
+    medians.</caption>
+    <thead><tr><th>Microbatch</th><th>Prefill<br>tok/s</th><th>Decode<br>tok/s</th><th>GPU memory<br>MiB</th><th>Prefill<br>vs 512</th></tr></thead>
+    <tbody>
+      <tr><td>256</td><td>1,555.5</td><td>108.66</td><td>63,231</td><td>−21.1%</td></tr>
+      <tr><td>512</td><td>1,972.3</td><td>108.50</td><td>63,407</td><td>baseline</td></tr>
+      <tr><td>1,024</td><td>2,324.1</td><td>109.07</td><td>63,759</td><td>+17.8%</td></tr>
+      <tr><td>2,048</td><td class="hi">2,579.3</td><td>109.02</td><td>64,465</td><td class="hi">+30.8%</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p>A larger microbatch speeds up prefill only. Decode stays within <b class="v">0.8%</b> across the sweep. The
+  gain shrinks at each doubling: <b class="v">+26.8%</b>, then <b class="v">+17.8%</b>, then <b class="v">+11.0%</b>. Most of the benefit is present
+  by 1,024. The cost is GPU memory: <b class="v">512 → 2,048</b> uses <b class="v">1,058 MiB</b> more. On a small card that memory
+  competes with context and expert layers.</p>
+  <p class="evid">Evidence: results/corrections/20260830T180949Z_UB-01/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">06</span>n-gram speculation: the average decode rate</h2>
+  <p class="sub">About +7% on a coding workload, at 28–43% draft acceptance</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Each arm serves the same three-turn coding conversation in thinking mode with the model-card
+    thinking sampler. One arm runs plain decoding; the other runs <code>ngram-mod</code>
+    speculation. Four pairs run with alternating order, each arm on a fresh server, with a
+    49,152-token output limit per turn. A checker reads every arm's output and confirms the model
+    wrote code. The score is total generated tokens divided by total decode time, per arm. We do
+    not compare wall time, because sampled arms generate different amounts of text. No DFlash or
+    MTP draft model exists for this model; this is n-gram speculation only.</p>
+    <p><strong>Settings:</strong> thinking mode; the model-card thinking sampler from the
+    section 01 table; <b class="v">49,152</b>-token output limit per turn; fresh server per
+    arm.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Decode rate per arm in tokens per second (tok/s): total generated tokens divided by
+    total decode time. Four runs per configuration, order alternated.</caption>
+    <thead><tr><th>Configuration</th><th>Run 1</th><th>Run 2</th><th>Run 3</th><th>Run 4</th><th>Mean<br>tok/s</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td>79.7</td><td>91.1</td><td>86.8</td><td>81.5</td><td>84.8</td></tr>
+      <tr><td>ngram-mod</td><td>89.3</td><td>89.6</td><td>91.9</td><td>91.5</td><td class="hi">90.6</td></tr>
+      <tr class="rule-top"><td>Draft acceptance</td><td>43.2%</td><td>41.6%</td><td>35.1%</td><td>28.2%</td><td class="dim">—</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p><code>ngram-mod</code> raises the average decode rate from <strong>84.8 to
+  90.6 tok/s — about +7%</strong>. The <b class="v">95%</b> confidence interval on the difference is <b class="v">+0.6 to
+  +11.0 tok/s</b>. The effect is real but not large, and four runs per arm leave it imprecise. The
+  speculation arm is also more stable: its four runs span <b class="v">2.6 tok/s</b>, while the baseline spans
+  <b class="v">11.4 tok/s</b>.</p>
+  <p class="evid">Evidence: results/corrections/20260830T171252Z_SPEC-01-rate/ ·
+  results/corrections/20260830T182917Z_SPEC-01-rate/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07</span>One request does not saturate the GPU</h2>
+  <p class="sub">Activity counters by tier, and what concurrency adds</p>
+  <div class="col">
+  <p>These counters report how often parts of the GPU were active during each tier sweep.
+  "Tensor pipe" is the matrix-math hardware. "DRAM" is GPU-memory traffic. "SM" is broader
+  shader-core activity. A <b class="v">13%</b> tensor-pipe reading does not mean the whole GPU was <b class="v">87%</b> idle.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Mean activity during each hardware-tier sweep. Percentages are activity counters, not
+    a single "GPU utilization" score.</caption>
+    <thead><tr><th>Usable VRAM</th><th>Expert layers<br>in system RAM</th><th>Tensor pipe<br>active</th>
+      <th>GPU DRAM<br>active</th><th>SMs<br>active</th><th>Telemetry hint</th></tr></thead>
+    <tbody>
+      <tr><td>8 GiB</td><td>48 of 48</td><td>0.9%</td><td>4.3%</td><td>8.8%</td><td>Latency / unsaturated</td></tr>
+      <tr><td>16 GiB</td><td>45 of 48</td><td>1.8%</td><td>4.3%</td><td>10.5%</td><td>Host / PCIe</td></tr>
+      <tr><td>24 GiB</td><td>42 of 48</td><td>2.6%</td><td>6.0%</td><td>13.5%</td><td>Host / PCIe</td></tr>
+      <tr><td>32 GiB</td><td>36 of 48</td><td>2.9%</td><td>6.5%</td><td>15.1%</td><td>Host / PCIe</td></tr>
+      <tr><td>48 GiB</td><td>23 of 48</td><td>6.8%</td><td>14.3%</td><td>34.9%</td><td>Host / PCIe</td></tr>
+      <tr><td>96 GiB</td><td>0 of 48</td><td>13.3%</td><td>23.9%</td><td>69.2%</td><td>Latency / unsaturated</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="table-key"><strong>What the hints mean:</strong> "Host / PCIe" means the monitor saw
+  more than <b class="v">5 GB/s</b> arriving over PCIe. GPU math and memory activity stayed low at the same time.
+  "Latency / unsaturated" means both stayed below <b class="v">30%</b> without that PCIe traffic. These labels come
+  from threshold rules in the telemetry script. They narrow the explanation; they do not prove a
+  root cause.</p>
+
+  <h3>Concurrency: more total output, slower individual requests</h3>
+
+  <div class="explainer" aria-label="What unified and non-unified KV mean">
+    <p class="explainer-title">The two KV-cache layouts under test</p>
+    <div class="concept-grid">
+      <div class="concept">
+        <span class="tag">Unified KV · one shared pool</span>
+        <strong>All 16 slots share one 131,072-token pool</strong>
+        <p>Any request can take as much cache memory as is free. Flexible, but requests compete
+        for the same pool, and the bookkeeping covers the whole pool.</p>
+      </div>
+      <div class="concept">
+        <span class="tag">Non-unified KV · per-slot</span>
+        <strong>The pool is divided: 8,192 tokens per slot, fixed</strong>
+        <p>Each of the 16 slots owns its slice. Requests never compete for cache memory, but no
+        request can use more than its slice.</p>
+      </div>
+    </div>
+    <p class="takeaway"><strong>Same total cache memory in both layouts.</strong> The only
+    difference is shared against pre-divided. Every test request here (about 4,000 prompt tokens
+    plus 256 output) fits either layout.</p>
+  </div>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Concurrency <em>c</em> = 16 means 16 requests start together. Each request uses a unique
+    prompt of about 4,000 tokens, bypasses the prompt cache, and generates exactly 256 tokens. The
+    score is aggregate throughput: all generated tokens divided by the time until the whole group
+    finishes. Two KV-cache layouts are compared at the same total context (131,072) and the same
+    16 slots. The pool is either shared ("unified") or divided into 8,192 tokens per slot
+    ("non-unified"). Each layout
+    gets two server starts and three full sweeps per start, in reversed order, so each cell below
+    is the mean of six samples.</p>
+    <p><strong>Settings:</strong> greedy sampling (temperature 0), exactly
+    <b class="v">256</b>-token outputs, prompt cache off.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Aggregate output rate in tokens per second (tok/s), mean ± standard deviation of six
+    samples. This includes prompt-processing time.</caption>
+    <thead><tr><th>Requests<br>at once</th><th>Total output<br>tokens</th>
+      <th>Unified KV<br>mean ± SD</th><th>Non-unified KV<br>mean ± SD</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>256</td><td>58.4 ± 0.4</td><td>56.2 ± 2.9</td></tr>
+      <tr><td>2</td><td>512</td><td>68.6 ± 0.3</td><td>71.6 ± 1.2</td></tr>
+      <tr><td>4</td><td>1,024</td><td>71.7 ± 1.8</td><td>82.2 ± 1.3</td></tr>
+      <tr><td>8</td><td>2,048</td><td>70.4 ± 2.2</td><td>87.1 ± 2.5</td></tr>
+      <tr><td>16</td><td>4,096</td><td>62.3 ± 3.0</td><td class="hi">90.3 ± 1.1</td></tr>
+      <tr class="rule-top"><td>Gain: 1 → 16</td><td class="dim">—</td><td>1.07×</td><td class="hi">1.61×</td></tr>
+    </tbody>
+  </table></div>
+
+  <figure class="chart" aria-labelledby="concurrency-chart-caption">
+    <div class="chart-head"><h3>Total throughput plateaus as requests are added</h3>
+      <span>Aggregate · tok/s</span></div>
+    <div class="chart-legend" aria-hidden="true">
+      <span><i class="swatch"></i>Unified KV · one shared pool</span>
+      <span><i class="swatch mmap"></i>Non-unified KV · per-slot</span>
+    </div>
+    <div role="img" aria-label="Bar chart of mean aggregate throughput. With 1, 2, 4, 8, and 16 simultaneous requests, unified KV measured 58.4, 68.6, 71.7, 70.4, and 62.3 tokens per second. Non-unified KV measured 56.2, 71.6, 82.2, 87.1, and 90.3 tokens per second.">
+      <div class="chart-row"><span class="chart-label">c = 1</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:64.7">58.4</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:62.2">56.2</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">c = 2</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:76.0">68.6</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:79.3">71.6</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">c = 4</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:79.4">71.7</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:91.0">82.2</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">c = 8</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:78.0">70.4</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:96.5">87.1</span></div>
+      </div></div>
+      <div class="chart-row"><span class="chart-label">c = 16</span><div class="bar-pair">
+        <div class="bar-line"><span class="bar" style="--w:69.0">62.3</span></div>
+        <div class="bar-line"><span class="bar mmap" style="--w:100">90.3</span></div>
+      </div></div>
+    </div>
+    <figcaption class="figcap" id="concurrency-chart-caption">With the shared pool, adding requests
+    stops helping after four and throughput falls at 16. The per-slot layout continues to improve
+    through 16 requests, where it is 1.45× faster in aggregate.</figcaption>
+  </figure>
+
+  <div class="col">
+  <p>From 1 to 16 requests, combined throughput rises <b class="v">7%</b> with unified KV and <b class="v">61%</b> with non-unified
+  KV. Each individual request slows either way: from about <b class="v">104 tok/s</b> at <em>c</em> = 1 to
+  10–<b class="v">12 tok/s</b> at <em>c</em> = 16. Concurrency raises server capacity; it does not make any single
+  request faster. The two layouts differ only under load — at one or two requests they match
+  within noise.</p>
+  <p class="evid">Evidence: results/corrections/20260830T193552Z_CONC-01/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">08</span>Preserved reasoning: an early look</h2>
+  <p class="sub">Keep or drop earlier turns' thinking — one run per arm so far</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Both arms run in thinking mode with the model-card thinking sampler (temperature 1.0,
+    top-p 0.95, top-k 20, min-p 0.0, presence penalty 0.0, repetition penalty 1.0). The same five
+    coding requests run as one conversation, with a 49,152-token output limit per turn and a fresh
+    server per arm. The flag under test controls one thing: whether earlier turns' reasoning text
+    is sent back inside later prompts. The model still generates reasoning on every turn in both
+    arms.</p>
+    <p><strong>Settings:</strong> same thinking mode and sampler as section 06; five turns;
+    <b class="v">49,152</b>-token output limit per turn.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>One five-turn run per arm. Token counts are totals across the five turns unless the
+    row names turn 5. Decode is tokens per second (tok/s).</caption>
+    <thead><tr><th>Measured value</th><th>Keep prior reasoning</th><th>Drop prior reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Prompt tokens recomputed</td><td class="hi">267</td><td>18,403</td></tr>
+      <tr><td>Prompt tokens served from cache</td><td>132,972</td><td>18,183</td></tr>
+      <tr><td>Turn-5 prompt length</td><td>63,223 tokens</td><td>18,387 tokens</td></tr>
+      <tr><td>Decode, turn 1 → turn 5</td><td>110.2 → 48.9</td><td>96.0 → 65.5</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p>Both effects are visible in one pair. Keeping prior reasoning makes the history append-only,
+  so the server recomputes almost nothing: 267 prompt tokens across five turns, <b class="v">69×</b> fewer than the
+  drop arm. But the prompt grows to 63,223 tokens by turn 5, and decode ends <b class="v">25%</b> lower than the
+  drop arm. Fewer recomputed tokens against a faster-growing prompt — that is the trade.</p>
+  <p><strong>This is one run per arm, so we publish it as a direction, not a magnitude.</strong>
+  We are measuring it further. The full result will go in the comments under the video.</p>
+  <p class="evid">Evidence: results/corrections/20260830T200958Z_THINK-01/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">09</span>Long-document recall after server reuse</h2>
+  <p class="sub">Hidden facts stay findable after the server has served other work</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>We hide three facts in a very long generated document. The facts are an access code, a
+    number that a later sentence corrects, and a date among decoy dates. We ask the model to find each fact, at
+    three depths in the document. Then we send one different large request to the same server.
+    Then we ask the same questions again. Exact checkers grade every answer, and we first proved
+    the checkers reject wrong, empty, and decoy answers.</p>
+    <p><strong>Settings:</strong> greedy sampling (temperature 0), because this test checks
+    retrieval, not writing quality.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Correct answers before and after the interfering request, by document length in
+    tokens.</caption>
+    <thead><tr><th>Document length</th><th>Before other work</th><th>After other work</th></tr></thead>
+    <tbody>
+      <tr><td>32,768 (1 and 4 server slots)</td><td>36/36</td><td>36/36</td></tr>
+      <tr><td>131,072</td><td>9/9</td><td>9/9</td></tr>
+      <tr><td>245,760</td><td>9/9</td><td>9/9</td></tr>
+      <tr class="rule-top"><td>Total</td><td class="hi">54/54</td><td class="hi">54/54</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p>Every answer stayed correct: the code, the corrected number, and the right date among decoys.
+  This held at every depth and every document length, before and after the server served other
+  work.
+  An upstream project reported recall errors in a similar situation on a different GPU backend;
+  that behavior did not appear here on CUDA.</p>
+  <p class="evid">Evidence: results/slot_reuse/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">10</span>Quant comparison: IQ4_XS and Q4_K_XL</h2>
+  <p class="sub">Speed and reach measured; output quality not measured</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Both quantizations run on the same server configuration and the same prompt set, with
+    prompt lengths from 256 to 24,576 tokens. Q4_K_XL is <b class="v">19%</b> larger on disk, so it fits only with
+    a smaller context setting on this card.</p>
+    <p><strong>Settings:</strong> same speed-sweep workload as section 02.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Two quantizations of the same model. Decode is tokens per second (tok/s) at a
+    2,048-token prompt. Context values are tokens.</caption>
+    <thead><tr><th></th><th>UD-IQ4_XS</th><th>UD-Q4_K_XL</th></tr></thead>
+    <tbody>
+      <tr><td>Size</td><td>87.2 GiB</td><td>103.7 GiB</td></tr>
+      <tr><td>Decode @2K</td><td class="hi">109.1</td><td>105.4</td></tr>
+      <tr><td>Configured context</td><td class="hi">262,144</td><td>32,768</td></tr>
+      <tr><td>Largest tested prompt</td><td>245,760</td><td>24,576</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="col">
+  <p><strong>Q4_K_XL costs 3.4% decode for 19% more model</strong>, and it reduces the context
+  this card can hold. Its real context ceiling was not probed; 32,768 is the setting that fit.
+  We did not measure answer quality for either quantization, so this report makes no quality
+  claim.</p>
+  <p class="evid">Evidence: results/q4kxl/</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">11</span>The configuration that matters</h2>
+  <p class="sub">Every flag, and what it is worth here</p>
+
+<pre><code>-ot per_layer_token_embd=CPU   <span class="cm"># the 27 GiB lookup table.
+                               # On the GPU instead: 55.6x slower.</span>
+--load-mode none               <span class="cm"># copy host-side weights into ordinary RAM instead
+                               # of mmap: 1.87x prefill here. Needs room in RAM.</span>
+--tensor-read-lazy off         <span class="cm"># 'auto' silently streams any tensor >4 GiB from
+                               # disk. The largest PLE tensor is ~25 GiB, so
+                               # auto streamed it on every mmap run by default.</span>
+--n-cpu-moe N                  <span class="cm"># number of the 48 expert layers kept in system RAM.
+                               # 0 at 96 GiB VRAM; all 48 at 8 GiB VRAM.</span>
+-ub 2048                       <span class="cm"># +30.8% prefill vs 512 for +1,058 MiB, measured.
+                               # Use 1024 (+17.8%, +352 MiB) if VRAM is tighter.</span>
+--parallel 1                   <span class="cm"># one user. For 8+ concurrent users, see section 07
+                               # and prefer the non-unified KV layout.</span></code></pre>
+
+  <h3>Reproduce it</h3>
+<pre><code>./scripts/download_models.sh          <span class="cm"># 93.7 GB, resumable, sha256-verified</span>
+./scripts/serve.sh --ctx 262144
+
+./benchmark/tier_full.sh              <span class="cm"># section 03: the hardware ladder</span>
+./benchmark/mmap_control_v2.sh        <span class="cm"># section 04: loading mode</span>
+./benchmark/cpu_only.sh               <span class="cm"># section 03: no GPU at all</span>
+./benchmark/slot_reuse_long.sh        <span class="cm"># section 09: long-document recall</span>
+./benchmark/correction_run_v2.sh --execute --plan-id CORRECTION-R1 --only PLE-01
+./benchmark/correction_run_v2.sh --execute --plan-id CORRECTION-R1 --only UB-01
+./benchmark/spec01_rate.sh --execute --plan-id CORRECTION-R1
+./benchmark/conc01.sh --execute --plan-id CORRECTION-R1
+./benchmark/think01.sh --execute --plan-id CORRECTION-R1</code></pre>
+  <div class="col"><p>Every sweep calls <code>gpu_settle()</code> between arms. It waits for the
+  previous arm's VRAM to be released and for the card to cool, then holds a floor delay.
+  Back-to-back arms would otherwise measure order instead of configuration.</p></div>
+</section>
+
+<section>
+  <h2><span class="num">12</span>What this does not prove</h2>
+  <p class="sub">Stated plainly, because a benchmark without its limits is marketing</p>
+  <ul class="limits">
+    <li><strong>Capping VRAM reproduces capacity, not bandwidth.</strong> A <b class="v">24 GiB</b> cap on this
+    Blackwell card overstates a real 3090 (~<b class="v">1.6 TB/s</b> vs <b class="v">936 GB/s</b>). The 5090 row is the one fair
+    proxy. Multi-GPU rows are an optimistic upper bound — one capped pool is not two cards.</li>
+    <li><strong>Most long-context cells are a single run.</strong> Short-prompt arms repeat to
+    <b class="v">0.2%</b> decode and <b class="v">0.7%</b> prefill, but a 245,760-token cell costs about 18 minutes and ran
+    once.</li>
+    <li><strong>The mmap penalty is measured, not explained.</strong> The two mmap passes agree
+    within <b class="v">0.5%</b>, so the file cache is not the obvious cause. A background model download ran
+    during that control at about <b class="v">54 MiB</b>/s mean disk read; both mmap passes shared it.</li>
+    <li><strong>The recall test restarts the server once per document length.</strong> Only the
+    first probe after each start runs on a never-used server; later probes run on a server that
+    has already served requests.</li>
+    <li><strong>The speculation gain is about +7% with a wide interval</strong> (<b class="v">+0.6 to
+    +11.0 tok/s</b>, <b class="v">95%</b>) from four runs per arm. Draft acceptance also declined across the runs,
+    <b class="v">43%</b> → <b class="v">28%</b>, and we do not know why.</li>
+    <li><strong>The preserved-reasoning comparison is one run per arm.</strong> It shows the
+    direction and the mechanism, not a settled magnitude.</li>
+    <li><strong>The microbatch sweep covered one configuration:</strong> context 32,768, no expert
+    offload, this card. Small-card and long-context behavior is unmeasured.</li>
+    <li><strong>Quant quality was never measured.</strong> IQ4_XS versus Q4_K_XL is a speed and
+    reach comparison only.</li>
+  </ul>
+</section>
+
+<footer>
+  <p class="eyebrow">Resources</p>
+  <ul>
+    <li>Model — <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next">Qwen3.8-Flash-Next</a> · <a href="https://qwen.ai/blog?id=qwen3.8-flash-next">announcement</a> · <a href="https://github.com/QwenLM/Qwen3.8-Flash-Next/">official repo</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-flash-next">independent quality benchmarks</a></li>
+    <li>Tech report — Qwen Team, <a href="https://github.com/QwenLM/Qwen3.8-Flash-Next/blob/main/tech_report.pdf"><em>On the Design of Qwen3.8-Next Architecture</em></a> (2026): the GDN equations, Qwen Sparse Attention, the gated residual, and the 51.2B-parameter n-gram embedding table — the tensor llama.cpp names <code>per_layer_token_embd</code> and this report calls the PLE table</li>
+    <li>Prior art — SGLang team, <a href="https://www.lmsys.org/blog/2026-08-26-qwen-flash-next"><em>Qwen3.8-Flash-Next: Day-0 Support in SGLang</em></a> (2026-08-26): the host-RAM PLE path on datacenter GPUs (weights 83.91 → 60.45 GiB per GPU, KV capacity +78.54%, throughput −0.07%)</li>
+    <li>Background — Yang, Kautz &amp; Hatamizadeh, <a href="https://arxiv.org/abs/2412.06464"><em>Gated Delta Networks: Improving Mamba2 with Delta Rule</em></a> (ICLR 2025): the gated delta rule behind 36 of this model's 48 blocks</li>
+    <li>GGUFs — <a href="https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF">unsloth/Qwen3.8-Flash-Next-GGUF</a></li>
+    <li>Engine — llama.cpp build <code>b10666</code> (<code>4e97ac86e</code>), image <code>ghcr.io/ggml-org/llama.cpp:server-cuda13</code></li>
+    <li>Previous study — <a href="https://github.com/lukaLLM/deepseek-v4-flash-dspark-rtx6000pro">DeepSeek V4 Flash + DSpark</a></li>
+    <li>Previous study — <a href="https://github.com/lukaLLM/DFlash_Qwen3.6_27B_LlamaCPP">Qwen 27B speculative decoding</a></li>
+  </ul>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "turns": [
+    {
+      "id": "02",
+      "chars": 61054,
+      "tokens": 3858,
+      "tool_call": false,
+      "code_block": true,
+      "repetition": 0.14,
+      "error": null
+    },
+    {
+      "id": "03",
+      "chars": 62029,
+      "tokens": 30220,
+      "tool_call": false,
+      "code_block": true,
+      "repetition": 0.11,
+      "error": null
+    }
+  ],
+  "flags": [],
+  "median_tokens": 17039.0,
+  "total_tokens": 34078,
+  "tool_call_turns": 0,
+  "code_turns": 2,
+  "verdict": "USABLE"
+}

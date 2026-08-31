@@ -1,0 +1,149 @@
+{
+  "seconds": 8.3,
+  "samples": 4,
+  "source": "http://localhost:9402/metrics",
+  "profiling_metrics": true,
+  "tensor_active": {
+    "mean": 0.0027,
+    "max": 0.0036,
+    "min": 0.0
+  },
+  "dram_active": {
+    "mean": 0.0173,
+    "max": 0.0231,
+    "min": 0.0
+  },
+  "sm_active": {
+    "mean": 0.0599,
+    "max": 0.0799,
+    "min": 0.0
+  },
+  "sm_occupancy": {
+    "mean": 0.0196,
+    "max": 0.0261,
+    "min": 0.0
+  },
+  "pcie_rx_bytes": {
+    "mean": 1732285540.5,
+    "max": 2309690453.0,
+    "min": 70803.0
+  },
+  "pcie_tx_bytes": {
+    "mean": 117039865.25,
+    "max": 155938228.0,
+    "min": 344777.0
+  },
+  "fb_used_mib": {
+    "mean": 48468.5,
+    "max": 64620.0,
+    "min": 14.0
+  },
+  "gpu_temp_c": {
+    "mean": 44.0,
+    "max": 46.0,
+    "min": 38.0
+  },
+  "memory_temp_c": {
+    "mean": 0.0,
+    "max": 0.0,
+    "min": 0.0
+  },
+  "power_w": {
+    "mean": 245.295,
+    "max": 324.384,
+    "min": 8.028
+  },
+  "sm_clock_mhz": {
+    "mean": 2142.75,
+    "max": 2797.0,
+    "min": 180.0
+  },
+  "gpu_util_pct": {
+    "mean": 71.25,
+    "max": 95.0,
+    "min": 0.0
+  },
+  "thermal_violation_us": 0.0,
+  "power_violation_us": 0.0,
+  "samples_over_max_temp": 0,
+  "max_temp_threshold_c": 84.0,
+  "sm_clock_drop": false,
+  "power_violation_trusted": false,
+  "verdict": "ok",
+  "dram_over_tensor": 6.4,
+  "bound_by": "latency",
+  "rows": [
+    {
+      "DCGM_FI_DEV_SM_CLOCK": 180.0,
+      "DCGM_FI_DEV_MEMORY_TEMP": 0.0,
+      "DCGM_FI_DEV_GPU_TEMP": 38.0,
+      "DCGM_FI_DEV_POWER_USAGE": 8.028,
+      "DCGM_FI_DEV_GPU_UTIL": 0.0,
+      "DCGM_FI_DEV_MEM_COPY_UTIL": 0.0,
+      "DCGM_FI_DEV_POWER_VIOLATION": 200504672.0,
+      "DCGM_FI_DEV_THERMAL_VIOLATION": 0.0,
+      "DCGM_FI_DEV_FB_USED": 14.0,
+      "DCGM_FI_PROF_SM_ACTIVE": 0.0,
+      "DCGM_FI_PROF_SM_OCCUPANCY": 0.0,
+      "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE": 0.0,
+      "DCGM_FI_PROF_DRAM_ACTIVE": 0.0,
+      "DCGM_FI_PROF_PCIE_TX_BYTES": 344777.0,
+      "DCGM_FI_PROF_PCIE_RX_BYTES": 70803.0,
+      "_t": 2.0
+    },
+    {
+      "DCGM_FI_DEV_SM_CLOCK": 2797.0,
+      "DCGM_FI_DEV_MEMORY_TEMP": 0.0,
+      "DCGM_FI_DEV_GPU_TEMP": 46.0,
+      "DCGM_FI_DEV_POWER_USAGE": 324.384,
+      "DCGM_FI_DEV_GPU_UTIL": 95.0,
+      "DCGM_FI_DEV_MEM_COPY_UTIL": 55.0,
+      "DCGM_FI_DEV_POWER_VIOLATION": 200504672.0,
+      "DCGM_FI_DEV_THERMAL_VIOLATION": 0.0,
+      "DCGM_FI_DEV_FB_USED": 64620.0,
+      "DCGM_FI_PROF_SM_ACTIVE": 0.079929,
+      "DCGM_FI_PROF_SM_OCCUPANCY": 0.026082,
+      "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE": 0.003604,
+      "DCGM_FI_PROF_DRAM_ACTIVE": 0.023087,
+      "DCGM_FI_PROF_PCIE_TX_BYTES": 155938228.0,
+      "DCGM_FI_PROF_PCIE_RX_BYTES": 2309690453.0,
+      "_t": 4.0
+    },
+    {
+      "DCGM_FI_DEV_SM_CLOCK": 2797.0,
+      "DCGM_FI_DEV_MEMORY_TEMP": 0.0,
+      "DCGM_FI_DEV_GPU_TEMP": 46.0,
+      "DCGM_FI_DEV_POWER_USAGE": 324.384,
+      "DCGM_FI_DEV_GPU_UTIL": 95.0,
+      "DCGM_FI_DEV_MEM_COPY_UTIL": 55.0,
+      "DCGM_FI_DEV_POWER_VIOLATION": 200504672.0,
+      "DCGM_FI_DEV_THERMAL_VIOLATION": 0.0,
+      "DCGM_FI_DEV_FB_USED": 64620.0,
+      "DCGM_FI_PROF_SM_ACTIVE": 0.079929,
+      "DCGM_FI_PROF_SM_OCCUPANCY": 0.026082,
+      "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE": 0.003604,
+      "DCGM_FI_PROF_DRAM_ACTIVE": 0.023087,
+      "DCGM_FI_PROF_PCIE_TX_BYTES": 155938228.0,
+      "DCGM_FI_PROF_PCIE_RX_BYTES": 2309690453.0,
+      "_t": 6.0
+    },
+    {
+      "DCGM_FI_DEV_SM_CLOCK": 2797.0,
+      "DCGM_FI_DEV_MEMORY_TEMP": 0.0,
+      "DCGM_FI_DEV_GPU_TEMP": 46.0,
+      "DCGM_FI_DEV_POWER_USAGE": 324.384,
+      "DCGM_FI_DEV_GPU_UTIL": 95.0,
+      "DCGM_FI_DEV_MEM_COPY_UTIL": 55.0,
+      "DCGM_FI_DEV_POWER_VIOLATION": 200504672.0,
+      "DCGM_FI_DEV_THERMAL_VIOLATION": 0.0,
+      "DCGM_FI_DEV_FB_USED": 64620.0,
+      "DCGM_FI_PROF_SM_ACTIVE": 0.079929,
+      "DCGM_FI_PROF_SM_OCCUPANCY": 0.026082,
+      "DCGM_FI_PROF_PIPE_TENSOR_ACTIVE": 0.003604,
+      "DCGM_FI_PROF_DRAM_ACTIVE": 0.023087,
+      "DCGM_FI_PROF_PCIE_TX_BYTES": 155938228.0,
+      "DCGM_FI_PROF_PCIE_RX_BYTES": 2309690453.0,
+      "_t": 8.0
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "cpu_decode_med": 108.51499999999999,
+  "cuda0_decode_med": 1.95,
+  "decode_ratio": 55.65,
+  "cpu_prefill_med": 1967.855,
+  "cuda0_prefill_med": 575.655,
+  "prefill_ratio": 3.418,
+  "arms": {
+    "A1": {
+      "n": 3,
+      "n_ctx": 32768,
+      "overflow": 0,
+      "prefill_med": 1965.97,
+      "decode_med": 108.82,
+      "decode_min": 108.31,
+      "decode_max": 108.96
+    },
+    "A2": {
+      "n": 3,
+      "n_ctx": 32768,
+      "overflow": 0,
+      "prefill_med": 1969.74,
+      "decode_med": 108.21,
+      "decode_min": 108.13,
+      "decode_max": 108.79
+    },
+    "B1": {
+      "n": 3,
+      "n_ctx": 32768,
+      "overflow": 0,
+      "prefill_med": 575.81,
+      "decode_med": 1.95,
+      "decode_min": 1.95,
+      "decode_max": 1.95
+    },
+    "B2": {
+      "n": 3,
+      "n_ctx": 32768,
+      "overflow": 0,
+      "prefill_med": 575.5,
+      "decode_med": 1.95,
+      "decode_min": 1.95,
+      "decode_max": 1.95
+    }
+  },
+  "calculation": "medians over rows.json['rows'] per arm, then median across same-placement arms"
+}

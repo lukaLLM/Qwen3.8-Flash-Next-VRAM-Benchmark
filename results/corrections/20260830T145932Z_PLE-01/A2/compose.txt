@@ -1,0 +1,90 @@
+name: llamacpp_qwen38_flash_next
+services:
+  q38n:
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --model
+      - /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      - --alias
+      - qwen3.8-flash-next
+      - --ctx-size
+      - "32768"
+      - --parallel
+      - "1"
+      - --n-gpu-layers
+      - "999"
+      - --n-cpu-moe
+      - "0"
+      - --threads
+      - "16"
+      - --threads-batch
+      - "32"
+      - --batch-size
+      - "2048"
+      - --ubatch-size
+      - "512"
+      - --temp
+      - "1.0"
+      - --top-p
+      - "0.95"
+      - --top-k
+      - "20"
+      - --min-p
+      - "0.0"
+      - --load-mode
+      - none
+      - --jinja
+      - --flash-attn
+      - "on"
+      - --metrics
+    container_name: q38n
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+      HF_TOKEN: <redacted>
+      HUGGING_FACE_HUB_TOKEN: <redacted>
+      LLAMA_ARG_KV_UNIFIED: "true"
+      LLAMA_ARG_OVERRIDE_TENSOR: per_layer_token_embd=CPU
+      LLAMA_ARG_SPEC_TYPE: none
+      LLAMA_ARG_TENSOR_READ_LAZY: "off"
+    gpus:
+      - count: -1
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -fsS
+        - http://localhost:8000/health
+      timeout: 5s
+      interval: 15s
+      retries: 360
+      start_period: 1m0s
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    ipc: host
+    networks:
+      server: null
+    ports:
+      - mode: ingress
+        target: 8000
+        published: "8000"
+        protocol: tcp
+    pull_policy: never
+    restart: "no"
+    ulimits:
+      memlock: -1
+      nofile:
+        soft: 1048576
+        hard: 1048576
+      stack: 67108864
+    volumes:
+      - type: bind
+        source: /home/luke/.cache/huggingface
+        target: /hf
+        read_only: true
+        bind: {}
+networks:
+  server:
+    name: llamacpp_qwen38_flash_next_server
+    driver: bridge

@@ -1,0 +1,148 @@
+{
+  "plan_id": "CORRECTION-R1",
+  "test": "PLE-01",
+  "utc_start": "20260830T145932Z",
+  "utc_finish": "20260830T151218Z",
+  "n_predict": 128,
+  "arm_order": [
+    "A1",
+    "A2",
+    "B1",
+    "B2"
+  ],
+  "arms": {
+    "A1": {
+      "failed": null,
+      "memory": {
+        "gpu_memory_used_mib": 63407,
+        "pid": 193058,
+        "vmrss_kib": 29458896,
+        "rssanon_kib": 28541476,
+        "rssfile_kib": 185700,
+        "rssshmem_kib": 731720
+      },
+      "LLAMA_ARG_KV_UNIFIED": "true",
+      "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+      "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_PLE-01_A1",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_170020"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1965.97,
+      "decode_median_tps": 108.82
+    },
+    "A2": {
+      "failed": null,
+      "memory": {
+        "gpu_memory_used_mib": 63407,
+        "pid": 203658,
+        "vmrss_kib": 29460440,
+        "rssanon_kib": 28541512,
+        "rssfile_kib": 187208,
+        "rssshmem_kib": 731720
+      },
+      "LLAMA_ARG_KV_UNIFIED": "true",
+      "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+      "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_PLE-01_A2",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_171209"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1969.74,
+      "decode_median_tps": 108.21
+    },
+    "B1": {
+      "failed": null,
+      "memory": {
+        "gpu_memory_used_mib": 90927,
+        "pid": 194509,
+        "vmrss_kib": 29468200,
+        "rssanon_kib": 421440,
+        "rssfile_kib": 189904,
+        "rssshmem_kib": 28856856
+      },
+      "LLAMA_ARG_KV_UNIFIED": "true",
+      "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CUDA0",
+      "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_PLE-01_B1",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_170118"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 575.81,
+      "decode_median_tps": 1.95
+    },
+    "B2": {
+      "failed": null,
+      "memory": {
+        "gpu_memory_used_mib": 90927,
+        "pid": 199025,
+        "vmrss_kib": 29466096,
+        "rssanon_kib": 421424,
+        "rssfile_kib": 187816,
+        "rssshmem_kib": 28856856
+      },
+      "LLAMA_ARG_KV_UNIFIED": "true",
+      "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CUDA0",
+      "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_PLE-01_B2",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_170644"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 575.5,
+      "decode_median_tps": 1.95
+    }
+  },
+  "calculation": "medians over rows.json['rows']; warm-up excluded by speed_bench_v2"
+}

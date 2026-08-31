@@ -1,0 +1,183 @@
+
+############ 8 GiB  ctx 16384 ############
+  17:35:54
+  cooldown: 30s  ->  15MiB / 39C
+  predicted host RAM 87.2 GiB > 70 - starting on mmap
+  started: ncmoe 48 mode mmap  VRAM 96641 MiB
+          256 tok | prefill 118.71 t/s (min 118.52, max 118.9) | TTFT 2156.5 ms | decode 35.41 t/s | accept -
+         2048 tok | prefill 232.11 t/s (min 231.43, max 232.78) | TTFT 8823.61 ms | decode 35.69 t/s | accept -
+         8192 tok | prefill 236.05 t/s (min 235.23, max 236.88) | TTFT 34704.52 ms | decode 34.11 t/s | accept -
+        12288 tok | prefill 234.75 t/s (min 234.75, max 234.75) | TTFT 52344.21 ms | decode 33.28 t/s | accept -
+      SM clock             mean  2789.36 MHz   max  2835.00 MHz
+      throttle (thermal)   0 us      (power) 0 us
+      DRAM/tensor ratio    4.9x  (LATENCY BOUND - neither is saturated)
+        tensor 0.88%  DRAM 4.33%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_8.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         48 |   1 | per_layer_token_embd=CPU |           pp512 |       372.15 ± 20.02 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         48 |   1 | per_layer_token_embd=CPU |          pp4096 |        386.01 ± 3.63 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         48 |   1 | per_layer_token_embd=CPU |           tg128 |         36.48 ± 0.14 |
+
+############ 16 GiB  ctx 131072 ############
+  17:43:03
+  cooldown: 30s  ->  15MiB / 41C
+  predicted host RAM 83.5 GiB > 70 - starting on mmap
+  started: ncmoe 45 mode mmap  VRAM 96535 MiB
+          256 tok | prefill 143.41 t/s (min 139.92, max 146.9) | TTFT 1786.1 ms | decode 38.15 t/s | accept -
+         2048 tok | prefill 249.19 t/s (min 247.93, max 250.44) | TTFT 8219.0 ms | decode 37.93 t/s | accept -
+         8192 tok | prefill 245.71 t/s (min 245.67, max 245.75) | TTFT 33340.43 ms | decode 35.59 t/s | accept -
+        32768 tok | prefill 239.02 t/s (min 237.17, max 240.87) | TTFT 137100.52 ms | decode 30.59 t/s | accept -
+        65536 tok | prefill 233.47 t/s (min 233.47, max 233.47) | TTFT 280709.57 ms | decode 25.01 t/s | accept -
+       122880 tok | prefill 224.54 t/s (min 224.54, max 224.54) | TTFT 547257.36 ms | decode 20.57 t/s | accept -
+      SM clock             mean  2804.08 MHz   max  2820.00 MHz
+      throttle (thermal)   0 us      (power) 0 us
+      DRAM/tensor ratio    2.3x  (HOST-PATH BOUND - 20.1 GB/s over PCIe, GPU idle)
+        tensor 1.84%  DRAM 4.29%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_16.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         45 |   1 | per_layer_token_embd=CPU |           pp512 |       381.95 ± 24.45 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         45 |   1 | per_layer_token_embd=CPU |          pp4096 |        396.53 ± 4.60 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         45 |   1 | per_layer_token_embd=CPU |           tg128 |         37.85 ± 0.19 |
+
+############ 24 GiB  ctx 262144 ############
+  18:23:48
+  cooldown: 30s  ->  15MiB / 42C
+  predicted host RAM 79.7 GiB > 70 - starting on mmap
+  started: ncmoe 42 mode mmap  VRAM 96171 MiB
+          256 tok | prefill 151.75 t/s (min 149.61, max 153.89) | TTFT 1687.31 ms | decode 39.3 t/s | accept -
+         2048 tok | prefill 259.72 t/s (min 258.36, max 261.07) | TTFT 7885.76 ms | decode 39.01 t/s | accept -
+         8192 tok | prefill 256.97 t/s (min 256.26, max 257.68) | TTFT 31879.39 ms | decode 37.34 t/s | accept -
+        32768 tok | prefill 252.32 t/s (min 251.07, max 253.58) | TTFT 129868.45 ms | decode 31.22 t/s | accept -
+        65536 tok | prefill 245.87 t/s (min 245.87, max 245.87) | TTFT 266552.75 ms | decode 25.33 t/s | accept -
+       131072 tok | prefill 234.23 t/s (min 234.23, max 234.23) | TTFT 559587.07 ms | decode 20.62 t/s | accept -
+       245760 tok | prefill 219.7 t/s (min 219.7, max 219.7) | TTFT 1118608.72 ms | decode 14.89 t/s | accept -
+      SM clock             mean  2785.49 MHz   max  2827.00 MHz
+      throttle (thermal)   0 us      (power) 1528062624 us
+      DRAM/tensor ratio    2.3x  (HOST-PATH BOUND - 19.8 GB/s over PCIe, GPU idle)
+        tensor 2.59%  DRAM 5.95%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_24.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         42 |   1 | per_layer_token_embd=CPU |           pp512 |       402.07 ± 27.25 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         42 |   1 | per_layer_token_embd=CPU |          pp4096 |        416.01 ± 4.19 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         42 |   1 | per_layer_token_embd=CPU |           tg128 |         39.25 ± 0.42 |
+
+############ 32 GiB  ctx 262144 ############
+  19:41:52
+  cooldown: 30s  ->  15MiB / 44C
+  predicted host RAM 72.2 GiB > 70 - starting on mmap
+  started: ncmoe 36 mode mmap  VRAM 94805 MiB
+          256 tok | prefill 161.12 t/s (min 156.02, max 166.22) | TTFT 1590.47 ms | decode 42.84 t/s | accept -
+         2048 tok | prefill 292.03 t/s (min 291.23, max 292.84) | TTFT 7012.98 ms | decode 42.24 t/s | accept -
+         8192 tok | prefill 290.26 t/s (min 290.19, max 290.34) | TTFT 28222.57 ms | decode 39.57 t/s | accept -
+        32768 tok | prefill 286.2 t/s (min 285.39, max 287.01) | TTFT 114493.29 ms | decode 33.21 t/s | accept -
+        65536 tok | prefill 277.19 t/s (min 277.19, max 277.19) | TTFT 236432.6 ms | decode 28.14 t/s | accept -
+       131072 tok | prefill 262.87 t/s (min 262.87, max 262.87) | TTFT 498626.16 ms | decode 22.1 t/s | accept -
+       245760 tok | prefill 244.71 t/s (min 244.71, max 244.71) | TTFT 1004285.15 ms | decode 15.41 t/s | accept -
+      SM clock             mean  2780.47 MHz   max  2820.00 MHz
+      throttle (thermal)   0 us      (power) 1702165568 us
+      DRAM/tensor ratio    2.2x  (HOST-PATH BOUND - 19.3 GB/s over PCIe, GPU idle)
+        tensor 2.90%  DRAM 6.50%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_32.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         36 |   1 | per_layer_token_embd=CPU |           pp512 |       391.97 ± 34.21 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         36 |   1 | per_layer_token_embd=CPU |          pp4096 |        401.65 ± 4.91 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         36 |   1 | per_layer_token_embd=CPU |           tg128 |         42.87 ± 0.18 |
+
+############ 48 GiB  ctx 262144 ############
+  20:51:55
+  cooldown: 30s  ->  15MiB / 41C
+  started: ncmoe 23 mode none  VRAM 93665 MiB
+          256 tok | prefill 457.58 t/s (min 451.58, max 463.57) | TTFT 559.57 ms | decode 53.37 t/s | accept -
+         2048 tok | prefill 746.71 t/s (min 746.27, max 747.15) | TTFT 2742.7 ms | decode 51.73 t/s | accept -
+         8192 tok | prefill 747.22 t/s (min 746.83, max 747.61) | TTFT 10963.31 ms | decode 48.79 t/s | accept -
+        32768 tok | prefill 723.88 t/s (min 722.73, max 725.04) | TTFT 45266.98 ms | decode 40.91 t/s | accept -
+       131072 tok | prefill 618.48 t/s (min 618.48, max 618.48) | TTFT 211926.0 ms | decode 24.3 t/s | accept -
+       245760 tok | prefill 535.16 t/s (min 535.16, max 535.16) | TTFT 459227.15 ms | decode 16.96 t/s | accept -
+      SM clock             mean  2696.91 MHz   max  2820.00 MHz
+      throttle (thermal)   0 us      (power) 5949599872 us
+      DRAM/tensor ratio    2.1x  (HOST-PATH BOUND - 27.1 GB/s over PCIe, GPU idle)
+        tensor 6.76%  DRAM 14.25%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_48.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |           pp512 |       404.88 ± 61.92 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |          pp4096 |       492.98 ± 12.99 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |           tg128 |         52.65 ± 0.05 |
+
+############ 96 GiB  ctx 262144 ############
+  21:21:14
+  cooldown: 30s  ->  15MiB / 42C
+  started: ncmoe 0 mode none  VRAM 72255 MiB
+          256 tok | prefill 1304.51 t/s (min 1294.75, max 1314.26) | TTFT 196.25 ms | decode 113.09 t/s | accept -
+         2048 tok | prefill 1954.87 t/s (min 1949.72, max 1960.02) | TTFT 1047.65 ms | decode 109.07 t/s | accept -
+         8192 tok | prefill 1874.65 t/s (min 1872.5, max 1876.8) | TTFT 4369.89 ms | decode 98.94 t/s | accept -
+        32768 tok | prefill 1706.32 t/s (min 1704.93, max 1707.71) | TTFT 19203.93 ms | decode 72.37 t/s | accept -
+        65536 tok | prefill 1531.04 t/s (min 1531.04, max 1531.04) | TTFT 42804.9 ms | decode 53.28 t/s | accept -
+       131072 tok | prefill 1266.55 t/s (min 1266.55, max 1266.55) | TTFT 103487.6 ms | decode 34.91 t/s | accept -
+       245760 tok | prefill 975.01 t/s (min 975.01, max 975.01) | TTFT 252058.86 ms | decode 21.61 t/s | accept -
+      SM clock             mean  2556.46 MHz   max  2797.00 MHz
+      throttle (thermal)   0 us      (power) 21269824000 us
+      DRAM/tensor ratio    1.8x  (LATENCY BOUND - neither is saturated)
+        tensor 13.34%  DRAM 23.88%  - a ratio without these is meaningless
+      verdict              ok
+      wrote results/tier_full/gpu_96.json
+  --- llama-bench ---
+    | model                          |       size |     params | backend    | ngl |  fa | ot                    |            test |                  t/s |
+    | ------------------------------ | ---------: | ---------: | ---------- | --: | --: | --------------------- | --------------: | -------------------: |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |           pp512 |      982.61 ± 191.87 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |          pp4096 |      1120.81 ± 28.07 |
+    | qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |           tg128 |        107.26 ± 0.53 |
+
+############ TIER FULL DONE ############
+cap  ctx     ncmoe  mode  length  prefill_tps  decode_tps  ttft_ms
+8    16384   48     mmap  256     118.71       35.41       2156.5
+8    16384   48     mmap  2048    232.11       35.69       8823.61
+8    16384   48     mmap  8192    236.05       34.11       34704.52
+8    16384   48     mmap  12288   234.75       33.28       52344.21
+16   131072  45     mmap  256     143.41       38.15       1786.1
+16   131072  45     mmap  2048    249.19       37.93       8219.0
+16   131072  45     mmap  8192    245.71       35.59       33340.43
+16   131072  45     mmap  32768   239.02       30.59       137100.52
+16   131072  45     mmap  65536   233.47       25.01       280709.57
+16   131072  45     mmap  122880  224.54       20.57       547257.36
+24   262144  42     mmap  256     151.75       39.3        1687.31
+24   262144  42     mmap  2048    259.72       39.01       7885.76
+24   262144  42     mmap  8192    256.97       37.34       31879.39
+24   262144  42     mmap  32768   252.32       31.22       129868.45
+24   262144  42     mmap  65536   245.87       25.33       266552.75
+24   262144  42     mmap  131072  234.23       20.62       559587.07
+24   262144  42     mmap  245760  219.7        14.89       1118608.72
+32   262144  36     mmap  256     161.12       42.84       1590.47
+32   262144  36     mmap  2048    292.03       42.24       7012.98
+32   262144  36     mmap  8192    290.26       39.57       28222.57
+32   262144  36     mmap  32768   286.2        33.21       114493.29
+32   262144  36     mmap  65536   277.19       28.14       236432.6
+32   262144  36     mmap  131072  262.87       22.1        498626.16
+32   262144  36     mmap  245760  244.71       15.41       1004285.15
+48   262144  23     none  256     457.58       53.37       559.57
+48   262144  23     none  2048    746.71       51.73       2742.7
+48   262144  23     none  8192    747.22       48.79       10963.31
+48   262144  23     none  32768   723.88       40.91       45266.98
+48   262144  23     none  131072  618.48       24.3        211926.0
+48   262144  23     none  245760  535.16       16.96       459227.15
+96   262144  0      none  256     1304.51      113.09      196.25
+96   262144  0      none  2048    1954.87      109.07      1047.65
+96   262144  0      none  8192    1874.65      98.94       4369.89
+96   262144  0      none  32768   1706.32      72.37       19203.93
+96   262144  0      none  65536   1531.04      53.28       42804.9
+96   262144  0      none  131072  1266.55      34.91       103487.6
+96   262144  0      none  245760  975.01       21.61       252058.86

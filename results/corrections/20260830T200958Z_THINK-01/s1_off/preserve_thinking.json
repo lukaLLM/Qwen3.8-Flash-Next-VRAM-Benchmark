@@ -1,0 +1,81 @@
+{
+  "sampler": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0
+  },
+  "method_note": "One run per arm. Repeat and counterbalance before publication.",
+  "off": {
+    "preserve_thinking": false,
+    "turns_completed": 5,
+    "rows": [
+      {
+        "turn": 1,
+        "prompt_tokens": 119,
+        "prefilled_n": 119,
+        "cached_n": 0,
+        "prefill_ms": 262.946,
+        "completion_tokens": 19568,
+        "reasoning_chars": 75518,
+        "decode_tps": 96.01664211258714,
+        "wall": 204.1,
+        "finish": "stop"
+      },
+      {
+        "turn": 2,
+        "prompt_tokens": 1501,
+        "prefilled_n": 1386,
+        "cached_n": 115,
+        "prefill_ms": 793.431,
+        "completion_tokens": 36609,
+        "reasoning_chars": 139029,
+        "decode_tps": 83.47313167530812,
+        "wall": 439.6,
+        "finish": "stop"
+      },
+      {
+        "turn": 3,
+        "prompt_tokens": 5766,
+        "prefilled_n": 4269,
+        "cached_n": 1497,
+        "prefill_ms": 2369.434,
+        "completion_tokens": 15541,
+        "reasoning_chars": 42923,
+        "decode_tps": 90.74201550407332,
+        "wall": 174.0,
+        "finish": "stop"
+      },
+      {
+        "turn": 4,
+        "prompt_tokens": 10813,
+        "prefilled_n": 5051,
+        "cached_n": 5762,
+        "prefill_ms": 2954.38,
+        "completion_tokens": 30690,
+        "reasoning_chars": 98510,
+        "decode_tps": 77.22237005415681,
+        "wall": 400.6,
+        "finish": "stop"
+      },
+      {
+        "turn": 5,
+        "prompt_tokens": 18387,
+        "prefilled_n": 7578,
+        "cached_n": 10809,
+        "prefill_ms": 4475.63,
+        "completion_tokens": 45806,
+        "reasoning_chars": 153014,
+        "decode_tps": 65.47704554825299,
+        "wall": 704.5,
+        "finish": "stop"
+      }
+    ],
+    "total_wall_s": 1922.8,
+    "total_prefilled": 18403,
+    "total_cached": 18183,
+    "final_prompt_tokens": 18387
+  }
+}

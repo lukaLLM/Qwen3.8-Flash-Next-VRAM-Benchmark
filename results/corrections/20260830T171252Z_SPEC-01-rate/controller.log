@@ -1,0 +1,56 @@
+SPEC-01 rate | THINKING mode | 3 turns | cap 49152 tok/turn
+  sampler: temp 1.0 top-p 0.95 top-k 20 min-p 0.0 presence 0.0 repeat 1.0
+  metric: decode tokens/second. Wall clock is NOT comparable - the arms
+          generate different text and different token counts.
+evidence -> results/corrections/20260830T171252Z_SPEC-01-rate
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 37 C
+  --- p1_none ---
+  cooldown: 30s  ->  15MiB / 36C
+      overall decode : 79.7 t/s  (= 63,771 tok / 800.1s, min 69.9 / max 109.3 per turn)
+      draft accept   : -
+      end-to-end     : 78.5 t/s  (incl. prefill; total wall 812.1s)
+        build phase   : 79.7 t/s   draft accept -
+        02        3858   61054     -   yes  0.14
+        03       30220   62029     -   yes  0.11
+        median 17039.0 tok/turn | total 34078 | 0 turns used tool calls | 2 contained code
+        VERDICT: USABLE - the model did the workload.
+  --- p1_ngram-mod ---
+  cooldown: 30s  ->  15MiB / 46C
+      overall decode : 89.3 t/s  (= 69,128 tok / 774.2s, min 81.1 / max 107.0 per turn)
+      draft accept   : 43% (5670/13131)
+      end-to-end     : 88.7 t/s  (incl. prefill; total wall 779.1s)
+        build phase   : 89.3 t/s   draft accept 43% (5670/13131)
+        01       11377    7088     -   yes  0.24
+        02       42374   21609     -   yes  0.26
+        03       15377   25552     -   yes  0.27
+        median 15377 tok/turn | total 69128 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+        first turn excerpt: 'Below is a complete Gradio chat app in a **single Python file** that streams responses from a llama.cpp server running its OpenAI-compatible API at:  ```text http://localhost:8001/v1 ```  It uses:  - '
+  --- p2_ngram-mod ---
+  cooldown: 30s  ->  15MiB / 47C
+      overall decode : 89.6 t/s  (= 77,971 tok / 870.7s, min 81.5 / max 107.0 per turn)
+      draft accept   : 42% (6710/16123)
+      end-to-end     : 89.0 t/s  (incl. prefill; total wall 876.5s)
+        build phase   : 89.6 t/s   draft accept 42% (6710/16123)
+        01       24125   10073     -   yes  0.21
+        02       40225   20387     -   yes   0.3
+        03       13621   26142     -   yes  0.29
+        median 24125 tok/turn | total 77971 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+        first turn excerpt: 'Below is a complete setup for a single-file Gradio chat app that talks to an OpenAI-compatible llama.cpp server on `http://localhost:8001/v1`.  It:  - Uses `gr.Blocks` - Uses `gr.Chatbot(type="message'
+  --- p2_none ---
+  cooldown: 30s  ->  15MiB / 47C
+      overall decode : 91.1 t/s  (= 57,438 tok / 630.7s, min 89.1 / max 95.1 per turn)
+      draft accept   : -
+      end-to-end     : 90.4 t/s  (incl. prefill; total wall 635.3s)
+        build phase   : 91.1 t/s   draft accept -
+        01       25072    6796     -   yes  0.29
+        02       25521   20388     -   yes  0.35
+        03        6845   20969     -   yes   0.2
+        median 25072 tok/turn | total 57438 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+
+########## decode rate, non-thinking, recommended sampler ##########
+DONE -> results/corrections/20260830T171252Z_SPEC-01-rate

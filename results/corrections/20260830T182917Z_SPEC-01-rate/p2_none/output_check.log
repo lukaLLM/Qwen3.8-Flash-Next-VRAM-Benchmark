@@ -1,0 +1,7 @@
+  turn    tokens   chars  tool  code   rep
+  02       49152   70793     -   yes  0.18
+
+  median 49152 tok/turn | total 49152 | 0 turns used tool calls | 1 contained code
+  VERDICT: USABLE - the model did the workload.
+
+  first turn excerpt: "A chat that forgets everything is just a notepad. Here's **Ledger** — the whole thing runs on Node with zero dependencies: every session is its own pretty-printed JSON file on disk, the sidebar is a l"

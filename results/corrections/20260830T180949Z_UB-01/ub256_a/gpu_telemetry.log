@@ -1,0 +1,11 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     0.00%   max     0.00%
+  DRAM active          mean     0.00%   max     0.00%
+  SM active            mean     0.00%   max     0.00%
+  VRAM                 mean    14.00 MiB   max    14.00 MiB
+  GPU temp             mean    36.00 C   max    36.00 C
+  power                mean     7.09 W   max     7.09 W
+  SM clock             mean   180.00 MHz   max   180.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  verdict              ok
+  wrote results/corrections/20260830T180949Z_UB-01/ub256_a/gpu.json

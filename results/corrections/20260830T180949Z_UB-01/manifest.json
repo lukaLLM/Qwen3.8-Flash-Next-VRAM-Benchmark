@@ -1,0 +1,528 @@
+{
+  "plan_id": "CORRECTION-R1",
+  "test": "UB-01",
+  "utc_start": "20260830T180949Z",
+  "utc_finish": "20260830T182009Z",
+  "command": "-",
+  "n_predict": 128,
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+  "quant": "UD-IQ4_XS",
+  "model_path": "/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "model_blob_sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+  "arm_order": [
+    "ub1024_a",
+    "ub1024_b",
+    "ub2048_a",
+    "ub2048_b",
+    "ub256_a",
+    "ub256_b",
+    "ub512_a",
+    "ub512_b"
+  ],
+  "arms": {
+    "ub1024_a": {
+      "memory": {
+        "gpu_memory_used_mib": 63759,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "334057, 63734",
+        "pid": 334057,
+        "vmrss_kib": 29509316,
+        "rssanon_kib": 28534644,
+        "rssfile_kib": 183504,
+        "rssshmem_kib": 791168,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "1024",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "1024",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub1024_a",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201359"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 2323.95,
+      "decode_median_tps": 109.09
+    },
+    "ub1024_b": {
+      "memory": {
+        "gpu_memory_used_mib": 63759,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "338367, 63734",
+        "pid": 338367,
+        "vmrss_kib": 29510364,
+        "rssanon_kib": 28534616,
+        "rssfile_kib": 184580,
+        "rssshmem_kib": 791168,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "1024",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "1024",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub1024_b",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201727"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 2324.25,
+      "decode_median_tps": 109.05
+    },
+    "ub2048_a": {
+      "memory": {
+        "gpu_memory_used_mib": 64465,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "335499, 64440",
+        "pid": 335499,
+        "vmrss_kib": 29660408,
+        "rssanon_kib": 28568816,
+        "rssfile_kib": 181532,
+        "rssshmem_kib": 910060,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "2048",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "2048",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub2048_a",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201509"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 2579.86,
+      "decode_median_tps": 109.01
+    },
+    "ub2048_b": {
+      "memory": {
+        "gpu_memory_used_mib": 64465,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "336952, 64440",
+        "pid": 336952,
+        "vmrss_kib": 29664404,
+        "rssanon_kib": 28568876,
+        "rssfile_kib": 185468,
+        "rssshmem_kib": 910060,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "2048",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "2048",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub2048_b",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201618"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 2578.68,
+      "decode_median_tps": 109.02
+    },
+    "ub256_a": {
+      "memory": {
+        "gpu_memory_used_mib": 63231,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "331172, 63206",
+        "pid": 331172,
+        "vmrss_kib": 29425884,
+        "rssanon_kib": 28541516,
+        "rssfile_kib": 182372,
+        "rssshmem_kib": 701996,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "256",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "256",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub256_a",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201138"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1555.49,
+      "decode_median_tps": 108.89
+    },
+    "ub256_b": {
+      "memory": {
+        "gpu_memory_used_mib": 63231,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "341263, 63206",
+        "pid": 341263,
+        "vmrss_kib": 29427872,
+        "rssanon_kib": 28541500,
+        "rssfile_kib": 184376,
+        "rssshmem_kib": 701996,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "256",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "256",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub256_b",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201947"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1555.5,
+      "decode_median_tps": 108.44
+    },
+    "ub512_a": {
+      "memory": {
+        "gpu_memory_used_mib": 63407,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "332618, 63382",
+        "pid": 332618,
+        "vmrss_kib": 29458904,
+        "rssanon_kib": 28541488,
+        "rssfile_kib": 185696,
+        "rssshmem_kib": 731720,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "512",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "512",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub512_a",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201249"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1971.93,
+      "decode_median_tps": 108.25
+    },
+    "ub512_b": {
+      "memory": {
+        "gpu_memory_used_mib": 63407,
+        "gpu_memory_total_mib": 97887,
+        "gpu_per_process": "339803, 63382",
+        "pid": 339803,
+        "vmrss_kib": 29458628,
+        "rssanon_kib": 28541508,
+        "rssfile_kib": 185400,
+        "rssshmem_kib": 731720,
+        "vmswap_kib": 0
+      },
+      "options": {
+        "resolved_env": {
+          "LLAMA_ARG_OVERRIDE_TENSOR": "per_layer_token_embd=CPU",
+          "LLAMA_ARG_TENSOR_READ_LAZY": "off",
+          "LLAMA_ARG_KV_UNIFIED": "true"
+        },
+        "resolved_args": {
+          "--ctx-size": "32768",
+          "--n-cpu-moe": "0",
+          "--ubatch-size": "512",
+          "--batch-size": "2048",
+          "--parallel": "1",
+          "--n-gpu-layers": "999",
+          "--load-mode": "none"
+        },
+        "mismatches": {}
+      },
+      "env": {
+        "OT": "per_layer_token_embd=CPU",
+        "CTX": "32768",
+        "LOAD_MODE": "none",
+        "N_CPU_MOE": "0",
+        "LAZY": "off",
+        "UBATCH": "512",
+        "BATCH": "2048",
+        "PARALLEL": "1",
+        "KV_UNIFIED": "true",
+        "NGL": "999",
+        "LLAMA_IMAGE": "ghcr.io/ggml-org/llama.cpp:server-cuda13",
+        "NPREDICT": "128"
+      },
+      "server": {
+        "base_url": "http://127.0.0.1:8000",
+        "alias": "qwen3.8-flash-next",
+        "n_ctx": 32768,
+        "build": "b10666-4e97ac86e"
+      },
+      "settings": {
+        "tag": "corr_UB-01_ub512_b",
+        "lengths": [
+          2048
+        ],
+        "n_predict": 128,
+        "num_prompts": 3,
+        "source": "lcb",
+        "timestamp": "20260830_201837"
+      },
+      "n_measured_rows": 3,
+      "prefill_median_tps": 1972.76,
+      "decode_median_tps": 108.76
+    }
+  }
+}

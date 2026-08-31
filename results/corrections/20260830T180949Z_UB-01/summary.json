@@ -1,0 +1,34 @@
+{
+  "256": {
+    "prefill_tps": 1555.49,
+    "order_spread_tps": 0.01,
+    "decode_tps": 108.66,
+    "gpu_mib": 63231,
+    "vs_512_pct": -21.1,
+    "vram_vs_512_mib": -176
+  },
+  "512": {
+    "prefill_tps": 1972.35,
+    "order_spread_tps": 0.83,
+    "decode_tps": 108.5,
+    "gpu_mib": 63407,
+    "vs_512_pct": 0.0,
+    "vram_vs_512_mib": 0
+  },
+  "1024": {
+    "prefill_tps": 2324.1,
+    "order_spread_tps": 0.3,
+    "decode_tps": 109.07,
+    "gpu_mib": 63759,
+    "vs_512_pct": 17.8,
+    "vram_vs_512_mib": 352
+  },
+  "2048": {
+    "prefill_tps": 2579.27,
+    "order_spread_tps": 1.18,
+    "decode_tps": 109.02,
+    "gpu_mib": 64465,
+    "vs_512_pct": 30.8,
+    "vram_vs_512_mib": 1058
+  }
+}

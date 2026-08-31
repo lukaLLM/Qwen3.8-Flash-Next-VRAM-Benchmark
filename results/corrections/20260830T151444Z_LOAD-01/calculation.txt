@@ -1,0 +1,14 @@
+Scores are medians over rows.json["rows"], which contains only measured
+requests: speed_bench_v2.py issues one warm-up per length and discards it
+before writing (the warm-up lines are kept in warmups.txt).
+
+Recompute with:
+  python3 - <<'PY'
+  import json,glob,statistics as st
+  for f in sorted(glob.glob("*/rows.json")):
+      rows=json.load(open(f))["rows"]
+      pp=[r["prompt_per_second"] for r in rows if r.get("prompt_per_second")]
+      tg=[r["predicted_per_second"] for r in rows if r.get("predicted_per_second")]
+      print(f, round(st.median(pp),2) if pp else None,
+                round(st.median(tg),2) if tg else None)
+  PY

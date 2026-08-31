@@ -1,0 +1,11 @@
+{
+  "gpu_memory_used_mib": 63407,
+  "gpu_memory_total_mib": 97887,
+  "gpu_per_process": "332618, 63382",
+  "pid": 332618,
+  "vmrss_kib": 29458904,
+  "rssanon_kib": 28541488,
+  "rssfile_kib": 185696,
+  "rssshmem_kib": 731720,
+  "vmswap_kib": 0
+}

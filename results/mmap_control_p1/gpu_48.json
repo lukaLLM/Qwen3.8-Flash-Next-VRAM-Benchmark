@@ -1,0 +1,75 @@
+{
+  "seconds": 1485.6,
+  "samples": 741,
+  "source": "http://localhost:9402/metrics",
+  "profiling_metrics": true,
+  "tensor_active": {
+    "mean": 0.0305,
+    "max": 0.049,
+    "min": 0.0
+  },
+  "dram_active": {
+    "mean": 0.0639,
+    "max": 0.115,
+    "min": 0.0
+  },
+  "sm_active": {
+    "mean": 0.1739,
+    "max": 0.2541,
+    "min": 0.0
+  },
+  "sm_occupancy": {
+    "mean": 0.0328,
+    "max": 0.0697,
+    "min": 0.0
+  },
+  "pcie_rx_bytes": {
+    "mean": 17300975406.6599,
+    "max": 19935134855.0,
+    "min": 653803.0
+  },
+  "pcie_tx_bytes": {
+    "mean": 1075755977.942,
+    "max": 1220578508.0,
+    "min": 1030240.0
+  },
+  "fb_used_mib": {
+    "mean": 93545.2578,
+    "max": 93792.0,
+    "min": 48098.0
+  },
+  "gpu_temp_c": {
+    "mean": 51.7031,
+    "max": 59.0,
+    "min": 33.0
+  },
+  "memory_temp_c": {
+    "mean": 0.0,
+    "max": 0.0,
+    "min": 0.0
+  },
+  "power_w": {
+    "mean": 190.5394,
+    "max": 238.366,
+    "min": 74.629
+  },
+  "sm_clock_mhz": {
+    "mean": 2779.1889,
+    "max": 2827.0,
+    "min": 2602.0
+  },
+  "gpu_util_pct": {
+    "mean": 74.3414,
+    "max": 100.0,
+    "min": 0.0
+  },
+  "thermal_violation_us": 0.0,
+  "power_violation_us": 0.0,
+  "samples_over_max_temp": 0,
+  "max_temp_threshold_c": 84.0,
+  "sm_clock_drop": false,
+  "power_violation_trusted": false,
+  "verdict": "ok",
+  "dram_over_tensor": 2.1,
+  "bound_by": "pcie"
+}

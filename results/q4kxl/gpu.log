@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     4.35%   max     9.20%
+  DRAM active          mean    17.94%   max    27.30%
+  SM active            mean    41.96%   max    62.42%
+  VRAM                 mean 80211.74 MiB   max 80362.00 MiB
+  GPU temp             mean    56.50 C   max    66.00 C
+  power                mean   333.74 W   max   421.07 W
+  SM clock             mean  2747.43 MHz   max  2805.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    4.1x  (LATENCY BOUND - neither is saturated)
+    tensor 4.35%  DRAM 17.94%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/q4kxl/gpu.json

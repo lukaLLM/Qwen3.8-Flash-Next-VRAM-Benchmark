@@ -1,0 +1,9 @@
+  turn    tokens   chars  tool  code   rep
+  01       25072    6796     -   yes  0.29
+  02       25521   20388     -   yes  0.35
+  03        6845   20969     -   yes   0.2
+
+  median 25072 tok/turn | total 57438 | 0 turns used tool calls | 3 contained code
+  VERDICT: USABLE - the model did the workload.
+
+  first turn excerpt: '## 1. Create a separate venv with `uv`  From a terminal:  ```bash mkdir llama-gradio-chat cd llama-gradio-chat  # Create a separate virtual environment named .venv uv venv .venv --python 3.11  # Activ'

@@ -1,0 +1,5 @@
+| model                          |       size |     params | backend    | ngl |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | --: | --------------------- | --------------: | -------------------: |
+| qwen4exp A3B Q4_K - Medium     | 103.68 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |           pp512 |       679.64 ± 97.14 |
+| qwen4exp A3B Q4_K - Medium     | 103.68 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |          pp4096 |        766.79 ± 6.59 |
+| qwen4exp A3B Q4_K - Medium     | 103.68 GiB |   176.94 B | CUDA       | 999 |   1 | per_layer_token_embd=CPU |           tg128 |        100.65 ± 0.74 |

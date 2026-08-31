@@ -1,0 +1,37 @@
+[
+  {
+    "concurrency": 1,
+    "aggregate_tps": 57.0,
+    "per_request_tps": 100.57,
+    "wall_s": 4.49,
+    "tokens": 256
+  },
+  {
+    "concurrency": 2,
+    "aggregate_tps": 71.08,
+    "per_request_tps": 73.02,
+    "wall_s": 7.2,
+    "tokens": 512
+  },
+  {
+    "concurrency": 4,
+    "aggregate_tps": 81.08,
+    "per_request_tps": 44.56,
+    "wall_s": 12.63,
+    "tokens": 1024
+  },
+  {
+    "concurrency": 8,
+    "aggregate_tps": 84.89,
+    "per_request_tps": 24.14,
+    "wall_s": 24.13,
+    "tokens": 2048
+  },
+  {
+    "concurrency": 16,
+    "aggregate_tps": 89.3,
+    "per_request_tps": 11.98,
+    "wall_s": 45.87,
+    "tokens": 4096
+  }
+]

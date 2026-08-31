@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     6.76%   max    10.46%
+  DRAM active          mean    14.25%   max    22.83%
+  SM active            mean    34.93%   max    48.53%
+  VRAM                 mean 93726.79 MiB   max 93848.00 MiB
+  GPU temp             mean    58.77 C   max    68.00 C
+  power                mean   276.72 W   max   339.02 W
+  SM clock             mean  2696.91 MHz   max  2820.00 MHz
+  throttle (thermal)   0 us      (power) 5949599872 us
+  DRAM/tensor ratio    2.1x  (HOST-PATH BOUND - 27.1 GB/s over PCIe, GPU idle)
+    tensor 6.76%  DRAM 14.25%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/tier_full/gpu_48.json

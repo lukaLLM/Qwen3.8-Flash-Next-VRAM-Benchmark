@@ -1,0 +1,9 @@
+  turn    tokens   chars  tool  code   rep
+  01       15868    7862     -   yes  0.25
+  02       26799   19271     -   yes  0.34
+  03       24837   26607     -   yes   0.4
+
+  median 24837 tok/turn | total 67504 | 0 turns used tool calls | 3 contained code
+  VERDICT: USABLE - the model did the workload.
+
+  first turn excerpt: 'Here is a complete single-file Gradio chat app that talks to a llama.cpp server via the OpenAI-compatible endpoint, streams tokens into the UI, and keeps the visible `gr.Chatbot(type="messages")` list'

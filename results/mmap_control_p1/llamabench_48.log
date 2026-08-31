@@ -1,0 +1,5 @@
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | --: | --------------------- | --------------: | -------------------: |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |           pp512 |       522.50 ± 50.33 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |          pp4096 |        545.08 ± 5.56 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CUDA       | 999 |         23 |   1 | per_layer_token_embd=CPU |           tg128 |         51.47 ± 0.79 |

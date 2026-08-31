@@ -1,0 +1,37 @@
+{
+  "turns": [
+    {
+      "id": "01",
+      "chars": 6806,
+      "tokens": 24890,
+      "tool_call": false,
+      "code_block": true,
+      "repetition": 0.22,
+      "error": null
+    },
+    {
+      "id": "02",
+      "chars": 18276,
+      "tokens": 25561,
+      "tool_call": false,
+      "code_block": true,
+      "repetition": 0.25,
+      "error": null
+    },
+    {
+      "id": "03",
+      "chars": 27175,
+      "tokens": 20176,
+      "tool_call": false,
+      "code_block": true,
+      "repetition": 0.31,
+      "error": null
+    }
+  ],
+  "flags": [],
+  "median_tokens": 24890,
+  "total_tokens": 70627,
+  "tool_call_turns": 0,
+  "code_turns": 3,
+  "verdict": "USABLE"
+}

@@ -1,0 +1,9 @@
+{
+  "gpu_memory_used_mib": 15,
+  "gpu_temp_c": 31,
+  "disk_avail_gib": 908,
+  "download_state": "none",
+  "other_server": null,
+  "swap_used_mib": 0,
+  "free_output": "               total        used        free      shared  buff/cache   available\nMem:           94167        6568       84459           8        3960       87599\nSwap:           8191           0        8191\n"
+}

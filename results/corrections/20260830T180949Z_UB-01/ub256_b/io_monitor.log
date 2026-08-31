@@ -1,0 +1,6 @@
+  watching pid 341263, device /nvme0n1/, 5400.0s (Ctrl-C to stop early)
+  stopped early
+  NVMe read :      35.3 MB   (3.39 MB/s)
+  majflt    :       277   (27/s)
+  verdict   : ok
+  wrote results/corrections/20260830T180949Z_UB-01/ub256_b/io.json

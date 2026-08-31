@@ -1,0 +1,49 @@
+CORRECTION-R1 controller v2 | test UB-01 | 2026-08-30T18:09:49Z
+command: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/benchmark/correction_run_v2.sh --execute --plan-id CORRECTION-R1 --only UB-01
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 41 C | disk 908 GiB | download none | other server 'none'
+dcgm-exporter did not start - telemetry falls back to nvidia-smi only
+UB-01: ctx 32768, n-cpu-moe 0, ascending then descending microbatch
+  --- arm ub256_a : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 35C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 1555.49 t/s (min 1547.1, max 1609.51) | TTFT 1316.63 ms | decode 108.89 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub512_a : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 1971.93 t/s (min 1962.87, max 1995.37) | TTFT 1038.57 ms | decode 108.25 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub1024_a : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 2323.95 t/s (min 2319.05, max 2336.44) | TTFT 881.26 ms | decode 109.09 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub2048_a : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 2579.86 t/s (min 2575.1, max 2580.88) | TTFT 793.84 ms | decode 109.01 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub2048_b : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 2578.68 t/s (min 2524.74, max 2583.48) | TTFT 794.2 ms | decode 109.02 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub1024_b : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 2324.25 t/s (min 2321.37, max 2337.76) | TTFT 881.14 ms | decode 109.05 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub512_b : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 1972.76 t/s (min 1960.07, max 1999.03) | TTFT 1038.14 ms | decode 108.76 t/s | accept -
+      telemetry verdict: ok
+  --- arm ub256_b : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 37C
+      card:   CONFIG CHECK: WARN
+           2048 tok | prefill 1555.5 t/s (min 1547.17, max 1608.36) | TTFT 1316.62 ms | decode 108.44 t/s | accept -
+      telemetry verdict: ok
+DONE UB-01 -> results/corrections/20260830T180949Z_UB-01
+controller exiting - stopping server and monitors

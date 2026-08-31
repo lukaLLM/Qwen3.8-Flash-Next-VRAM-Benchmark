@@ -1,0 +1,7 @@
+load_backend: loaded CPU backend from /app/libggml-cpu-zen4.so
+| model                          |       size |     params | backend    | threads |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | ------: | --------------: | -------------------: |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CPU        |      16 |           pp512 |         72.15 ± 0.00 |
+| qwen4exp A3B IQ4_XS - 4.25 bpw |  87.24 GiB |   176.94 B | CPU        |      16 |            tg64 |          8.98 ± 0.00 |
+
+build: 4e97ac86e (10666)

@@ -1,0 +1,79 @@
+{
+  "server": {
+    "base_url": "http://127.0.0.1:8000",
+    "alias": "qwen3.8-flash-next",
+    "n_ctx": 32768,
+    "build": "b10666-4e97ac86e"
+  },
+  "settings": {
+    "tag": "corr_UB-01_ub2048_a",
+    "lengths": [
+      2048
+    ],
+    "n_predict": 128,
+    "num_prompts": 3,
+    "source": "lcb",
+    "timestamp": "20260830_201509"
+  },
+  "rows": [
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 793.84,
+      "prompt_per_second": 2579.86496019349,
+      "predicted_n": 128,
+      "predicted_ms": 1164.501,
+      "predicted_per_second": 109.05958861349197,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 2.018,
+      "text_head": "\n\n<think>\nLet me analyze the problem:\n\n1. We have n boxes in a row with weights a_i.\n2. For each k (1 ≤ k ≤ n), we divide boxes into groups of k (only valid if n is divisible by k).\n3. For each valid ",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 1
+    },
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 793.527,
+      "prompt_per_second": 2580.8825660626544,
+      "predicted_n": 128,
+      "predicted_ms": 1164.986,
+      "predicted_per_second": 109.01418557819578,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 2.018,
+      "text_head": "\n\n<think>\nThe user wants me to solve the last problem shown, which is the \"Minimum Extra Characters in a String\" problem.\n\nLet me analyze the problem:\n- Given a string `s` and a dictionary of words\n- ",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 2
+    },
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 795.309,
+      "prompt_per_second": 2575.0997411069156,
+      "predicted_n": 128,
+      "predicted_ms": 1164.98,
+      "predicted_per_second": 109.01474703428386,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 2.021,
+      "text_head": "\n\n<think>\nThe user wants me to solve the last problem shown: finding the longest semi-repetitive substring.\n\nA string is semi-repetitive if it has at most one consecutive pair of the same digits.\n\nI n",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 3
+    }
+  ],
+  "per_length": [
+    {
+      "length": 2048,
+      "reps": 3,
+      "pp_tps_med": 2579.86,
+      "pp_tps_min": 2575.1,
+      "pp_tps_max": 2580.88,
+      "ttft_ms_med": 793.84,
+      "tg_tps_med": 109.01,
+      "itl_ms_med": 9.101,
+      "accept_pct": null,
+      "wall_s_med": 2.02
+    }
+  ]
+}

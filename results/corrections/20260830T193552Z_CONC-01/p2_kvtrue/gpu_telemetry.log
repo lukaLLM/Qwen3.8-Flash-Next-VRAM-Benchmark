@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     6.76%   max    12.23%
+  DRAM active          mean    15.06%   max    18.79%
+  SM active            mean    49.09%   max    67.39%
+  VRAM                 mean 68674.16 MiB   max 69102.00 MiB
+  GPU temp             mean    65.72 C   max    71.00 C
+  power                mean   369.79 W   max   412.77 W
+  SM clock             mean  2662.43 MHz   max  2767.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    2.2x  (LATENCY BOUND - neither is saturated)
+    tensor 6.76%  DRAM 15.06%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/corrections/20260830T193552Z_CONC-01/p2_kvtrue/gpu.json

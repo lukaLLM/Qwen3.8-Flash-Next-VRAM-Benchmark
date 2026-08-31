@@ -1,0 +1,79 @@
+{
+  "server": {
+    "base_url": "http://127.0.0.1:8000",
+    "alias": "qwen3.8-flash-next",
+    "n_ctx": 32768,
+    "build": "b10666-4e97ac86e"
+  },
+  "settings": {
+    "tag": "corr_PLE-01_B2",
+    "lengths": [
+      2048
+    ],
+    "n_predict": 128,
+    "num_prompts": 3,
+    "source": "lcb",
+    "timestamp": "20260830_170644"
+  },
+  "rows": [
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 3542.506,
+      "prompt_per_second": 578.1218154605807,
+      "predicted_n": 128,
+      "predicted_ms": 65138.326,
+      "predicted_per_second": 1.949697018618501,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 68.756,
+      "text_head": "\n\n<think>\nLet me analyze the last problem carefully.\n\n**Problem:** We have n boxes in a row with weights a_i. For each k from 1 to n, we divide the boxes into groups of k (only valid if n is divisible",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 1
+    },
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 3558.619,
+      "prompt_per_second": 575.5041492219312,
+      "predicted_n": 128,
+      "predicted_ms": 65145.968,
+      "predicted_per_second": 1.9494683078467727,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 68.78,
+      "text_head": "\n\n<think>\nThe user wants me to solve the last problem shown, which is the \"Minimum Extra Characters in a String\" problem.\n\nLet me analyze the problem:\n- Given a string `s` and a dictionary of words\n- ",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 2
+    },
+    {
+      "prompt_n": 2048,
+      "prompt_ms": 3730.889,
+      "prompt_per_second": 548.9308312308407,
+      "predicted_n": 128,
+      "predicted_ms": 65141.288,
+      "predicted_per_second": 1.9496083651278127,
+      "draft_n": null,
+      "draft_n_accepted": null,
+      "wall_s": 68.951,
+      "text_head": "<think>\n\n</think>\n\n```python\nclass Solution:\n    def longestSemiRepetitiveSubstring(self, s: str) -> int:\n        \"\"\"\n        Find the length of the longest semi-repetitive substring.\n        A semi-r",
+      "decode_valid": true,
+      "length": 2048,
+      "rep": 3
+    }
+  ],
+  "per_length": [
+    {
+      "length": 2048,
+      "reps": 3,
+      "pp_tps_med": 575.5,
+      "pp_tps_min": 548.93,
+      "pp_tps_max": 578.12,
+      "ttft_ms_med": 3558.62,
+      "tg_tps_med": 1.95,
+      "itl_ms_med": 508.916,
+      "accept_pct": null,
+      "wall_s_med": 68.78
+    }
+  ]
+}

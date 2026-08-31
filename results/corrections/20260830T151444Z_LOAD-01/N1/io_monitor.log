@@ -1,0 +1,6 @@
+  watching pid 214917, device /nvme0n1/, 5400.0s (Ctrl-C to stop early)
+  stopped early
+  NVMe read :     959.0 MB   (3.54 MB/s)
+  majflt    :     47500   (175/s)
+  verdict   : VOID - weights were being paged from disk
+  wrote results/corrections/20260830T151444Z_LOAD-01/N1/io.json

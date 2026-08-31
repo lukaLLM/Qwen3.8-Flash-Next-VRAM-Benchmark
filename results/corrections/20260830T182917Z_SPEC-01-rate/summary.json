@@ -1,0 +1,59 @@
+{
+  "per_arm": {
+    "p1_ngram-mod": {
+      "turns": 3,
+      "tokens": 67504,
+      "decode_tps_mean": 93.47,
+      "decode_tps_median": 89.82,
+      "draft_n": 12036,
+      "draft_accept_pct": 35.1,
+      "turns_at_cap": 0,
+      "output_verdict": "USABLE",
+      "output_flags": []
+    },
+    "p1_none": {
+      "turns": 3,
+      "tokens": 74660,
+      "decode_tps_mean": 89.92,
+      "decode_tps_median": 91.33,
+      "draft_n": 0,
+      "draft_accept_pct": null,
+      "turns_at_cap": 0,
+      "output_verdict": "USABLE",
+      "output_flags": []
+    },
+    "p2_ngram-mod": {
+      "turns": 3,
+      "tokens": 70627,
+      "decode_tps_mean": 91.55,
+      "decode_tps_median": 91.24,
+      "draft_n": 14125,
+      "draft_accept_pct": 28.2,
+      "turns_at_cap": 0,
+      "output_verdict": "USABLE",
+      "output_flags": []
+    },
+    "p2_none": {
+      "turns": 3,
+      "tokens": 86883,
+      "decode_tps_mean": 81.09,
+      "decode_tps_median": 78.46,
+      "draft_n": 0,
+      "draft_accept_pct": null,
+      "turns_at_cap": 1,
+      "output_verdict": "USABLE",
+      "output_flags": []
+    }
+  },
+  "baseline_decode_tps": 85.5,
+  "ngram_decode_tps": 92.51,
+  "rate_gain_pct": 8.2,
+  "baseline_arms": [
+    89.92,
+    81.09
+  ],
+  "ngram_arms": [
+    93.47,
+    91.55
+  ]
+}

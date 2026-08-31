@@ -1,0 +1,4 @@
+  device 0: 95.0 GiB total, 94.4 GiB free
+  holding 86.4 GiB -> 8.0 GiB visible to everything else
+  simulating a ~8 GiB card. Ctrl-C or SIGTERM to release.
+  released

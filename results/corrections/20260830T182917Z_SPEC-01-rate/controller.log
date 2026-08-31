@@ -1,0 +1,54 @@
+SPEC-01 rate | THINKING mode | 3 turns | cap 49152 tok/turn
+  sampler: temp 1.0 top-p 0.95 top-k 20 min-p 0.0 presence 0.0 repeat 1.0
+  metric: decode tokens/second. Wall clock is NOT comparable - the arms
+          generate different text and different token counts.
+evidence -> results/corrections/20260830T182917Z_SPEC-01-rate
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 32 C
+  --- p1_none ---
+  cooldown: 30s  ->  15MiB / 31C
+      overall decode : 86.8 t/s  (= 74,660 tok / 860.2s, min 79.9 / max 98.5 per turn)
+      draft accept   : -
+      end-to-end     : 86.4 t/s  (incl. prefill; total wall 864.1s)
+        build phase   : 86.8 t/s   draft accept -
+        01       16039    4868     -   yes  0.14
+        02       23161   15899     -   yes   0.3
+        03       35460   21623     -   yes  0.35
+        median 23161 tok/turn | total 74660 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+  --- p1_ngram-mod ---
+  cooldown: 30s  ->  15MiB / 46C
+      overall decode : 91.9 t/s  (= 67,504 tok / 734.7s, min 88.3 / max 102.3 per turn)
+      draft accept   : 35% (4221/12036)
+      end-to-end     : 91.3 t/s  (incl. prefill; total wall 739.3s)
+        build phase   : 91.9 t/s   draft accept 35% (4221/12036)
+        01       15868    7862     -   yes  0.25
+        02       26799   19271     -   yes  0.34
+        03       24837   26607     -   yes   0.4
+        median 24837 tok/turn | total 67504 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+  --- p2_ngram-mod ---
+  cooldown: 30s  ->  15MiB / 47C
+      overall decode : 91.5 t/s  (= 70,627 tok / 771.9s, min 89.2 / max 94.2 per turn)
+      draft accept   : 28% (3985/14125)
+      end-to-end     : 91.0 t/s  (incl. prefill; total wall 776.4s)
+        build phase   : 91.5 t/s   draft accept 28% (3985/14125)
+        01       24890    6806     -   yes  0.22
+        02       25561   18276     -   yes  0.25
+        03       20176   27175     -   yes  0.31
+        median 24890 tok/turn | total 70627 | 0 turns used tool calls | 3 contained code
+        VERDICT: USABLE - the model did the workload.
+        first turn excerpt: 'Below is a complete single-file Gradio chat app that:  - Uses `gr.Blocks` - Uses `gr.Chatbot(type="messages")` - Connects to a llama.cpp OpenAI-compatible server at `http://localhost:8001/v1` - Uses t'
+  --- p2_none ---
+  cooldown: 30s  ->  15MiB / 47C
+      overall decode : 81.5 t/s  (= 86,883 tok / 1065.8s, min 76.4 / max 88.4 per turn)
+      draft accept   : -
+      end-to-end     : 80.4 t/s  (incl. prefill; total wall 1080.3s)
+        build phase   : 81.5 t/s   draft accept -
+        02       49152   70793     -   yes  0.18
+        median 49152 tok/turn | total 49152 | 0 turns used tool calls | 1 contained code
+        VERDICT: USABLE - the model did the workload.
+
+########## decode rate, non-thinking, recommended sampler ##########
+DONE -> results/corrections/20260830T182917Z_SPEC-01-rate

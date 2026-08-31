@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean    13.34%   max    17.85%
+  DRAM active          mean    23.88%   max    35.13%
+  SM active            mean    69.23%   max    82.43%
+  VRAM                 mean 72198.59 MiB   max 72376.00 MiB
+  GPU temp             mean    71.88 C   max    77.00 C
+  power                mean   430.83 W   max   472.12 W
+  SM clock             mean  2556.46 MHz   max  2797.00 MHz
+  throttle (thermal)   0 us      (power) 21269824000 us
+  DRAM/tensor ratio    1.8x  (LATENCY BOUND - neither is saturated)
+    tensor 13.34%  DRAM 23.88%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/tier_full/gpu_96.json

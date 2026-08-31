@@ -1,0 +1,8 @@
+  turn    tokens   chars  tool  code   rep
+  02        3858   61054     -   yes  0.14
+  03       30220   62029     -   yes  0.11
+
+  median 17039.0 tok/turn | total 34078 | 0 turns used tool calls | 2 contained code
+  VERDICT: USABLE - the model did the workload.
+
+  first turn excerpt: "Here's a complete, dependency-free build: **Archivist** — a chat client whose sessions are *files*. One JSON document per conversation on disk, an archive rail you can live inside, and a raw-record dr"

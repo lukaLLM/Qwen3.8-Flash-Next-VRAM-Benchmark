@@ -1,0 +1,13 @@
+  source: http://localhost:9402/metrics  (profiling metrics available)
+  tensor pipe          mean     3.59%   max     5.08%
+  DRAM active          mean     8.17%   max     9.83%
+  SM active            mean    22.78%   max    27.01%
+  VRAM                 mean 44645.05 MiB   max 45702.00 MiB
+  GPU temp             mean    54.35 C   max    59.00 C
+  power                mean   227.25 W   max   270.24 W
+  SM clock             mean  2742.33 MHz   max  2797.00 MHz
+  throttle (thermal)   0 us      (power) 0 us
+  DRAM/tensor ratio    2.3x  (HOST-PATH BOUND - 27.2 GB/s over PCIe, GPU idle)
+    tensor 3.59%  DRAM 8.17%  - a ratio without these is meaningless
+  verdict              ok
+  wrote results/corrections/20260830T151444Z_LOAD-01/N1/gpu.json

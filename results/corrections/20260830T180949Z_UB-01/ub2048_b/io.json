@@ -1,0 +1,12 @@
+{
+  "pid": 336952,
+  "seconds": 8.3,
+  "nvme_read_mb": 0.9,
+  "nvme_read_mbs": 0.11,
+  "major_faults": 28,
+  "major_faults_per_s": 3.4,
+  "void_threshold_mbs": 50.0,
+  "void_threshold_faults_per_s": 50.0,
+  "verdict": "ok",
+  "samples": null
+}

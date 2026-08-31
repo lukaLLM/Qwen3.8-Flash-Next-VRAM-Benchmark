@@ -1,0 +1,13 @@
+warn: LLAMA_ARG_HOST environment variable is set, but will be overwritten by command line argument --host
+0.00.188.661 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.188.938 W srv  llama_server: -----------------
+0.00.188.939 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.188.939 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.188.939 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.188.939 W srv  llama_server: -----------------
+0.00.190.119 I srv    load_model: loading model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf'
+0.11.013.385 I cmn          init: llama threadpool init, n_threads = 16
+0.11.085.891 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 32768, kv_unified = 'true'
+0.11.089.614 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.11.089.647 I srv  llama_server: model loaded
+0.11.089.651 I srv  llama_server: listening on http://0.0.0.0:8000

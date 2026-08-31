@@ -1,0 +1,160 @@
+# Qwen3.8-Flash-Next on one RTX PRO 6000 Blackwell (96 GB) + 96 GB DDR5.
+#
+# The image is the upstream llama.cpp server build, which carries qwen4exp
+# support. Start this through scripts/serve.sh, which resolves MODEL to a real
+# path inside the mounted HF cache - compose cannot glob a snapshot hash on its
+# own.
+#
+# ONE SERVICE, NOT ONE PER ARM
+#   llama.cpp exposes --spec-type as LLAMA_ARG_SPEC_TYPE, so the speculative
+#   arm is the same container with one environment variable changed. That is
+#   worth more than separate services here: every arm is then guaranteed to
+#   share the identical flag list, which is the thing an A/B has to hold fixed.
+#
+#     SPEC_TYPE=none          no speculation. The number everything must beat.
+#     SPEC_TYPE=ngram-cache   model-free speculation, the classic lookup decode
+#     SPEC_TYPE=ngram-mod     the other model-free variant worth measuring
+#
+#   draft-mtp, draft-dspark and draft-dflash are all rejected for this model
+#   today: the published GGUF carries no MTP head and no sidecar drafter
+#   exists. PLAN.md has the evidence.
+name: llamacpp_qwen38_flash_next
+
+networks:
+  server:
+    driver: bridge
+
+services:
+  q38n:
+    image: ${LLAMA_IMAGE:-ghcr.io/ggml-org/llama.cpp:server-cuda13}
+    pull_policy: missing        # upstream image; carries qwen4exp since b10658
+    container_name: ${CONTAINER_NAME:-q38n}
+    networks: [server]
+    ipc: host
+    gpus: all
+    ports:
+      - "${LLAMA_HOST_PORT:-8000}:8000"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile: { soft: 1048576, hard: 1048576 }
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      # The whole A/B axis. "none" is a real, accepted value, not an absence.
+      LLAMA_ARG_SPEC_TYPE: ${SPEC_TYPE:-none}
+      # Phase 0's central choice: keep the ~27 GiB PLE / n-gram table off the GPU
+      # and everything that does matrix multiplication on it. The tensor is named
+      # per_layer_token_embd.weight (verified in the shard 2 header); the per-block
+      # PLE compute tensors are blk.N.ple_* and are deliberately NOT matched, so
+      # they stay on the GPU. Set OT= to disable.
+      LLAMA_ARG_OVERRIDE_TENSOR: ${OT:-per_layer_token_embd=CPU}
+      # DEFAULT off, and this matters more than it looks.
+      #
+      # llama.cpp's default is `auto`, which means "read rows on demand from disk
+      # instead of keeping them resident, for any tensor over 4 GiB". The PLE
+      # table is ~25 GiB, so auto silently streams it from the SSD whenever mmap
+      # is in use. That is what produced 457 major faults/s in two Phase 3 arms
+      # we voided as "paging" - it was this flag working exactly as designed.
+      #
+      # For a benchmark the tensor must be resident or the run measures storage.
+      # Set LAZY=on deliberately to measure the disk-backed configuration, which
+      # is the interesting one for anyone without enough RAM.
+      LLAMA_ARG_TENSOR_READ_LAZY: ${LAZY:-off}
+      # Unified KV shares one buffer across sequences; non-unified gives each slot
+      # its own, and upstream reports it can be faster at batch 16 - a concurrency
+      # variable, not a detail. Set through the env var, NOT the command list:
+      # --kv-unified is a boolean flag that takes no value, and passing one fails
+      # the server at startup with "error: invalid argument: true".
+      LLAMA_ARG_KV_UNIFIED: ${KV_UNIFIED:-true}
+    volumes:
+      # Read-only on purpose: this is the same HF cache download_models.sh
+      # writes, and a server has no business modifying it. Shard 1 of a split
+      # GGUF pulls its siblings in by relative path, so the whole snapshot has
+      # to be visible, not just the one file named below.
+      - ${HOME}/.cache/huggingface:/hf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 360            # 90 min: a cold start reads the whole quant off
+                              # disk, ~94 GB for IQ4_XS
+      start_period: 60s
+    # "no" by default. `unless-stopped` makes a server that cannot allocate its
+    # weights restart forever, which turns a clear OOM into a silent hang: the
+    # container never disappears, so anything waiting on health just waits. It
+    # cost a whole tier-ladder run. Set RESTART=unless-stopped for a long-lived
+    # serving deployment, never for a benchmark.
+    restart: ${RESTART:-no}
+    command:
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --model
+      - ${MODEL:?set MODEL, or start this through scripts/serve.sh}
+      - --alias
+      - ${ALIAS:-qwen3.8-flash-next}
+      - --ctx-size
+      - "${CTX:-32768}"
+      # One slot. The server defaults to 4, which splits the KV cache across
+      # concurrent requests - fine for serving, wrong for a single-stream
+      # benchmark where every arm must see identical conditions. Phase 0 was
+      # measured at the default 4 before this was noticed.
+      - --parallel
+      - "${PARALLEL:-1}"
+      # 999 = every layer on the GPU. Lower it to keep whole layers on the CPU,
+      # which is the ONLY lever for a small card: --n-cpu-moe relocates expert
+      # tensors only, so attention, hyper-connections and the per-block PLE
+      # tensors stay on the GPU however high you push it. On IQ4_XS that floor
+      # is ~10.7 GiB, which is why an 8 GiB card cannot load the model with
+      # -ngl 999 no matter what --n-cpu-moe says.
+      - --n-gpu-layers
+      - "${NGL:-999}"
+      # How many of the 48 layers keep their expert tensors in system RAM.
+      #
+      # DEFAULT 0, on purpose. With the PLE table already off the GPU via
+      # --override-tensor above, IQ4_XS is roughly 87.2 GiB total minus ~27 GiB
+      # of PLE, so about 60 GiB of compute weights against ~92 GiB of usable
+      # VRAM. That should fit outright, and expert offload is the fallback for
+      # when it does not - not the design point. Experts do matrix
+      # multiplication; moving them to the CPU costs far more than moving a
+      # lookup table does.
+      #
+      # If the server OOMs at 0, raise it in small steps and write down the
+      # value that fit. That number is a Phase 0 result.
+      - --n-cpu-moe
+      - "${N_CPU_MOE:-0}"
+      # 16 = physical cores, not the 32 SMT threads. With this much of the model
+      # in system RAM, decode is memory-bandwidth bound and the second thread on
+      # a core adds contention rather than bandwidth. Prompt processing is
+      # compute bound and does want all 32.
+      - --threads
+      - "${THREADS:-16}"
+      - --threads-batch
+      - "${THREADS_BATCH:-32}"
+      - --batch-size
+      - "${BATCH:-2048}"
+      - --ubatch-size
+      - "${UBATCH:-512}"
+      # Unsloth's thinking-mode sampler defaults. Instruct mode is
+      # 0.7 / 0.80 / 20 / 0.0 with presence_penalty 1.5.
+      - --temp
+      - "${TEMP:-1.0}"
+      - --top-p
+      - "${TOP_P:-0.95}"
+      - --top-k
+      - "${TOP_K:-20}"
+      - --min-p
+      - "${MIN_P:-0.0}"
+      # mmap is the default anyway, but naming it makes the Phase 2 cold/warm
+      # experiment explicit: the PLE table is a file mapping, which is exactly
+      # why the page cache can evict it and why that is worth measuring.
+      # mmap+mlock pins it instead. There is no env var for this flag.
+      - --load-mode
+      - "${LOAD_MODE:-mmap}"
+      - --jinja
+      - --flash-attn
+      - "on"
+      - --metrics

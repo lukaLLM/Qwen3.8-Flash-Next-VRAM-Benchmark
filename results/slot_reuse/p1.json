@@ -1,0 +1,133 @@
+{
+  "rows": [
+    {
+      "task": "code",
+      "depth": 10,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "code",
+      "depth": 10,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "code",
+      "depth": 50,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "code",
+      "depth": 50,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "code",
+      "depth": 90,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "code",
+      "depth": 90,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 10,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 10,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 50,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 50,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 90,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "contradiction",
+      "depth": 90,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 10,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 10,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 50,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 50,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 90,
+      "rep": 0,
+      "fresh": true,
+      "reused": true
+    },
+    {
+      "task": "date",
+      "depth": 90,
+      "rep": 1,
+      "fresh": true,
+      "reused": true
+    }
+  ],
+  "fresh": 18,
+  "reused": 18,
+  "n": 18
+}

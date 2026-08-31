@@ -1,0 +1,25 @@
+CORRECTION-R1 controller | test PLE-01 | 2026-08-30T14:59:32Z
+acquiring the benchmark lock ...
+lock acquired
+  preflight: GPU 15 MiB / 31 C | disk 908 GiB | download none | other server 'none'
+PLE-01: ctx 32768, n-cpu-moe 0, load-mode none, ubatch 512, order A-B-B-A
+        A = per_layer_token_embd=CPU    B = per_layer_token_embd=CUDA0
+        2048-token prompt, 128 output tokens, 1 warm-up + 3 measured
+  --- arm A1 : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 31s  ->  15MiB / 31C
+      resolved LLAMA_ARG_OVERRIDE_TENSOR = per_layer_token_embd=CPU
+           2048 tok | prefill 1965.97 t/s (min 1959.25, max 1992.06) | TTFT 1041.73 ms | decode 108.82 t/s | accept -
+  --- arm B1 : ot=per_layer_token_embd=CUDA0 ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 34C
+      resolved LLAMA_ARG_OVERRIDE_TENSOR = per_layer_token_embd=CUDA0
+           2048 tok | prefill 575.81 t/s (min 574.32, max 578.03) | TTFT 3556.72 ms | decode 1.95 t/s | accept -
+  --- arm B2 : ot=per_layer_token_embd=CUDA0 ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 39C
+      resolved LLAMA_ARG_OVERRIDE_TENSOR = per_layer_token_embd=CUDA0
+           2048 tok | prefill 575.5 t/s (min 548.93, max 578.12) | TTFT 3558.62 ms | decode 1.95 t/s | accept -
+  --- arm A2 : ot=per_layer_token_embd=CPU ctx=32768 load-mode=none n-cpu-moe=0 ---
+  cooldown: 30s  ->  15MiB / 39C
+      resolved LLAMA_ARG_OVERRIDE_TENSOR = per_layer_token_embd=CPU
+           2048 tok | prefill 1969.74 t/s (min 1964.08, max 1998.93) | TTFT 1039.73 ms | decode 108.21 t/s | accept -
+DONE PLE-01 -> results/corrections/20260830T145932Z_PLE-01
+controller exiting - stopping server

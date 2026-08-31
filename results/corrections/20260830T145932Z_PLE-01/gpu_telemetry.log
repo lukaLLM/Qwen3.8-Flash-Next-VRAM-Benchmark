@@ -1,0 +1,8 @@
+  source: nvidia-smi  (no tensor/DRAM ratios)
+  hint: ./benchmark/dcgm_exporter.sh up   for tensor-pipe and DRAM activity
+  VRAM                 mean 47215.72 MiB   max 91049.00 MiB
+  GPU temp             mean    46.36 C   max    64.00 C
+  power                mean   129.81 W   max   360.91 W
+  SM clock             mean  2100.43 MHz   max  2850.00 MHz
+  verdict              THROTTLED - this arm is not comparable with an unthrottled one
+  wrote results/corrections/20260830T145932Z_PLE-01/gpu_telemetry_partial.json

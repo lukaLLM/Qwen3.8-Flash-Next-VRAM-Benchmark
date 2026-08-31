@@ -12,8 +12,8 @@ model reaches **36 tok/s on an 8 GB card** and **8.5 tok/s with no GPU**. A
 larger microbatch buys **+30.8% prefill for about 1 GiB of VRAM**.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_decode_dark.png">
-  <img alt="One 125B model, from no GPU to 96 GiB" src="assets/ladder_decode.png">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_decode_dark.svg">
+  <img alt="Decode tok/s by VRAM tier: no GPU 8.3, 8 GiB 35.7, 16 GiB 37.9, 24 GiB 39.0, 32 GiB 42.2, 48 GiB 51.7, 96 GiB 109.1" src="assets/ladder_decode.svg">
 </picture>
 
 The full write-up, with a diagram per result and every limit stated, is
@@ -218,12 +218,30 @@ decodes 2.8× faster than the 24 GiB tier; at 245,760 tokens the lead is 1.45×.
 Long context costs every tier, and the fastest tier most.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_vs_context_dark.png">
-  <img alt="The tiers converge as the prompt grows" src="assets/ladder_vs_context.png">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_vs_context_dark.svg">
+  <img alt="Decode tok/s against prompt length for five tiers; all decline and converge near 245K tokens" src="assets/ladder_vs_context.svg">
+</picture>
+
+**Prefill is what the VRAM actually buys.** At a 2K prompt the 96 GiB tier
+processes prompts 8.4x faster than 8 GiB, against 3.1x for decode. Prompt
+processing runs every weight through the GPU, so resident layers do
+compute-bound work; decode only streams the ~2.4B active expert parameters per
+token, which system RAM can feed. Your GPU buys reading speed; your RAM decides
+whether the model runs at all.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_prefill_dark.svg">
+  <img alt="Prefill tok/s against prompt length for five tiers; 96 GiB is roughly eight times 8 GiB throughout" src="assets/ladder_prefill.svg">
 </picture>
 
 `report.html` has the per-tier charts, all 38 measured points with TTFT, and the
-llama-bench cross-check. `results/tier_full/`, `results/cpu_only/`
+llama-bench cross-check. `results/tier_full/`, `results/cpu_only/`. The charts
+above are generated from that CSV by `benchmark/make_charts.py` - rerun it after
+any new measurement rather than editing the SVGs.
+
+16 GiB is omitted from the two line charts for legibility; it tracks 24 GiB
+within 4%. Five is also the most steps the blue ordinal ramp holds while keeping
+adjacent tiers distinguishable.
 
 ## Loading mode: mmap or RAM resident
 

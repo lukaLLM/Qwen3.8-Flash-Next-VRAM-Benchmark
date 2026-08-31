@@ -47,8 +47,5 @@ Every controller prints its plan and exits unless given `--execute` and
 
 `data/` holds the fixed prompt source for the speed sweep.
 
-`plot_results.py` renders the README charts in [`../assets/`](../assets/)
-from the shipped evidence directories.
-
 `gen_configs.py` regenerates [`../results/CONFIGS.md`](../results/CONFIGS.md),
 the per-server-start configuration table, from the saved artifacts.

@@ -11,15 +11,12 @@ to decode. The largest free speed lever is not the card, it is
 model reaches **36 tok/s on an 8 GB card** and **8.5 tok/s with no GPU**. A
 larger microbatch buys **+30.8% prefill for about 1 GiB of VRAM**.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_decode_dark.svg">
-  <img alt="Decode tok/s by VRAM tier: no GPU 8.3, 8 GiB 35.7, 16 GiB 37.9, 24 GiB 39.0, 32 GiB 42.2, 48 GiB 51.7, 96 GiB 109.1" src="assets/ladder_decode.svg">
-</picture>
+<img alt="Decode tok/s by VRAM tier: no GPU 8.3, 8 GiB 35.7, 16 GiB 37.9, 24 GiB 39.0, 32 GiB 42.2, 48 GiB 51.7, 96 GiB 109.1" src="assets/ladder_decode.png">
 
 The full write-up, with a diagram per result and every limit stated, is
 [`report.html`](report.html) — open it in a browser.
 
-We discuss it here: [reddit thread - link TBD]
+We discuss it here: [Reddit thread](https://www.reddit.com/r/LocalLLaMA/comments/1w3pl64/qwen38flashnext_in_llamacpp_from_cpuonly_to_96gb/)
 
 ## YouTube
 
@@ -176,10 +173,7 @@ flowchart LR
 at a 2,048-token prompt, context 32,768 in both arms (the GPU placement does not
 fit 262,144 with all expert layers on the card).
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ple_placement_dark.png">
-  <img alt="The faster memory loses this one" src="assets/ple_placement.png">
-</picture>
+<img alt="The faster memory loses this one" src="assets/ple_placement.png">
 
 | PLE placement | GPU memory | Host memory | Prefill tok/s | Decode tok/s |
 |---|---|---|---|---|
@@ -217,10 +211,7 @@ machine has, so they use mmap. Only 48 and 96 GiB run `--load-mode none`.
 decodes 2.8× faster than the 24 GiB tier; at 245,760 tokens the lead is 1.45×.
 Long context costs every tier, and the fastest tier most.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_vs_context_dark.svg">
-  <img alt="Decode tok/s against prompt length for five tiers; all decline and converge near 245K tokens" src="assets/ladder_vs_context.svg">
-</picture>
+<img alt="Decode tok/s against prompt length for five tiers; all decline and converge near 245K tokens" src="assets/ladder_vs_context.png">
 
 **Prefill is what the VRAM actually buys.** At a 2K prompt the 96 GiB tier
 processes prompts 8.4x faster than 8 GiB, against 3.1x for decode. Prompt
@@ -229,15 +220,10 @@ compute-bound work; decode only streams the ~2.4B active expert parameters per
 token, which system RAM can feed. Your GPU buys reading speed; your RAM decides
 whether the model runs at all.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/ladder_prefill_dark.svg">
-  <img alt="Prefill tok/s against prompt length for five tiers; 96 GiB is roughly eight times 8 GiB throughout" src="assets/ladder_prefill.svg">
-</picture>
+<img alt="Prefill tok/s against prompt length for five tiers; 96 GiB is roughly eight times 8 GiB throughout" src="assets/ladder_prefill.png">
 
 `report.html` has the per-tier charts, all 38 measured points with TTFT, and the
-llama-bench cross-check. `results/tier_full/`, `results/cpu_only/`. The charts
-above are generated from that CSV by `benchmark/make_charts.py` - rerun it after
-any new measurement rather than editing the SVGs.
+llama-bench cross-check. `results/tier_full/`, `results/cpu_only/`.
 
 16 GiB is omitted from the two line charts for legibility; it tracks 24 GiB
 within 4%. Five is also the most steps the blue ordinal ramp holds while keeping
@@ -247,6 +233,8 @@ adjacent tiers distinguishable.
 
 *How it runs:* the 48 GiB tier again, identical tensor placement, context and
 microbatch — only the loading method changes. mmap runs cold and again warm.
+
+<img alt="At the same 48 GiB tensor placement and a 2,048-token prompt, RAM-resident loading reaches 746.7 prefill tokens per second against a 400.4 mmap mean, a 1.87-times increase, while decode is unchanged" src="assets/loading_mode.png">
 
 | Prompt tokens | RAM resident | mmap 1st | mmap 2nd | 2nd vs resident |
 |---|---|---|---|---|
@@ -270,6 +258,8 @@ to use `--load-mode none`.
 
 *How it runs:* only `-ub` changes — 256, 512, 1,024, 2,048 — ascending then
 descending, fresh server each time, context 32,768, no expert offload.
+
+<img alt="Prefill performance rises from 1,555 to 2,579 tokens per second as microbatch increases from 256 to 2,048, while decode stays flat" src="assets/microbatch.png">
 
 | Microbatch | Prefill tok/s | Decode tok/s | GPU memory | vs 512 |
 |---|---|---|---|---|
@@ -313,10 +303,7 @@ Tensor-pipe activity runs 0.9% (8 GiB) to 13.3% (96 GiB); SM activity reaches
 same 16 slots — one shared pool, or 8,192 tokens per slot. Two server starts per
 layout, three sweeps each, so every cell is the mean of six samples.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/concurrency_dark.png">
-  <img alt="Unified peaks at 4, non-unified climbs to 16" src="assets/concurrency.png">
-</picture>
+<img alt="Unified peaks at 4, non-unified climbs to 16" src="assets/concurrency.png">
 
 | Requests at once | Unified KV | Non-unified KV |
 |---|---|---|
@@ -339,6 +326,8 @@ difference only appears under load. Individual requests slow either way, from
 Both arms run in thinking mode with the model-card sampler. The flag controls
 one thing: whether earlier turns' reasoning is sent back in later prompts. The
 model still generates reasoning every turn in both arms.
+
+<img alt="Decode performance over five turns when prior reasoning is kept or dropped; keeping reasoning recomputes 69 times fewer prompt tokens but ends 25 percent slower" src="assets/preserved_reasoning.png">
 
 | | Keep prior reasoning | Drop prior reasoning |
 |---|---|---|
@@ -363,6 +352,8 @@ depths. The model is asked to find each one. Then one different large request
 goes to the same server. Then the same questions are asked again. Exact
 checkers grade every answer, and the checkers were first proven able to fail.
 
+<img alt="Long-context recall scores 54 out of 54 before and 54 out of 54 after the server handles other work" src="assets/long_context_recall.png">
+
 | Document length | Before other work | After other work |
 |---|---|---|
 | 32,768 (1 and 4 slots) | 36/36 | 36/36 |
@@ -377,6 +368,8 @@ on CUDA.
 `results/slot_reuse/`
 
 ## Quant comparison
+
+<img alt="IQ4_XS and Q4_K_XL comparison: Q4_K_XL is 19 percent larger, decodes 3.4 percent slower, and has a ten-times shorter largest tested prompt" src="assets/quant_comparison.png">
 
 | | UD-IQ4_XS | UD-Q4_K_XL |
 |---|---|---|
@@ -463,8 +456,7 @@ benchmark/                   the harnesses and controllers. See benchmark/README
 docs/                        operational notes: GPU monitoring and cooldown,
                              the run lifecycle and locking, a one-line test map.
 results/                     saved evidence for every published number.
-assets/                      the README charts. Regenerate with
-                             `uv run benchmark/plot_results.py`.
+assets/                      the README charts, as dark PNG files.
 report.html                  the full write-up, with diagrams and limits.
 ```
 

@@ -1,5 +1,18 @@
 # Qwen3.8-Flash-Next on one RTX PRO 6000
 
+## YouTube
+
+LOCAL AI SERIES:
+
+- **NEW:** Qwen3.8 Flash: Over 7x Faster First Token | llama.cpp vs SGLang vs FreeToken. Benchmarked! https://youtu.be/RlsxXB5q-cA
+- Why Qwen3 8 Flash Is So Cheap to Run 0 to 96GB VRAM Explained and Tested!  https://youtu.be/L4XyWM6IrBc 
+- DeepSeek V4 Flash 284B on a single RTX 6000 PRO with DSpark https://youtu.be/EDls1Popv1o
+- Fastest Qwen 3.8 27B in Llama.cpp? DFlash 2 + n-gram Explained & Benchmarked! https://youtu.be/RBlRTUwJMI4
+- Up to 8x Faster AI N-gram Explained, Deployed & Benchmarked on Qwen 3.6 27B llama.cpp! https://youtu.be/zNUoHONUHGk
+- Up to 6x Faster AI? DFlash Explained, Deployed & Benchmarked on Qwen 3.6 27B llama.cpp! https://www.youtube.com/watch?v=TUdihA_dJjo
+
+---
+
 Qwen3.8-Flash-Next (125B MoE, 6B active) on a single RTX PRO 6000 with 96 GB of
 system RAM, in llama.cpp. **51.2B of its 176.94B parameters are a lookup table,
 not matrix-multiply weights.** Put that table in system RAM and the model runs
@@ -155,17 +168,6 @@ upstream pull requests that carry this model's SM120 kernels
 FP8 KV dequantisation. Those are other people's work and every SGLang number here
 depends on them. There is no build script in this repo for that overlay;
 `docker/docker-compose.sglang.yaml` documents exactly how the image is run.
-
----
-## YouTube
-
-LOCAL AI SERIES:
-
-- **NEW:**  Why Qwen3 8 Flash Is So Cheap to Run 0 to 96GB VRAM Explained and Tested!  https://youtu.be/L4XyWM6IrBc 
-- DeepSeek V4 Flash 284B on a single RTX 6000 PRO with DSpark https://youtu.be/EDls1Popv1o
-- Fastest Qwen 3.8 27B in Llama.cpp? DFlash 2 + n-gram Explained & Benchmarked! https://youtu.be/RBlRTUwJMI4
-- Up to 8x Faster AI N-gram Explained, Deployed & Benchmarked on Qwen 3.6 27B llama.cpp! https://youtu.be/zNUoHONUHGk
-- Up to 6x Faster AI? DFlash Explained, Deployed & Benchmarked on Qwen 3.6 27B llama.cpp! https://www.youtube.com/watch?v=TUdihA_dJjo
 
 ## Hardware
 

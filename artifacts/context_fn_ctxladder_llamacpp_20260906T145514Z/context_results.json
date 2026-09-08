@@ -1,0 +1,67 @@
+{
+  "engine": "llamacpp",
+  "workload": "fn_ctxladder",
+  "stamp": "20260906T145514Z",
+  "admission_slots": 1,
+  "native_context": 262144,
+  "osl": 2048,
+  "ladder": [
+    {
+      "requested_isl": 2048,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 2048.6666666666665,
+      "ttft_ms": 2226.0829236666664,
+      "ttft_p95_ms": 2854.6095591,
+      "errors": 0
+    },
+    {
+      "requested_isl": 8192,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 8193.666666666666,
+      "ttft_ms": 6993.428448666667,
+      "ttft_p95_ms": 8568.7264302,
+      "errors": 0
+    },
+    {
+      "requested_isl": 32768,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 32768.0,
+      "ttft_ms": 26331.119625666666,
+      "ttft_p95_ms": 32106.613083999997,
+      "errors": 0
+    },
+    {
+      "requested_isl": 65536,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 65535.666666666664,
+      "ttft_ms": 46212.402383333334,
+      "ttft_p95_ms": 52299.4314699,
+      "errors": 0
+    },
+    {
+      "requested_isl": 131072,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 131072.33333333334,
+      "ttft_ms": 97961.81898233332,
+      "ttft_p95_ms": 107572.22299719999,
+      "errors": 0
+    }
+  ],
+  "capability_probe": {
+    "allocator_reported_candidate_limit": null,
+    "candidate_is_proof_of_capacity": false,
+    "requested_isl": null,
+    "result": "not_run",
+    "note": "per-engine capability finding; ISL differs per engine by construction so this is NOT a paired comparison and must be reported apart from the ladder"
+  }
+}

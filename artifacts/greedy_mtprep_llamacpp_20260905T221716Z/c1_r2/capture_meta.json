@@ -1,0 +1,12 @@
+{
+  "engine": "llamacpp",
+  "url": "http://localhost:8000",
+  "basis": "token_ids",
+  "n": 16,
+  "max_tokens": 256,
+  "prompts": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/data/lcb_code_2048.jsonl",
+  "label": "",
+  "concurrency": 1,
+  "n_errors": 0,
+  "sampling": "greedy temperature=0 top_k=1 top_p=1 seed=0, no ignore_eos"
+}

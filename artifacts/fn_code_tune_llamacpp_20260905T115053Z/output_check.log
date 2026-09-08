@@ -1,0 +1,24 @@
+{
+  "artifact": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/fn_code_tune_llamacpp_20260905T115053Z",
+  "cells": {
+    "fn_code_tune_llamacpp_20260905T115053Z": {
+      "responses": 16,
+      "code_responses": 16,
+      "tool_calls": 0,
+      "empty": 0,
+      "repetitive": 2
+    }
+  },
+  "flags": [
+    "repetition_loop",
+    "forced_generation_ignore_eos"
+  ],
+  "forced_generation": true,
+  "responses": 16,
+  "code_responses": 16,
+  "tool_calls": 0,
+  "empty": 0,
+  "repetitive": 2,
+  "code_fraction": 1.0,
+  "verdict": "NOT_APPLICABLE"
+}

@@ -1,0 +1,4 @@
+  geometry now: kv 1024 pages x 64 = 65536 tokens, moe=24576, mamba=8
+  geometry now: kv 256 pages x 64 = 16384 tokens, moe=24576, mamba=8
+  geometry now: kv 128 pages x 64 = 8192 tokens, moe=24576, mamba=8
+  geometry now: kv 64 pages x 64 = 4096 tokens, moe=24576, mamba=8

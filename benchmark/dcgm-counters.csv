@@ -1,4 +1,16 @@
 # DCGM counters for Flash-Next benchmarking.
+# ---------------------------------------------------------------------------------------
+# STATUS 2026-09-02: this file is the PROF-heavy set used by benchmark/dcgm_exporter.sh on
+# port 9402, and it is the one FINDINGS.md 4 / README.md:300 were measured with.
+#
+# It is CONTESTED. bench/dcgm_metrics.csv (the ported AIPerf harness set, port 9401) carries
+# a note measured 2026-08-24 stating that every DCGM_FI_PROF_* field is unreadable on this
+# exact card. Both cannot be true. Gate DCGM-1 resolves it; until then do not publish a new
+# claim from a PROF_* field, and do not delete the old ones either.
+#
+# The DEV fields below are uncontested and duplicated in bench/dcgm_metrics.csv, which is
+# the superset used for the three-engine study.
+# ---------------------------------------------------------------------------------------
 #
 # The stock dcgm-exporter default set has no PROF_* profiling metrics, so it
 # cannot answer the question that matters for a MoE with a 2560 hidden dim:

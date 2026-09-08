@@ -1,0 +1,32 @@
+{
+  "task": "math500",
+  "model": "qwen3.8-flash-next",
+  "url": "http://localhost:8000/v1",
+  "n_items": 500,
+  "n_scored": 500,
+  "n_errors": 0,
+  "n_correct": 463,
+  "accuracy": 0.926,
+  "ci95_wilson": [
+    0.899665,
+    0.945839
+  ],
+  "truncated": 34,
+  "seed": 0,
+  "concurrency": 4,
+  "max_tokens": 3072,
+  "sampler": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "seed": 0,
+    "presence_penalty": 1.5,
+    "extra_body": {
+      "top_k": 20,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    }
+  },
+  "wall_s": 2700.8,
+  "rescored": true
+}

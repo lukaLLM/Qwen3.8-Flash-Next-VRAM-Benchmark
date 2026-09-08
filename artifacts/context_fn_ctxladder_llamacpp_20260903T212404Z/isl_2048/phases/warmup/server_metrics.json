@@ -1,0 +1,555 @@
+{
+  "data": {
+    "benchmark_id": "44c48093dd40",
+    "end_ns": 1788470750491041436,
+    "endpoint_summaries": {
+      "localhost:8000": {
+        "endpoint_url": "http://localhost:8000/metrics",
+        "info": {
+          "avg_fetch_latency_ms": 0.4320030909090909,
+          "avg_update_interval_ms": 318.25118010526313,
+          "duration_seconds": 6.046772422,
+          "first_fetch_ns": 1788470750492427112,
+          "first_update_ns": 1788470750492427112,
+          "last_fetch_ns": 1788470756539199534,
+          "last_update_ns": 1788470756539199534,
+          "median_update_interval_ms": 333.174666,
+          "total_fetches": 22,
+          "unique_updates": 20
+        },
+        "metrics": {
+          "llamacpp:n_busy_slots_per_decode": {
+            "description": "Average number of busy slots per llama_decode() call",
+            "series": [
+              {
+                "stats": {
+                  "avg": 1.0,
+                  "max": 1.0,
+                  "min": 1.0,
+                  "p1": 1.0,
+                  "p10": 1.0,
+                  "p25": 1.0,
+                  "p5": 1.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.0
+                },
+                "timeslices": [
+                  {
+                    "avg": 1.0,
+                    "end_ns": 1788470755492427112,
+                    "max": 1.0,
+                    "min": 1.0,
+                    "start_ns": 1788470750492427112
+                  },
+                  {
+                    "avg": 1.0,
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "max": 1.0,
+                    "min": 1.0,
+                    "start_ns": 1788470755492427112
+                  }
+                ]
+              }
+            ],
+            "type": "gauge"
+          },
+          "llamacpp:n_decode": {
+            "description": "Total number of llama_decode() calls, excluding speculative decoding and multimodal decoding",
+            "series": [
+              {
+                "stats": {
+                  "rate": 84.99394982391267,
+                  "rate_avg": 79.8,
+                  "rate_max": 79.8,
+                  "rate_min": 79.8,
+                  "rate_std": 0.0,
+                  "total": 514.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 79.8,
+                    "start_ns": 1788470750492427112,
+                    "total": 399.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 109.86151104389717,
+                    "start_ns": 1788470755492427112,
+                    "total": 115.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:n_tokens_max": {
+            "description": "Largest observed sequence length (prompt + generation)",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 0.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:predicted_tokens_seconds": {
+            "description": "Average generation throughput in tokens/s",
+            "series": [
+              {
+                "stats": {
+                  "avg": 4.916047619047619,
+                  "max": 103.237,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 82.58960000000008,
+                  "std": 22.528160334293144
+                },
+                "timeslices": [
+                  {
+                    "avg": 0.0,
+                    "end_ns": 1788470755492427112,
+                    "max": 0.0,
+                    "min": 0.0,
+                    "start_ns": 1788470750492427112
+                  },
+                  {
+                    "avg": 20.647399999999998,
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "max": 103.237,
+                    "min": 0.0,
+                    "start_ns": 1788470755492427112
+                  }
+                ]
+              }
+            ],
+            "type": "gauge"
+          },
+          "llamacpp:prompt_seconds": {
+            "description": "Total time spent processing prompts",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.1652735465165418,
+                  "rate_avg": 0.19989800000000005,
+                  "rate_max": 0.19989800000000005,
+                  "rate_min": 0.19989800000000005,
+                  "rate_std": 0.0,
+                  "total": 0.9994900000000002
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.19989800000000005,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.9994900000000002
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:prompt_tokens": {
+            "description": "Number of prompt tokens processed, excluding cached tokens",
+            "series": [
+              {
+                "stats": {
+                  "rate": 340.8025886908249,
+                  "rate_avg": 412.2,
+                  "rate_max": 412.2,
+                  "rate_min": 412.2,
+                  "rate_std": 0.0,
+                  "total": 2061.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 412.2,
+                    "start_ns": 1788470750492427112,
+                    "total": 2061.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:prompt_tokens_cached": {
+            "description": "Number of prompt tokens reused from the cache",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 0.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:prompt_tokens_seconds": {
+            "description": "Average prompt throughput in tokens/s",
+            "series": [
+              {
+                "stats": {
+                  "avg": 98.19285714285715,
+                  "max": 2062.05,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 1649.6400000000017,
+                  "std": 449.9762005611281
+                },
+                "timeslices": [
+                  {
+                    "avg": 128.878125,
+                    "end_ns": 1788470755492427112,
+                    "max": 2062.05,
+                    "min": 0.0,
+                    "start_ns": 1788470750492427112
+                  },
+                  {
+                    "avg": 0.0,
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "max": 0.0,
+                    "min": 0.0,
+                    "start_ns": 1788470755492427112
+                  }
+                ]
+              }
+            ],
+            "type": "gauge"
+          },
+          "llamacpp:requests_deferred": {
+            "description": "Number of requests deferred",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                },
+                "timeslices": [
+                  {
+                    "avg": 0.0,
+                    "end_ns": 1788470755492427112,
+                    "max": 0.0,
+                    "min": 0.0,
+                    "start_ns": 1788470750492427112
+                  },
+                  {
+                    "avg": 0.0,
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "max": 0.0,
+                    "min": 0.0,
+                    "start_ns": 1788470755492427112
+                  }
+                ]
+              }
+            ],
+            "type": "gauge"
+          },
+          "llamacpp:requests_processing": {
+            "description": "Number of requests processing",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.8571428571428571,
+                  "max": 1.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 1.0,
+                  "p5": 0.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.3585685828003181
+                },
+                "timeslices": [
+                  {
+                    "avg": 0.9375,
+                    "end_ns": 1788470755492427112,
+                    "max": 1.0,
+                    "min": 0.0,
+                    "start_ns": 1788470750492427112
+                  },
+                  {
+                    "avg": 0.6,
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "max": 1.0,
+                    "min": 0.0,
+                    "start_ns": 1788470755492427112
+                  }
+                ]
+              }
+            ],
+            "type": "gauge"
+          },
+          "llamacpp:spec_decode_num_accepted_tokens": {
+            "description": "Speculative: Total draft tokens accepted by the target model",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 0.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:spec_decode_num_draft_tokens": {
+            "description": "Speculative: Total draft tokens generated",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 0.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:spec_decode_num_drafts": {
+            "description": "Speculative: Total speculative decoding verification steps",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 0.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 0.0,
+                    "start_ns": 1788470755492427112,
+                    "total": 0.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:tokens_predicted": {
+            "description": "Number of generation tokens processed",
+            "series": [
+              {
+                "stats": {
+                  "rate": 84.66323406584297,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 512.0
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 489.122553517177,
+                    "start_ns": 1788470755492427112,
+                    "total": 512.0
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          },
+          "llamacpp:tokens_predicted_seconds": {
+            "description": "Total time spent generating tokens",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.818486776067908,
+                  "rate_avg": 0.0,
+                  "rate_max": 0.0,
+                  "rate_min": 0.0,
+                  "rate_std": 0.0,
+                  "total": 4.94979
+                },
+                "timeslices": [
+                  {
+                    "end_ns": 1788470755492427112,
+                    "rate": 0.0,
+                    "start_ns": 1788470750492427112,
+                    "total": 0.0
+                  },
+                  {
+                    "end_ns": 1788470756539199534,
+                    "is_complete": false,
+                    "rate": 4.728620945651929,
+                    "start_ns": 1788470755492427112,
+                    "total": 4.94979
+                  }
+                ]
+              }
+            ],
+            "type": "counter"
+          }
+        }
+      }
+    },
+    "endpoints_configured": [
+      "http://localhost:8000/metrics"
+    ],
+    "endpoints_successful": [
+      "http://localhost:8000/metrics"
+    ],
+    "error_summary": [],
+    "start_ns": 1788470744409628777,
+    "warmup_end_ns": 1788470750492727093
+  },
+  "phase": {
+    "end_ns": 1788470750491037086,
+    "phase_index": 0,
+    "phase_kind": "warmup",
+    "phase_name": "warmup",
+    "profiling_index": null,
+    "start_ns": 1788470744409636377,
+    "was_cancelled": false
+  },
+  "schema_version": 1,
+  "warnings": []
+}

@@ -1,0 +1,27 @@
+{
+  "engine": "sglang",
+  "workload": "fn_maxctx",
+  "stamp": "20260903T204814Z",
+  "admission_slots": 1,
+  "native_context": 262144,
+  "osl": 128,
+  "ladder": [
+    {
+      "requested_isl": 261504,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 261505.0,
+      "ttft_ms": 35401.359011,
+      "ttft_p95_ms": 35401.359011,
+      "errors": 0
+    }
+  ],
+  "capability_probe": {
+    "allocator_reported_candidate_limit": 262144,
+    "candidate_is_proof_of_capacity": false,
+    "requested_isl": 235801,
+    "result": "served",
+    "note": "per-engine capability finding; ISL differs per engine by construction so this is NOT a paired comparison and must be reported apart from the ladder"
+  }
+}

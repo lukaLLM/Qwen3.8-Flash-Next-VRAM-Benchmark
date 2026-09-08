@@ -1,0 +1,14 @@
+{
+  "artifact": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/fn_code_tune_sglang_20260903T230845Z",
+  "cells": {},
+  "flags": [
+    "missing_outputs_json"
+  ],
+  "responses": 0,
+  "code_responses": 0,
+  "tool_calls": 0,
+  "empty": 0,
+  "repetitive": 0,
+  "code_fraction": 0.0,
+  "verdict": "DEGENERATE"
+}

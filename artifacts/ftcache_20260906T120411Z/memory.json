@@ -1,0 +1,15 @@
+{
+  "engine": "freetoken",
+  "container": "freetoken",
+  "scope": "null",
+  "state": "running",
+  "restart_count": 0,
+  "oom_killed": false,
+  "cgroup": "/sys/fs/cgroup/system.slice/docker-762e16e7f39aa72cc28a52b7a4da2db3801ffdf285acc694d1f999bbffeaeea6.scope",
+  "memory_peak_bytes": 92341796864,
+  "memory_swap_peak_bytes": 0,
+  "memory_events": {"low": 0, "high": 0, "max": 14711, "oom": 0, "oom_kill": 0, "oom_group_kill": 0, "sock_throttled": 0},
+  "host_swap_used_bytes": 2840690688,
+  "cap_bytes": null,
+  "note": "restart_count>0 voids the arm (every service is restart:no). oom_killed=true is a capacity finding. memory.events.oom_kill>0 with oom_killed=false means the HOST killer fired."
+}

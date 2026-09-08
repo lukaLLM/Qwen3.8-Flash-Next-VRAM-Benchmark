@@ -87,22 +87,38 @@ def hf_home() -> Path:
     return Path(os.environ.get("HF_HOME", str(Path.home() / ".cache/huggingface")))
 
 
-def weight_files(quant: str | None) -> list[tuple[str, Path]]:
-    """(display name, real path) for the .gguf files being served.
+def weight_files(quant: str | None, repo: str = DEFAULT_REPO,
+                 ext: str = "gguf") -> list[tuple[str, Path]]:
+    """(display name, real path) for the weight files being served.
 
     Snapshot entries are symlinks into blobs/, so the readable name and the file
     we actually have to mmap live at different paths. Report the shard name;
     operate on the blob.
+
+    `repo` and `ext` are parameters because this script is no longer GGUF-only:
+    the SGLang arm serves `models--RadixArk--Qwen3.8-Flash-Next-NVFP4` as
+    *.safetensors. Hardcoding either one silently reported "0 files" against a
+    perfectly healthy checkpoint, which reads as "nothing is paging" - the exact
+    false negative this tool exists to prevent.
     """
-    root = hf_home() / "hub" / DEFAULT_REPO / "snapshots"
+    root = hf_home() / "hub" / repo / "snapshots"
     pat = f"*{quant}*" if quant else "*"
     out, seen = [], set()
-    for p in glob.glob(str(root / "*" / pat / "*.gguf")):
+    for p in glob.glob(str(root / "*" / pat / f"*.{ext}")):
         link = Path(p)
         rp = link.resolve()
         if rp.exists() and rp not in seen:
             seen.add(rp)
             out.append((link.name, rp))
+    if not out:
+        # Repos without a per-quant subdirectory (the NVFP4 checkpoint) keep the
+        # shards directly under the snapshot.
+        for p in glob.glob(str(root / "*" / f"*.{ext}")):
+            link = Path(p)
+            rp = link.resolve()
+            if rp.exists() and rp not in seen:
+                seen.add(rp)
+                out.append((link.name, rp))
     return sorted(out)
 
 
@@ -186,7 +202,7 @@ def residency(name: str, path: Path) -> dict:
 
 
 def cmd_residency(args) -> int:
-    files = weight_files(args.quant)
+    files = weight_files(args.quant, args.repo, args.weights_ext)
     if not files:
         print("no .gguf found in the HF cache for that quant", file=sys.stderr)
         return 1
@@ -201,7 +217,7 @@ def cmd_residency(args) -> int:
 
 
 def cmd_warm(args) -> int:
-    files = weight_files(args.quant)
+    files = weight_files(args.quant, args.repo, args.weights_ext)
     if not files:
         print("no .gguf found", file=sys.stderr)
         return 1
@@ -265,7 +281,16 @@ def cmd_watch(args) -> int:
     # for catastrophic thrashing. Sustained faulting at ANY rate means the table
     # is not staying resident, so the fault rate is the better signal.
     flt_rate = total_flt / elapsed if elapsed else 0.0
-    void = rate >= args.void_mbs or flt_rate >= args.void_faults
+    # auto_run/Auto_Bench.md 7: "an mmap arm is judged on sustained disk
+    # bandwidth instead - page faults are normal for mmap, so the resident-arm
+    # rule must not be applied to it". The SGLang arm inverts that again: it
+    # streams the 47.68 GiB PLE table off NVMe with io_uring BY DESIGN, so
+    # sustained device reads are the feature, not the fault. Keep the
+    # major-fault gate (host thrash is still fatal there) and drop the MB/s gate.
+    if args.expect_nvme_reads:
+        void = flt_rate >= args.void_faults
+    else:
+        void = rate >= args.void_mbs or flt_rate >= args.void_faults
     result = {
         "pid": pid,
         "seconds": round(elapsed, 1),
@@ -273,9 +298,11 @@ def cmd_watch(args) -> int:
         "nvme_read_mbs": round(rate, 2),
         "major_faults": total_flt,
         "major_faults_per_s": round(flt_rate, 1),
-        "void_threshold_mbs": args.void_mbs,
+        "void_threshold_mbs": None if args.expect_nvme_reads else args.void_mbs,
         "void_threshold_faults_per_s": args.void_faults,
-        "verdict": "VOID - weights were being paged from disk" if void else "ok",
+        "expect_nvme_reads": bool(args.expect_nvme_reads),
+        "verdict": ("VOID - sustained major faults, weights are not staying resident"
+                    if void else "ok"),
         "samples": samples if args.samples else None,
     }
     print(f"  NVMe read : {total_mb:9.1f} MB   ({rate:.2f} MB/s)")
@@ -308,6 +335,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--quant", default="UD-IQ4_XS", help="quant dir to look at (default: UD-IQ4_XS)")
+    ap.add_argument("--repo", default=DEFAULT_REPO,
+                    help=f"HF cache repo dir to inspect (default: {DEFAULT_REPO}). "
+                         "For the SGLang arm: models--RadixArk--Qwen3.8-Flash-Next-NVFP4")
+    ap.add_argument("--weights-ext", default="gguf",
+                    help="weight file extension without the dot (default: gguf; "
+                         "use safetensors for the NVFP4 checkpoint)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("residency", help="page-cache residency of the weight blobs")
@@ -327,6 +360,10 @@ def main() -> int:
     t.add_argument("--void-faults", type=float, default=50.0,
                    help="major faults/s above which the run is marked void (default 50). "
                         "Catches slow continuous paging that the MB/s threshold misses.")
+    t.add_argument("--expect-nvme-reads", action="store_true",
+                   help="the arm streams weights off NVMe on purpose (SGLang io_uring PLE). "
+                        "Keeps the major-fault gate, drops the MB/s gate, and records the "
+                        "read rate as a measurement rather than a fault.")
     t.add_argument("--out", default=None)
     t.add_argument("--samples", action="store_true", help="include per-sample detail in the JSON")
     t.set_defaults(func=cmd_watch)

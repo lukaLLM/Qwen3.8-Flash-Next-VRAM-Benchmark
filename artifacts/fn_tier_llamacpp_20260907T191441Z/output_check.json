@@ -1,0 +1,23 @@
+{
+  "artifact": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/fn_tier_llamacpp_20260907T191441Z",
+  "cells": {
+    "fn_tier_llamacpp_20260907T191441Z": {
+      "responses": 4,
+      "code_responses": 3,
+      "tool_calls": 0,
+      "empty": 0,
+      "repetitive": 0
+    }
+  },
+  "flags": [
+    "forced_generation_ignore_eos"
+  ],
+  "forced_generation": true,
+  "responses": 4,
+  "code_responses": 3,
+  "tool_calls": 0,
+  "empty": 0,
+  "repetitive": 0,
+  "code_fraction": 0.75,
+  "verdict": "NOT_APPLICABLE"
+}

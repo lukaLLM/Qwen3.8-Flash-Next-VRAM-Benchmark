@@ -1,0 +1,99 @@
+23:28:26.705 INFO     Starting AIPerf System (_single_run.py:81)
+23:28:26.708 INFO     [OK] Tokenizer /home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 detected (tokenizer_display.py:297)
+23:28:26.709 INFO     1 tokenizer validated | 0.0s (tokenizer_display.py:306)
+23:28:26.709 INFO     Prefetching 1 tokenizer into HF cache... (tokenizer_validator.py:129)
+23:28:27.530 INFO       Cached /home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 (0.82s) (tokenizer_validator.py:146)
+23:28:27.535 INFO     1 tokenizer cached • 0.8s (tokenizer_validator.py:166)
+23:28:27.577 INFO     Custom GPU metrics file configured: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/dcgm_metrics.csv (resolvers.py:292)
+23:28:27.578 INFO     Validated 10 custom metrics from /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/dcgm_metrics.csv (resolvers.py:295)
+23:28:27.728 INFO     Registered Gpu Telemetry Manager (id: 'gpu_telemetry_manager') (system_controller.py:411)
+23:28:27.728 INFO     Server Metrics: Discovered 1 endpoints: ['http://localhost:8000/metrics'] (manager.py:97)
+23:28:27.736 INFO     Registered Dataset Manager (id: 'dataset_manager') (system_controller.py:411)
+23:28:27.740 INFO     Registered Server Metrics Manager (id: 'server_metrics_manager') (system_controller.py:411)
+23:28:27.775 INFO     GPU telemetry export enabled: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_llamacpp_20260903T212404Z/isl_65536/gpu_telemetry_export.jsonl (jsonl_writer.py:56)
+23:28:27.779 INFO     Telemetry streaming is disabled (set --otel-url and/or --mlflow-tracking-uri to enable) (otel_metrics_results_processor.py:127)
+23:28:27.780 INFO     Record metrics export enabled: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_llamacpp_20260903T212404Z/isl_65536/profile_export.jsonl (record_export_jsonl_writer.py:62)
+23:28:27.802 INFO     Registered Records Manager (id: 'records_manager') (system_controller.py:411)
+23:28:27.812 INFO     Registered Timing Manager (id: 'timing_manager') (system_controller.py:411)
+23:28:27.818 INFO     Registered Worker Manager (id: 'worker_manager') (system_controller.py:411)
+23:28:27.839 INFO     Registered Record Processor (id: 'record_processor_05c60a64') (system_controller.py:411)
+23:28:27.923 INFO     Registered Worker (id: 'worker_155eebbb') (system_controller.py:411)
+23:28:28.215 INFO     AIPerf System is CONFIGURING (system_controller.py:292)
+23:28:28.215 INFO     Configuring all services to start profiling (system_controller.py:305)
+23:28:28.215 INFO     Configuring tokenizers for inference result parser (resolve_alias: True) (inference_result_parser.py:86)
+23:28:28.215 INFO     Waiting for dataset to be configured before configuring timing (manager.py:126)
+23:28:28.216 INFO     Configuring tokenizer(s) for dataset manager (dataset_manager.py:240)
+23:28:28.226 INFO     Server metrics disabled - no Prometheus endpoints reachable (system_controller.py:557)
+23:28:28.226 INFO     Waiting for result domains: profile, telemetry (system_controller.py:824)
+23:28:28.234 WARNING  GPU Telemetry: http://localhost:9400/metrics is not reachable (manager.py:253)
+23:28:28.239 INFO     GPU Telemetry: Capturing baseline metrics from http://localhost:9401/metrics (manager.py:282)
+23:28:28.241 INFO     DCGM telemetry enabled - 1/1 endpoint(s) reachable (system_controller.py:533)
+23:28:29.000 INFO     Initialized tokenizers: {'qwen3.8-flash-next': {'class': 'Qwen2Tokenizer', 'name_or_path': '/home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594'}} in 0.78 seconds (inference_result_parser.py:109)
+23:28:29.005 INFO     Tokenizer(s) configured in 0.79 seconds (dataset_manager.py:244)
+23:28:29.005 INFO     Configuring dataset for dataset_manager (dataset_manager.py:250)
+23:28:29.280 INFO     Memory-mapped backing store initialized (streaming to /tmp/aiperf_mmap_60a166b181c0/dataset.dat) (memory_map_utils.py:160)
+23:28:29.281 INFO     Data file finalized: 1 conversations, 0.27 MB (memory_map_utils.py:288)
+23:28:29.281 INFO     Index file created: /tmp/aiperf_mmap_60a166b181c0/index.dat (memory_map_utils.py:295)
+23:28:29.281 INFO     Backing store finalized: client_type=DatasetClientStoreType.MEMORY_MAP format=MemoryMapFormat.CONVERSATION data_file_path=PosixPath('/tmp/aiperf_mmap_60a166b181c0/dataset.dat') index_file_path=PosixPath('/tmp/aiperf_mmap_60a166b181c0/index.dat') conversation_count=1 total_size_bytes=287159 compressed=False compressed_data_file_path=None compressed_index_file_path=None compressed_size_bytes=0 (dataset_manager.py:975)
+23:28:29.281 INFO     sampling strategy: sequential, unique conversations: 1, unique turn count: 1 (dataset_manager.py:993)
+23:28:29.281 INFO     Generating inputs.json file at /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_llamacpp_20260903T212404Z/isl_65536/inputs.json (dataset_manager.py:495)
+23:28:29.282 INFO     inputs.json file generated in 0.00 seconds (dataset_manager.py:514)
+23:28:29.282 INFO     Initialized 2 phase(s): ['Warmup', 'Profiling'] (phase_orchestrator.py:341)
+23:28:29.360 INFO     Dataset client initialized and freed 1 conversations from memory (dataset_manager.py:333)
+23:28:29.360 INFO     Dataset configured in 0.35 seconds (dataset_manager.py:263)
+23:28:29.360 INFO     All services configured in 1.15 seconds (system_controller.py:316)
+23:28:29.360 INFO     AIPerf System is CONFIGURED (system_controller.py:294)
+23:28:29.361 INFO     All services started profiling successfully (system_controller.py:338)
+23:28:29.361 INFO     AIPerf System is PROFILING (system_controller.py:296)
+23:28:29.362 INFO     Creating interval generator: pattern=concurrency_burst, rate=None, smoothness=None (request_rate.py:116)
+23:28:29.362 NOTICE   Phase warmup (warmup) started | phase_index=0 | target: 1 requests (runner.py:630)
+23:28:29.362 INFO     Credit phase start: warmup (records_manager.py:976)
+23:28:29.363 INFO     Rate loop pacing via timerfd (kernel hrtimer) (request_rate.py:146)
+23:28:29.363 NOTICE   Phase warmup (warmup) sending complete | sent=1, completed=0, in_flight=1 | sessions: sent=1, completed=0 (runner.py:1073)
+Warmup: 0/1 |[33m          [0m|   0% [00:00<?]23:28:29.366 ERROR    Error in aiohttp request: ClientConnectorError(ConnectionKey(host='localhost', port=8000, is_ssl=False, ssl=True, proxy=None, proxy_auth=None, proxy_headers_hash=None, server_hostname=None), ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 8000)")) (aiohttp_client.py:300)
+23:28:29.366 NOTICE   Phase warmup (warmup) complete | completed=1, cancelled=0, errors=1 | sessions: completed=1, cancelled=0 | elapsed=0.00s (runner.py:1196)
+23:28:29.366 INFO     Creating interval generator: pattern=concurrency_burst, rate=None, smoothness=None (request_rate.py:116)
+23:28:29.366 NOTICE   Phase profiling (profiling) started | phase_index=1 | profiling_index=0 | target: 1 requests (runner.py:630)
+Warmup: 1/1 |[33m██████████[0m| 100% [00:00<00:00]23:28:29.367 INFO     Credit phase start: profiling (records_manager.py:976)
+23:28:29.367 INFO     Rate loop pacing via timerfd (kernel hrtimer) (request_rate.py:146)
+23:28:29.367 NOTICE   Phase profiling (profiling) sending complete | sent=1, completed=0, in_flight=1 | sessions: sent=1, completed=0 (runner.py:1073)
+23:28:29.367 INFO     Sent 1 requests. Waiting for all to complete... (records_manager.py:992)
+Profiling: 0/1 |[32m          [0m|   0% [00:00<?]Processing Records: 0/1 |[34m          [0m|   0% [00:00<?]Profiling: 0/1 |[32m          [0m|   0% [00:00<?]23:28:29.368 ERROR    Error in aiohttp request: ClientConnectorError(ConnectionKey(host='localhost', port=8000, is_ssl=False, ssl=True, proxy=None, proxy_auth=None, proxy_headers_hash=None, server_hostname=None), ConnectionRefusedError(111, "Connect call failed ('127.0.0.1', 8000)")) (aiohttp_client.py:300)
+23:28:29.368 NOTICE   Phase profiling (profiling) complete | completed=1, cancelled=0, errors=1 | sessions: completed=1, cancelled=0 | elapsed=0.00s (runner.py:1196)
+23:28:29.368 NOTICE   All credits completed (phase_orchestrator.py:358)
+23:28:29.368 INFO     Received CREDIT_PHASE_COMPLETE message, Phase complete: PhaseRecordsStats(phase=CreditPhase.PROFILING, phase_index=1, profiling_index=0, phase_name='profiling', phase_kind='profiling', start_ns=1788470909366851273, sent_end_ns=1788470909367157775, requests_end_ns=1788470909368271519, baseline_start_ns=1788470909366846453, baseline_end_ns=1788470909368272939, total_expected_requests=1, expected_duration_sec=None, expected_num_sessions=None, expected_grace_period_sec=None, final_requests_sent=None, final_requests_completed=1, final_requests_cancelled=0, final_request_errors=1, final_sent_sessions=None, final_completed_sessions=None, final_cancelled_sessions=None, timeout_triggered=False, grace_period_timeout_triggered=False, was_cancelled=False, records_end_ns=None, success_records=0, error_records=0) (records_manager.py:1018)
+Profiling: 1/1 |[32m██████████[0m| 100% [00:00<00:00]23:28:29.368 NOTICE   All requests have completed, please wait for the results to be processed (currently 0 of 1 records processed)... (records_manager.py:1029)
+23:28:29.368 INFO     Received credits complete from 'timing_manager' (system_controller.py:446)
+23:28:29.368 INFO     All credits complete, please wait for the results to be processed... (records_manager.py:1055)
+Processing Records: 0/1 |[34m          [0m|   0% [00:00<?]23:28:29.441 INFO     Processed 0 valid requests and 1 errors (1 total). (records_manager.py:891)
+23:28:29.441 INFO     Received all records, processing now... (records_manager.py:897)
+23:28:29.441 INFO     GPU Telemetry: Profiling complete, capturing final metrics... (manager.py:422)
+23:28:29.441 INFO     Waiting 1.9s for server metrics flush period... (records_manager.py:951)
+Processing Records: 1/1 |[34m██████████[0m| 100% [00:00<00:00]Processing Records: 1/1 |[34m██████████[0m| 100% [00:00<00:00]23:28:31.368 INFO     Processing records results... (records_manager.py:1941)
+23:28:31.379 WARNING  ColumnStore.numeric: unknown tag 'output_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.379 WARNING  ColumnStore.numeric: unknown tag 'input_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.385 WARNING  ColumnStore.numeric: unknown tag 'output_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.386 WARNING  ColumnStore.numeric: unknown tag 'input_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.387 WARNING  ColumnStore.numeric: unknown tag 'output_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.387 WARNING  ColumnStore.numeric: unknown tag 'input_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.387 WARNING  ColumnStore.numeric: unknown tag 'output_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.387 WARNING  ColumnStore.numeric: unknown tag 'input_sequence_length' on a non-empty store (known numeric tags: ['context_overflow_count', 'error_isl', 'error_request_count']). Returning NaN-fill — check for a typo or missing ingestion. (column_store.py:136)
+23:28:31.388 WARNING  EnergyEfficiencyAnalyzer: no power or energy data available for platform 'nvidia' — GPU power efficiency metrics will not be emitted. Verify that the GPU telemetry collector is reporting power/energy fields for this hardware. (energy_efficiency_analyzer.py:250)
+23:28:31.389 INFO     _finalize_and_process_results completed (records_manager.py:958)
+23:28:31.390 INFO     Waiting for result domains: telemetry (system_controller.py:824)
+23:28:31.390 INFO     All results received, initiating shutdown (system_controller.py:819)
+23:28:32.002 ERROR    All 1 inference request(s) failed; no successful responses were collected. (system_controller.py:1137)
+
+╭─ AIPerf System Exit Errors ──────────────────────────────────────────────────╮
+│ • Service: system_controller                                                 │
+│    Operation: export_results                                                 │
+│    Error: Unknown                                                            │
+│    Reason: All 1 inference request(s) failed. No successful responses were   │
+│            collected — check the server URL, endpoint path, and              │
+│            response format. See prior log output for per-request             │
+│            error details.                                                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Log File: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctx
+ladder_llamacpp_20260903T212404Z/isl_65536/logs/aiperf.log
+

@@ -1,0 +1,37 @@
+{
+  "phases": [
+    {
+      "end_ns": 1788470144471264658,
+      "error_request_count": 0,
+      "error_summary": [],
+      "gpu_telemetry_json": "phases/warmup/gpu_telemetry.json",
+      "metrics_csv": "phases/warmup/profile_export_aiperf.csv",
+      "metrics_json": "phases/warmup/profile_export_aiperf.json",
+      "phase_index": 0,
+      "phase_kind": "warmup",
+      "phase_name": "warmup",
+      "profiling_index": null,
+      "start_ns": 1788470128317478320,
+      "successful_request_count": 1,
+      "total_request_count": 1,
+      "was_cancelled": false
+    },
+    {
+      "end_ns": 1788470160498942826,
+      "error_request_count": 0,
+      "error_summary": [],
+      "gpu_telemetry_json": "phases/profiling/gpu_telemetry.json",
+      "metrics_csv": "phases/profiling/profile_export_aiperf.csv",
+      "metrics_json": "phases/profiling/profile_export_aiperf.json",
+      "phase_index": 1,
+      "phase_kind": "profiling",
+      "phase_name": "profiling",
+      "profiling_index": 0,
+      "start_ns": 1788470144471888142,
+      "successful_request_count": 1,
+      "total_request_count": 1,
+      "was_cancelled": false
+    }
+  ],
+  "schema_version": 1
+}

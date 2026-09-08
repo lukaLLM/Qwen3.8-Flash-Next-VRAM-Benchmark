@@ -1,0 +1,33 @@
+# uv-managed environment for the three-engine study.
+#
+#   uv sync                      # reproduce .venv exactly
+#   uv run aiperf profile ...    # the load generator
+#   uv run benchmark/<script>.py # the repo's own harnesses (PEP-723, self-describing)
+#
+# WHY aiperf IS A PATH DEPENDENCY AND NOT A PYPI PIN.
+# "aiperf 0.12.0" is ambiguous, and the ambiguity is load-bearing. The PyPI
+# release 0.12.0 does NOT contain reset_kv_cache; the git checkout that also
+# reports 0.12.0 does. Same version string, different code, different behaviour.
+# The ported bench/ controllers pass --reset-kv-cache, so they require the
+# checkout. provenance.json therefore records the resolved MODULE PATH and the
+# checkout's commit, because the version string alone is not provenance here.
+[project]
+name = "qwen38-flashnext-rtx6000pro"
+version = "0"
+requires-python = ">=3.12"
+dependencies = [
+  "aiperf",
+  "httpx>=0.27",   # benchmark/sglang_speed.py and friends
+  # Long-context retrieval. Chosen because its scorers are EXACT MATCH - no LLM
+  # judge, which auto_run/Auto_Bench.md 11 and the audit both require, and which
+  # also keeps a third-party API off the critical path.
+  "math-verify>=0.9.0",
+  "needlehaystack>=2.0.0",
+  "openai>=3.7.0",
+]
+
+[tool.uv.sources]
+aiperf = { path = "../Inference_Engines/aiperf", editable = true }
+
+[tool.uv]
+package = false

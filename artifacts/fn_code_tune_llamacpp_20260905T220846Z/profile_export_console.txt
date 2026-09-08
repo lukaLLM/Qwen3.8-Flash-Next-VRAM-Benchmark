@@ -1,0 +1,110 @@
+
+
+                                             NVIDIA AIPerf | LLM Metrics: Effective                                             
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓
+┃                                    Metric ┃       avg ┃      min ┃        max ┃       p99 ┃       p90 ┃       p50 ┃      std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩
+│          Effective Concurrency (requests) │      1.00 │     0.00 │       1.00 │      1.00 │      1.00 │      1.00 │     0.02 │
+│  Effective Decode Throughput (tokens/sec) │     98.24 │     0.00 │ 341,573.03 │     47.50 │     43.12 │     37.44 │ 1,828.28 │
+│ Effective Prefill Throughput (tokens/sec) │    788.10 │     0.00 │   2,210.65 │  2,210.65 │  2,203.65 │      0.00 │ 1,054.34 │
+│   Effective Decode Concurrency (requests) │      0.64 │     0.00 │       1.00 │      1.00 │      1.00 │      1.00 │     0.48 │
+│  Effective Prefill Concurrency (requests) │      0.36 │     0.00 │       1.00 │      1.00 │      1.00 │      0.00 │     0.48 │
+│   Effective Total Throughput (tokens/sec) │    886.33 │     0.00 │   2,210.65 │  2,210.65 │  2,203.65 │    165.81 │   981.01 │
+│      Effective Decode Throughput Per User │     98.24 │     0.00 │ 341,573.03 │     47.50 │     43.12 │     37.44 │ 1,828.28 │
+│                         (tokens/sec/user) │           │          │            │           │           │           │          │
+│     Effective Prefill Throughput Per User │    788.10 │     0.00 │   2,210.65 │  2,210.65 │  2,203.65 │      0.00 │ 1,054.34 │
+│                         (tokens/sec/user) │           │          │            │           │           │           │          │
+│                 Tokens In Flight (tokens) │  8,525.98 │     0.00 │   9,232.00 │  9,210.00 │  9,063.00 │  8,429.78 │   373.32 │
+│         Effective Latency (CO-aware) (ms) │ 10,410.72 │ 9,129.20 │  11,941.59 │ 11,848.52 │ 11,205.93 │ 10,358.85 │   731.38 │
+└───────────────────────────────────────────┴───────────┴──────────┴────────────┴───────────┴───────────┴───────────┴──────────┘
+                                           NVIDIA AIPerf | LLM Metrics: Active                                           
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓
+┃                                 Metric ┃      avg ┃      min ┃        max ┃      p99 ┃      p90 ┃      p50 ┃      std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩
+│  Active Decode Throughput (tokens/sec) │   153.21 │     0.00 │ 341,573.03 │    48.63 │    44.02 │    40.21 │ 2,281.40 │
+│ Active Prefill Throughput (tokens/sec) │ 2,198.60 │ 2,182.80 │   2,210.65 │ 2,210.65 │ 2,209.18 │ 2,199.16 │     8.13 │
+│      Active Decode Throughput Per User │   153.21 │     0.00 │ 341,573.03 │    48.63 │    44.02 │    40.21 │ 2,281.40 │
+│                      (tokens/sec/user) │          │          │            │          │          │          │          │
+│     Active Prefill Throughput Per User │ 2,198.60 │ 2,182.80 │   2,210.65 │ 2,210.65 │ 2,209.18 │ 2,199.16 │     8.13 │
+│                      (tokens/sec/user) │          │          │            │          │          │          │          │
+│   Active Total Throughput (tokens/sec) │   886.66 │   124.64 │   2,210.65 │ 2,210.65 │ 2,203.65 │   165.81 │   981.04 │
+└────────────────────────────────────────┴──────────┴──────────┴────────────┴──────────┴──────────┴──────────┴──────────┘
+                                                   NVIDIA AIPerf | LLM Metrics                                                   
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┓
+┃                                        Metric ┃       avg ┃      min ┃       max ┃       p99 ┃       p90 ┃       p50 ┃    std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━┩
+│                      Time to First Token (ms) │  3,732.57 │ 3,712.04 │  3,760.30 │  3,758.99 │  3,751.26 │  3,730.30 │  14.01 │
+│                     Time to Second Token (ms) │     29.15 │    26.63 │     38.12 │     36.80 │     29.30 │     29.07 │   2.51 │
+│               Time to First Output Token (ms) │  3,732.57 │ 3,712.04 │  3,760.30 │  3,758.99 │  3,751.26 │  3,730.30 │  14.01 │
+│                          Request Latency (ms) │ 10,409.01 │ 9,127.50 │ 11,939.94 │ 11,846.87 │ 11,204.28 │ 10,357.11 │ 731.36 │
+│                          Decode Duration (ms) │  6,676.45 │ 5,398.30 │  8,207.36 │  8,117.00 │  7,466.88 │  6,613.69 │ 733.14 │
+│                      Inter Token Latency (ms) │      6.53 │     5.28 │      8.02 │      7.94 │      7.30 │      6.46 │   0.72 │
+│              Output Token Throughput Per User │    155.08 │   124.64 │    189.50 │    188.38 │    176.30 │    154.68 │  17.12 │
+│                             (tokens/sec/user) │           │          │           │           │           │           │        │
+│ E2E Output Token Throughput (tokens/sec/user) │     98.86 │    85.76 │    112.19 │    111.75 │    107.30 │     98.87 │   6.93 │
+│               Output Sequence Length (tokens) │  1,023.94 │ 1,023.00 │  1,024.00 │  1,024.00 │  1,024.00 │  1,024.00 │   0.24 │
+│                Input Sequence Length (tokens) │  8,206.44 │ 8,204.00 │  8,208.00 │  8,208.00 │  8,207.50 │  8,206.00 │   0.93 │
+│          Output Token Throughput (tokens/sec) │     98.33 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+│           Input Token Throughput (tokens/sec) │    788.10 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+│             Request Throughput (requests/sec) │      0.10 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+│                        Goodput (requests/sec) │      0.10 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+│                        Request Error Rate (%) │      0.00 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+│                      Request Count (requests) │     16.00 │      N/A │       N/A │       N/A │       N/A │       N/A │    N/A │
+└───────────────────────────────────────────────┴───────────┴──────────┴───────────┴───────────┴───────────┴───────────┴────────┘
+
+
+╭──────────────────────────────────────────── GPU Telemetry Platform ─────────────────────────────────────────────╮
+│  Platform: nvidia                                                                                               │
+│  Metric semantics are platform-specific; cross-platform comparisons require workload and collector validation.  │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+            GPU Power Efficiency (NVIDIA)            
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃                                Metric ┃       avg ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│            Energy Delay Product (J*s) │ 41,202.69 │
+│ Performance per Watt (requests/sec/W) │      0.00 │
+│     Output Tokens per Second per Watt │      0.26 │
+│                        (tokens/sec/W) │           │
+│       Goodput per Watt (good-req/s/W) │      0.00 │
+│                 Average GPU Power (W) │    380.14 │
+│                  Total GPU Energy (J) │ 63,333.86 │
+│                   Total GPU Power (W) │    379.04 │
+│     Energy per Total Token (mJ/token) │    428.84 │
+│    Energy per Output Token (mJ/token) │  3,865.83 │
+│   Energy per Request (joules/request) │  3,958.37 │
+│    Output Tokens per Joule (tokens/J) │      0.26 │
+│         Energy per User (joules/user) │ 63,333.86 │
+└───────────────────────────────────────┴───────────┘
+
+
+                                                    AIPerf | GPU Telemetry Summary                                                     
+                                                    1/1 telemetry sources reachable                                                    
+                                                          • localhost:9401 ✔                                                           
+                                                                                                                                       
+                              localhost:9401 | GPU 0 | NVIDIA RTX PRO 6000 Blackwell Workstation Edition                               
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━┓
+┃                                              Metric ┃       avg ┃       min ┃       max ┃       p99 ┃       p90 ┃       p50 ┃   std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━┩
+│                          NVIDIA GPU Power Usage (W) │    379.04 │    323.92 │    426.05 │    426.05 │    424.43 │    387.67 │ 39.55 │
+│                      NVIDIA Energy Consumption (MJ) │      0.06 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                          NVIDIA GPU Utilization (%) │     89.50 │     75.00 │    100.00 │    100.00 │    100.00 │     92.00 │ 10.30 │
+│                       NVIDIA Memory Utilization (%) │     29.33 │     22.00 │     40.00 │     40.00 │     39.90 │     26.00 │  7.69 │
+│                         NVIDIA GPU Memory Used (GB) │     70.77 │     70.77 │     70.77 │     70.77 │     70.77 │     70.77 │  0.00 │
+│                         NVIDIA GPU Temperature (°C) │     62.67 │     55.00 │     68.00 │     68.00 │     67.70 │     64.00 │  4.38 │
+│                      NVIDIA Decoder Utilization (%) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                      NVIDIA Encoder Utilization (%) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                           NVIDIA XID Errors (count) │      0.00 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                         NVIDIA Power Violation (us) │      0.00 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                            SM Clock Frequency (MHz) │  2,702.17 │  2,692.00 │  2,722.00 │  2,722.00 │  2,720.50 │  2,700.00 │ 10.73 │
+│                        Memory Clock Frequency (MHz) │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │  0.00 │
+│                             Memory Temperature (°C) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                        Framebuffer Memory Free (MB) │ 29,754.00 │ 29,754.00 │ 29,754.00 │ 29,754.00 │ 29,754.00 │ 29,754.00 │  0.00 │
+│ Throttling Duration Due To Thermal Constraints (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│         Throttling Duration Due To Board Limit (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│   Throttling Duration Due To Reliability Limit (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│          Throttling Duration Due To Sync Boost (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│     Throttling Duration Due To Low Utilization (us) │  3.07e+13 │  3.07e+13 │  3.07e+13 │  3.07e+13 │  3.07e+13 │  3.07e+13 │  0.00 │
+│                         PCIE Replay Counter (count) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+└─────────────────────────────────────────────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────┘

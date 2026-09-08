@@ -1,0 +1,158 @@
+# DCGM field set for the engine-battle benchmark.
+#
+# Passed to BOTH sides:
+#   1. dcgm-exporter  -f /etc/dcgm-exporter/custom.csv   (which fields it scrapes)
+#   2. aiperf         --gpu-telemetry bench/dcgm_metrics.csv  (so it maps the extra fields)
+#
+# The first 11 rows are aiperf's built-in DCGM_TO_FIELD_MAPPING (gpu_telemetry/constants.py:57-68).
+# Everything below the first divider is registered as a CUSTOM metric by
+# MetricsConfigLoader.build_custom_metrics_from_csv (gpu_telemetry/metrics_config.py:172-240),
+# which aiperf then merges into DCGM_TO_FIELD_MAPPING at bootstrap (common/bootstrap.py:161-167).
+#
+# Format: DCGM_FIELD, prometheus_type, description (in UNIT)
+#
+# The UNIT in parentheses is PARSED, not decorative - _infer_unit_from_help() reads it to pick the
+# metric unit. Recognised: W, %, percent, GB/MB/KB, GiB/MiB/KiB, MHz/GHz, C/celsius, count, us/ms/s,
+# mJ/J. Anything else silently falls back to COUNT, which is why the byte-rate rows below are
+# declared as count and converted at report time rather than mislabelled.
+#
+# Internal field names are derived, not chosen: DCGM_FI_DEV_<X> / DCGM_FI_PROF_<X> becomes
+# nvidia_<x lowercased>. So DCGM_FI_DEV_SM_CLOCK is queryable as nvidia_sm_clock.
+DCGM_FI_DEV_POWER_USAGE,              gauge, Power draw (in W)
+DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION, counter, Total energy consumption since boot (in mJ)
+DCGM_FI_DEV_GPU_UTIL,                 gauge, GPU utilization (in %)
+DCGM_FI_DEV_MEM_COPY_UTIL,            gauge, Memory utilization (in %)
+DCGM_FI_DEV_FB_USED,                  gauge, Framebuffer memory used (in MiB)
+DCGM_FI_DEV_GPU_TEMP,                 gauge, GPU temperature (in C)
+DCGM_FI_DEV_ENC_UTIL,                 gauge, Encoder utilization (in %)
+DCGM_FI_DEV_DEC_UTIL,                 gauge, Decoder utilization (in %)
+# DCGM_FI_PROF_SM_ACTIVE - DEAD ON THIS CARD, see the DCP note at the bottom. Left commented rather
+# than deleted because it IS one of aiperf's built-in 11 (constants.py:65), so aiperf maps it to
+# nvidia_sm_utilization regardless of this file; that metric is simply always empty here.
+# DCGM_FI_PROF_SM_ACTIVE,             gauge, Ratio of SMs active
+DCGM_FI_DEV_XID_ERRORS,               gauge, Last XID error code
+DCGM_FI_DEV_POWER_VIOLATION,          counter, Throttling duration due to power violation (in us)
+# ---- clocks and memory temp: not available via pynvml; the original reason for this file ----
+DCGM_FI_DEV_SM_CLOCK,                 gauge, SM clock frequency (in MHz)
+DCGM_FI_DEV_MEM_CLOCK,                gauge, Memory clock frequency (in MHz)
+DCGM_FI_DEV_MEMORY_TEMP,              gauge, Memory temperature (in C)
+DCGM_FI_DEV_FB_FREE,                  gauge, Framebuffer memory free (in MiB)
+DCGM_FI_DEV_THERMAL_VIOLATION,        counter, Throttling duration due to thermal constraints (in us)
+# ---- WHY was the clock low? The violation family, completed ----
+# POWER_VIOLATION and THERMAL_VIOLATION above answer two of the reasons; these are the rest.
+# Reading a clock drop without these is guesswork: a card pinned at its POWER cap and a card
+# pinned at a THERMAL limit look identical in the SM_CLOCK trace alone.
+DCGM_FI_DEV_BOARD_LIMIT_VIOLATION,    counter, Throttling duration due to board limit (in us)
+DCGM_FI_DEV_RELIABILITY_VIOLATION,    counter, Throttling duration due to reliability limit (in us)
+DCGM_FI_DEV_SYNC_BOOST_VIOLATION,     counter, Throttling duration due to sync boost (in us)
+DCGM_FI_DEV_LOW_UTIL_VIOLATION,       counter, Throttling duration due to low utilization (in us)
+# ---- NOT here: the card's own thermal/power limits ----
+# DCGM_FI_DEV_SLOWDOWN_TEMP / MAX_OP_TEMP / POWER_MGMT_LIMIT / FB_TOTAL were tried on 2026-08-24 and
+# are NOT valid ExporterCounter names in dcgm-exporter 4.2.3-4.1.3 - it exits 1 with
+# "unknown ExporterCounter field", so this fails loud rather than silently dropping a column.
+# The authoritative set is the 56 names in the image's own /etc/dcgm-exporter/*.csv; do not add a
+# field that does not appear there. Those limits are boot constants anyway and now come from
+# nvidia-smi into provenance instead - see plan.md, "Thermal limits are margins on this card".
+# ---- host<->GPU transfer and link health ----
+# PCIe traffic is the one "PC-side" pressure DCGM can see. It matters here for long-context prefill
+# (w3_context) and for weight/draft loading on the speculative arms; a replay counter that climbs
+# mid-run is a link problem, and it would otherwise surface only as unexplained latency variance.
+DCGM_FI_DEV_PCIE_REPLAY_COUNTER,      counter, PCIe replay counter (in count)
+#
+# ============================================================================================
+# MEASURED 2026-08-24: DCGM PROFILING (DCP) METRICS DO NOT WORK ON THIS CARD.
+#
+# Every DCGM_FI_PROF_* field is unavailable on the RTX PRO 6000 Blackwell Workstation Edition.
+# This is a hardware/driver capability limit, not a misconfiguration - probed with a standalone
+# nv-hostengine, where discovery succeeds and all DCGM_FI_DEV_* fields read fine:
+#
+#   dcgmi profile -l    -> lists 1001 gr_engine_active, 1002 sm_active, 1004 tensor_active,
+#                          1005 dram_active, 1009 pcie_tx_bytes ... (fields are KNOWN)
+#   dcgmi dmon -e 1001,1002,1005 -c 2
+#                       -> GPU 0   N/A   N/A   N/A                  (fields are NOT READABLE)
+#
+# The exporter does NOT error on these rows - it accepts them and exports nothing, which is the
+# silent-column failure the note below warns about. They are therefore commented out rather than
+# left in to rot:
+#
+#   DCGM_FI_PROF_PCIE_TX_BYTES        PCIe transmit throughput
+#   DCGM_FI_PROF_PCIE_RX_BYTES        PCIe receive throughput
+#   DCGM_FI_PROF_DRAM_ACTIVE          memory-bound decode vs compute-bound prefill
+#   DCGM_FI_PROF_PIPE_TENSOR_ACTIVE   FP8 kernel-fallback detection
+#
+# Consequence worth carrying into the writeup: SM utilization, DRAM activity, tensor-pipe activity
+# and PCIe throughput are simply NOT MEASURABLE on this hardware via DCGM. Do not report them, and
+# do not substitute DCGM_FI_DEV_GPU_UTIL for SM occupancy - it is a coarse "any kernel resident"
+# sampler, not the same quantity. PCIe replay counter (a DEV field, above) still works.
+# ============================================================================================
+#
+# VERIFY BEFORE TRUSTING (RULES rule 3): an unknown field name makes the exporter exit 1
+# ("unknown ExporterCounter field"), but a known-yet-unsupported field exports NOTHING SILENTLY.
+# Only the 56 names in the image's own /etc/dcgm-exporter/*.csv are valid at all, and validity is
+# not support. The preflight must assert each field actually appears in /metrics, the way
+# run.sh:113 already asserts SM_CLOCK, instead of assuming a row here means a column downstream.
+
+# ============================================================================================
+# DCGM-1, MEASURED 2026-09-02. TWO HALVES - read both.
+#
+# SETTLED: "every DCGM_FI_PROF_* field is unavailable on this card" is FALSE. Running
+# benchmark/dcgm-counters.csv (18 fields) yields six real PROF columns with values
+# (0.000000 on an idle GPU, which is correct). Observed three separate times. So DCP
+# profiling is NOT a hardware or driver limit here, and this repository's published
+# FINDINGS.md 4 / :291 and README.md:300 numbers came from a configuration that works.
+#
+# NOT SETTLED, AND THE MORE IMPORTANT HALF: availability is INTERMITTENT and I could not
+# isolate the variable. The SAME counter file, on an otherwise idle machine with no other
+# DCGM client, returned 6 PROF columns via benchmark/dcgm_exporter.sh and 0 PROF columns
+# via an inline `docker run` that differs only in container name and port. Ruled OUT by
+# direct test: a competing DCGM client, --rm, port number, warm-up from 12 s to 35 s, and
+# a concurrent docker build. Both outcomes reproduce; neither is explained.
+#
+# WHAT THIS MEANS OPERATIONALLY - this is the part that matters:
+#   1. NEVER report a PROF-derived number without asserting the column IN THAT RUN.
+#      benchmark/gpu_telemetry.py:119 already probes before reporting, which is why the
+#      published numbers are trustworthy; keep that behaviour in anything new.
+#   2. A zero from a PROF field is NOT evidence of an idle pipeline. It is equally
+#      likely to be an absent column. Distinguish "0.000000" from "no such metric".
+#   3. Do not merge these rows into this file. Attempts to do so produced 20 DEV columns
+#      and 0 PROF columns, and given the intermittency that result is not even
+#      attributable to the merge.
+#
+# OPERATING RULE: one exporter at a time, two counter files.
+#   :9401  this file (20 DEV fields)      measured runs - bench/lib.sh preflight requires
+#                                         SM_CLOCK, MEM_CLOCK, GPU_TEMP, POWER_USAGE,
+#                                         THERMAL_VIOLATION, POWER_VIOLATION
+#   :9402  benchmark/dcgm-counters.csv    a dedicated tensor-pipe / DRAM arm, with the
+#                                         column asserted at scrape time
+#
+# ALSO MEASURED, and it is how the first wrong conclusion got made: tearing an exporter
+# down and starting the next one within ~11 s reports 0 for a file that works after a
+# settle. An unknown field makes the exporter exit 1; a known-yet-unsupported one exports
+# nothing and says nothing. ASSERT THE COLUMN, NEVER THE ROW.
+# ============================================================================================
+# ============================================================================================
+# CONTRADICTION AS FIRST RECORDED (kept for the trail - RESOLVED above on 2026-09-02).
+#
+# The block above records that every DCGM_FI_PROF_* field is unreadable on this card,
+# measured 2026-08-24 via a standalone nv-hostengine.
+#
+# BUT this repository publishes NON-ZERO values from exactly those fields:
+#   FINDINGS.md 4    tensor pipe 0.64%, DRAM 14.6%, SM occupancy 9.7%
+#   FINDINGS.md:291  "tensor pipes at 2.90%"
+#   README.md:300    "Neither the tensor pipeline nor the memory interface saturates."
+# via benchmark/gpu_telemetry.py, which reads PIPE_TENSOR_ACTIVE / DRAM_ACTIVE /
+# SM_ACTIVE / SM_OCCUPANCY from a second exporter on port 9402
+# (benchmark/dcgm_exporter.sh + benchmark/dcgm-counters.csv).
+#
+# Both cannot be true. gpu_telemetry.py:119 does probe for the field before reporting, so
+# the published numbers were probably real - but two projects on this box disagree and one
+# of them is publishing.
+#
+# DCGM-1:  dcgmi profile -l                 # are the fields KNOWN?
+#          dcgmi dmon -e 1002,1004,1005 -c 2  # are they READABLE, or N/A?
+#          curl -fsS localhost:9401/metrics | grep '^DCGM_FI_PROF_'   # a real column?
+#
+# Whichever way it lands, ASSERT THE COLUMN. A row in this file is not proof of a column:
+# an unknown field makes the exporter exit 1, but a known-yet-unsupported field exports
+# NOTHING SILENTLY. That is the whole failure mode.
+# ============================================================================================

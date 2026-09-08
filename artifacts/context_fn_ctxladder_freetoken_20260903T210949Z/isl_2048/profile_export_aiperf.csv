@@ -1,0 +1,92 @@
+Metric,avg,min,max,sum,p1,p5,p10,p25,p50,p75,p90,p95,p99,std
+Active Decode Throughput (tokens/sec),97.65,0.00,204.71,,,,,,99.81,,101.76,102.42,103.44,8.77
+Active Decode Throughput Per User (tokens/sec/user),97.65,0.00,204.71,,,,,,99.81,,101.76,102.42,103.44,8.77
+Active Prefill Throughput (tokens/sec),1528.59,1528.59,1528.59,,,,,,1528.59,,1528.59,1528.59,1528.59,0.00
+Active Prefill Throughput Per User (tokens/sec/user),1528.59,1528.59,1528.59,,,,,,1528.59,,1528.59,1528.59,1528.59,0.00
+Active Total Throughput (tokens/sec),389.91,97.65,1528.59,,,,,,97.65,,1528.59,1528.59,1528.59,576.88
+Credit-to-Start Latency (ms),0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.55,0.00
+Decode Duration (ms),5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,5222.46,0.00
+E2E Output Token Throughput (tokens/sec/user),77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,77.86,0.00
+Effective Concurrency,1.00,0.00,1.00,,,,,,1.00,,1.00,1.00,1.00,0.02
+Effective Decode Concurrency,0.80,0.00,1.00,,,,,,1.00,,1.00,1.00,1.00,0.40
+Effective Decode Throughput (tokens/sec),77.68,0.00,204.71,,,,,,99.00,,101.59,102.19,103.36,40.16
+Effective Decode Throughput Per User (tokens/sec/user),77.68,0.00,204.71,,,,,,99.00,,101.59,102.19,103.36,40.16
+Effective Latency (CO-aware) (ms),6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,6563.63,0.00
+Effective Prefill Concurrency,0.20,0.00,1.00,,,,,,0.00,,1.00,1.00,1.00,0.40
+Effective Prefill Throughput (tokens/sec),312.09,0.00,1528.59,,,,,,0.00,,1528.59,1528.59,1528.59,616.17
+Effective Prefill Throughput Per User (tokens/sec/user),312.09,0.00,1528.59,,,,,,0.00,,1528.59,1528.59,1528.59,616.17
+Effective Total Throughput (tokens/sec),389.77,0.00,1528.59,,,,,,97.65,,1528.59,1528.59,1528.59,576.82
+HTTP Blocked (ms),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+HTTP Chunks Received,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,514.00,0.00
+HTTP Chunks Sent,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,0.00
+HTTP Connecting (ms),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+HTTP Connection Overhead (ms),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+HTTP Connection Reused (ratio),1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,0.00
+HTTP Data Received (KB),98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,98.84,0.00
+HTTP Data Sent (KB),9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,9.07,0.00
+HTTP DNS Lookup (ms),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+HTTP Duration (excl. conn) (ms),6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,0.00
+HTTP Receiving (ms),6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,6561.80,0.00
+HTTP Sending (ms),0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.11,0.00
+HTTP Total Time (ms),6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,6563.04,0.00
+HTTP Waiting (TTFB) (ms),1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,1.13,0.00
+Input Sequence Length (tokens),2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,2049.00,0.00
+Inter Chunk Latency (ms),10.24,9.43,36.14,5222.46,9.67,9.76,9.82,9.90,10.01,10.23,10.64,11.06,12.26,1.47
+Inter Token Latency (ms),10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,10.24,0.00
+OSL Mismatch Diff % (%),-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,-0.20,0.00
+Output Sequence Length (tokens),511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,0.00
+Output Token Count (tokens),511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,511.00,0.00
+Output Token Throughput Per User (tokens/sec/user),97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,97.66,0.00
+Prefill Throughput Per User (tokens/sec/user),1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,1528.59,0.00
+Request Latency (ms),6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,6562.91,0.00
+Time to First Output Token (ms),1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,0.00
+Time to First Token (ms),1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,1340.45,0.00
+Time to Second Token (ms),36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,36.14,0.00
+Tokens In Flight (tokens),2249.45,0.00,2560.00,,,,,,2237.00,,2494.00,2527.00,2553.00,172.16
+
+Metric,Value
+Benchmark Duration (sec),6.56
+Input Token Throughput (tokens/sec),312.09
+Average GPU Power (W),269.90
+Energy Delay Product (J*s),11629.56
+Energy per Output Token (mJ/token),3467.73
+Energy per Request (joules/request),1772.01
+Energy per Total Token (mJ/token),692.19
+Energy per User (joules/user),1772.01
+Output Tokens per Joule (tokens/J),0.29
+Output Tokens per Second per Watt (tokens/sec/W),0.29
+Performance per Watt (requests/sec/W),0.00
+Total GPU Energy (J),1772.01
+Total GPU Power (W),269.90
+OSL Mismatch Count,0.00
+Output Token Throughput (tokens/sec),77.83
+Request Count,1.00
+Request Error Rate (%),0.00
+Request Throughput (requests/sec),0.15
+Total Input Sequence Length (tokens),2049.00
+Total Output Sequence Length (tokens),511.00
+Total Output Tokens (tokens),511.00
+Total Token Throughput (tokens/sec),389.92
+
+
+Endpoint,GPU_Index,GPU_Name,GPU_UUID,Platform,Metric,avg,min,max,sum,p1,p5,p10,p25,p50,p75,p90,p95,p99,std,Hostname
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA GPU Power Usage (W),269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,269.90,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA Energy Consumption (MJ),0.00,,,,,,,,,,,,,,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA GPU Utilization (%),100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,100.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA Memory Utilization (%),63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,63.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA GPU Memory Used (GB),92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,92.67,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA GPU Temperature (°C),44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,44.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA Decoder Utilization (%),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA Encoder Utilization (%),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA XID Errors (count),0.00,,,,,,,,,,,,,,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,NVIDIA Power Violation (us),0.00,,,,,,,,,,,,,,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,SM Clock Frequency (MHz),2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,2812.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Memory Clock Frequency (MHz),13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,13365.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Memory Temperature (°C),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Framebuffer Memory Free (MB),8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,8874.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Throttling Duration Due To Thermal Constraints (us),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Throttling Duration Due To Board Limit (us),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Throttling Duration Due To Reliability Limit (us),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Throttling Duration Due To Sync Boost (us),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,Throttling Duration Due To Low Utilization (us),39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,39492229375520.00,0.00,8ef754981bf5
+localhost:9401,0,NVIDIA RTX PRO 6000 Blackwell Workstation Edition,GPU-af9f36c6-304a-a609-3da5-290993b4b4d0,nvidia,PCIE Replay Counter (count),0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,8ef754981bf5

@@ -1,0 +1,24 @@
+warn: LLAMA_ARG_HOST environment variable is set, but will be overwritten by command line argument --host
+0.00.432.076 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.432.364 W srv  llama_server: -----------------
+0.00.432.365 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.432.366 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.432.366 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.432.366 W srv  llama_server: -----------------
+0.00.433.546 I srv    load_model: loading model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf'
+0.00.952.607 E llama_init_from_model: failed to initialize the context: qwen4exp requires ctx_other to be set (this warning is normal during memory fitting)
+0.00.979.118 W operator(): failed to measure the memory of the extra model, fitting without it: failed to create llama_context from model
+0.07.316.415 I cmn          init: llama threadpool init, n_threads = 16
+0.07.369.734 I common_speculative_init_result: loading draft model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.08.189.738 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 8192, kv_unified = 'true'
+0.08.209.007 W srv          init: chat template supports preserving reasoning, it is enabled by default (may use more tokens, disable via --no-reasoning-preserve)
+0.08.209.320 I srv  llama_server: model loaded
+0.08.209.333 I srv  llama_server: listening on http://0.0.0.0:8000
+0.15.064.337 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.15.064.404 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.16.607.301 I slot print_timing: id  0 | task 0 | prompt eval time =     358.23 ms /    68 tokens (    5.27 ms per token,   189.82 tokens per second)
+0.16.607.305 I slot print_timing: id  0 | task 0 |        eval time =    1184.63 ms /   171 tokens (    6.97 ms per token,   143.50 tokens per second)
+0.16.607.305 I slot print_timing: id  0 | task 0 |       total time =    1542.87 ms /   239 tokens
+0.16.607.309 I slot print_timing: id  0 | task 0 |    graphs reused =         44
+0.16.607.312 I slot print_timing: id  0 | task 0 | draft acceptance = 0.59091 (  130 accepted /   220 generated), mean len =  3.95
+0.16.607.362 I slot      release: id  0 | task 0 | stop processing: n_tokens = 242, truncated = 0

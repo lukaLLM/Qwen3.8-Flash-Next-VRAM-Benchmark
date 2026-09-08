@@ -1,0 +1,52 @@
+{
+  "stamp": "20260903T225048Z",
+  "workload": "fn_code_tune",
+  "engine": "sglang",
+  "engine_version": "0.0.0.dev1+gd91c3682b",
+  "image_digest": "sglang-flashnext-sm120@sha256:c423c91c1aa4725909283945f099548d2067d4f66a39cd5e175604d30bca48c0",
+  "model": "Qwen3.8-Flash-Next",
+  "model_revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+  "kv_report_from_engine_log": "Mamba Cache is allocated. max_mamba_cache_size: 10, conv_state size: 0.02GB, ssm_state size: 1.16GB intermediate_ssm_state_cache size: 1.27GB intermediate_conv_window_cache size: 0.01GB ;KV Cache is allocated. dtype: torch.float8_e4m3fn, #tokens: 19456, K size: 0.11 GB, V size: 0.11 GB KV Cache is allocated. dtype: torch.float8_e4m3fn, #tokens: 19456, K size: 0.01 GB, V size: 0.01 GB;max_total_num_tokens=19456",
+  "parity_flags": {
+    "context": "19456",
+    "mem_fraction": "0.90",
+    "prefill_budget": "8192",
+    "admission_slots": "2",
+    "cudagraph_max_bs": "1",
+    "prefix_cache": "disabled",
+    "kv_cache_dtype": "fp8_e4m3"
+  },
+  "workload_params": {
+    "isl": "8192",
+    "osl": "1024",
+    "concurrency": "1",
+    "duration_s": "0",
+    "warmup": "2",
+    "seed": "42",
+    "goodput_slo": "time_to_first_token:30000 inter_token_latency:100",
+    "sampling": "thinking=off temperature=0.7,top_p=0.80,top_k=20,presence=1.5",
+    "input_file": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/data/lcb_code_8192.jsonl",
+    "input_sha256": "bb56de89b0a23017d13d9e0da548f62a36053f664cccc3a48e9fe40f9d7156e8",
+    "custom_dataset_type": "single_turn"
+  },
+  "thermal_trace": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/thermal/fn_code_tune_sglang_20260903T225048Z.csv",
+  "server_boot_args": "python -m sglang.launch_server --model-path /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 --served-model-name Qwen3.8-Flash-Next --host 0.0.0.0 --port 8000 --quantization modelopt_fp4 --fp4-gemm-backend flashinfer_cudnn --kv-cache-dtype fp8_e4m3 --page-size 64 --mamba-radix-cache-strategy extra_buffer --mamba-track-interval 64 --chunked-prefill-size 8192 --max-running-requests 2 --context-length 9728 --max-total-tokens 19456 --max-mamba-cache-size 10 --mem-fraction-static 0.93 --speculative-algorithm NEXTN --speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4 --cuda-graph-backend-decode breakable --cuda-graph-max-bs-decode 1 --cuda-graph-backend-prefill disabled --reasoning-parser auto --tool-call-parser auto --enable-metrics",
+  "server_backend_lines": "[2026-09-03 22:51:26] Attention backend not specified. Use flashinfer backend by default.\n[2026-09-03 22:51:26] Use flashinfer_cutlass as MoE runner backend on SM120 for modelopt_fp4 (trtllm-gen MoE kernels are SM100-only)\n[2026-09-03 22:51:35] Multimodal attention backend not set. Use triton_attn.\n[2026-09-03 22:51:35] Using triton_attn as multimodal attention backend.\n[2026-09-03 22:52:41] Linear attention kernel backend: decode=triton, prefill=triton, verify=triton\n[2026-09-03 22:52:41] Using hybrid linear attention backend for hybrid GDN models.",
+  "runtime_route_probe": {},
+  "aiperf_version": "0.12.0",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 97887 MiB, 595.84, 600.00 W",
+  "gpu_at_start": "39, 2610 MHz, 76.71 W",
+  "gpu_thermal_margin_at_start_c": "54",
+  "gpu_power_limit_w": "600.00 W",
+  "cuda": "CUDA Version: 13.2",
+  "host_kernel": "7.1.1-070101-generic",
+  "host_cores": "32",
+  "aiperf_module": "/home/luke/Documents/Code/Inference_Engines/aiperf/src/aiperf",
+  "source_commits": {
+    "repo": "518a52dafcfc707ca2f7d5349635350d0b2fe831",
+    "aiperf": "9e96b499d1e942e1b338010fa5d99d9d9c96e074"
+  },
+  "model_repo": "RadixArk/Qwen3.8-Flash-Next-NVFP4",
+  "model_quant": "NVFP4",
+  "engine_args": "tokenizer=7b719225242aacd3dbd3f9407468c2ee9a9d2594 dataset=lcb_code_8192.jsonl type=single_turn cache_bust=system_prefix reset=/flush_cache extra=ignore_eos:true"
+}

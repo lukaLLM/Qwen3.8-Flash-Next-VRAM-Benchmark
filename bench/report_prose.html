@@ -1,0 +1,834 @@
+<p class="eyebrow">Qwen3.8-Flash-Next · 125B-A6B · one RTX PRO 6000 Blackwell, 96 GB</p>
+<h1>Three Engines, One Card</h1>
+<p class="standfirst">The same 125-billion-parameter model, served three ways on one workstation
+GPU &mdash; and, since the first report, a draft head that makes the slowest of them competitive.
+<strong>Speed differs by up to 7.3&times;. Accuracy does not differ at all.</strong></p>
+
+<section>
+  <h2><span class="num">01</span>How every test here is run</h2>
+  <p class="sub">The rules first, because a number without its method is not a result</p>
+
+  <div class="col">
+    <p><strong>Two words appear in every table.</strong> <em>Prefill</em> is the speed at which the
+    server reads the prompt. <em>Decode</em> is the speed at which it writes the answer, one token
+    at a time. Both are tokens per second. They are different machines doing different work, and
+    almost every disagreement between these three engines is a disagreement about one and not the
+    other.</p>
+  </div>
+
+  <h3>One engine at a time, on a card that has cooled down</h3>
+  <div class="col">
+    <p>Each arm gets its own container start, behind a lock that makes a second engine impossible
+    while one is measuring. Before every start a settle routine waits for the previous arm's VRAM to
+    be released, then waits for the card to reach <b class="v">42&nbsp;&deg;C</b> or below. A hot
+    card clocks lower, so back-to-back arms would measure the order they ran in rather than the
+    configuration under test. Every engine runs under the same cgroup memory cap, so one stack
+    cannot fail differently from another because it was given more room.</p>
+  </div>
+
+  <h3>One client measures all three</h3>
+  <div class="col">
+    <p>A single AIPerf process drives every engine over its OpenAI-compatible endpoint. Time to
+    first token and inter-token latency are therefore computed the same way for all three, rather
+    than read out of each engine's own log where each would define them slightly differently.</p>
+  </div>
+
+  <h3>The workloads</h3>
+  <div class="col">
+    <p>No live traffic. Every test draws from one of a few fixed workloads, so a re-run sees the
+    same input. Prompts come from contiguous natural prose or from real LiveCodeBench problems,
+    never from synthetic filler &mdash; a corpus that repeats itself feeds a speculative drafter
+    and would be reported as engine speed (section 06).</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>The workloads behind the numbers in this report. Lengths are tokens.</caption>
+    <thead><tr><th>Workload</th><th>What the server receives</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td>Context ladder</td>
+        <td>Prose slices at 2,048 / 8,192 / 32,768 / 65,536 / 131,072 / 261,120 tokens, a pinned
+        2,048-token output, one request at a time, three measured per rung.</td><td>03</td></tr>
+      <tr><td>Full window</td>
+        <td>One 261,504-token prompt &mdash; the native window minus the output and the chat
+        template &mdash; and a 128-token answer.</td><td>04, 12</td></tr>
+      <tr><td>Real code</td>
+        <td>LiveCodeBench problems cut to 8,192 and 32,000 tokens, output pinned to exactly 1,024
+        tokens so no stack can look faster by writing less.</td><td>05, 09, 10, 11</td></tr>
+      <tr><td>Accuracy</td>
+        <td>GSM8K (1,319 problems) and MATH-500, four requests in flight, scored by exact match.</td>
+        <td>08</td></tr>
+      <tr><td>Soak</td>
+        <td>2,048-token prompts, 256-token answers, two concurrent requests for twenty minutes.</td>
+        <td>07</td></tr>
+      <tr><td>Boot and cache</td>
+        <td>Repeated cold starts timed to a served answer; and a single 9,726-token request replayed
+        at each KV pool size, with a unique prefix so the prefix cache cannot answer it.</td>
+        <td>13, 14</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The sampler matches the model card, and thinking is off everywhere</h3>
+  <div class="col">
+    <p>This model has a thinking mode and a non-thinking mode, each with its own published sampler.
+    Every speed and accuracy number here runs <strong>non-thinking</strong>, so completion tokens
+    are answer tokens and lengths are comparable between engines. Mixing the two would measure the
+    sampler rather than the engine: a lower temperature raises draft acceptance, which flatters
+    whichever stack is speculating.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>Sampler values, from the model card. Used unchanged on all three engines.</caption>
+    <thead><tr><th>Parameter</th><th>Non-thinking (used here)</th><th>Thinking</th></tr></thead>
+    <tbody>
+      <tr><td>Temperature</td><td class="hi">0.7</td><td>1.0</td></tr>
+      <tr><td>top-p</td><td class="hi">0.80</td><td>0.95</td></tr>
+      <tr><td>top-k</td><td class="hi">20</td><td>20</td></tr>
+      <tr><td>Presence penalty</td><td class="hi">1.5</td><td>0.0</td></tr>
+      <tr><td>Seed</td><td class="hi">42</td><td>42</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Provenance records what ran, not what was asked for</h3>
+  <div class="col">
+    <p>Before the first request, each arm records the server's <em>resolved</em> launch flags, the
+    image digest, the model revision and the workload parameters. That distinction has already paid
+    for itself here: a workload file was once silently overriding the environment, so a whole sweep
+    ran identical arms under different labels. Recording intent would have hidden it; recording what
+    the server actually reported did not.</p>
+  </div>
+
+  <h3>An arm can fail, and failing is recorded</h3>
+  <div class="col">
+    <p>A container restart voids the arm outright &mdash; every service is set never to restart, so a
+    restart means it died. An out-of-memory kill is kept as a capacity finding rather than retried
+    until it passes. A thermal throttle voids the arm. In the accuracy runs, items that errored are
+    excluded rather than scored as wrong: counting a killed run's errors as wrong answers once
+    turned a 95% result into an apparent 8%, which would have read as catastrophic quantisation
+    damage instead of an interrupted run.</p>
+    <p>Runs that were voided are kept, not deleted, and listed with their reasons in the repository
+    beside the ones that count. Section 15 gathers the findings that were withdrawn.</p>
+  </div>
+
+  <h3>Every number here was generated, not typed</h3>
+  <div class="col">
+    <p>The tables and charts in this report are produced by a script that reads the saved evidence
+    directories and prints every value it drew. Nothing is transcribed from a terminal. That is why
+    a re-scored benchmark cost no GPU time at all: when a scoring bug was found (section 16), every
+    raw response was already on disk, so the fix was a re-score rather than a re-run.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>What is actually being compared</h2>
+  <p class="sub">Three stacks, two checkpoints, one card</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>One engine at a time, each in its own container with a hard memory cap, behind a lock that
+    makes a second engine impossible. Every arm boots fresh, settles the card to
+    <b class="v">42&nbsp;&deg;C</b>, and records its resolved launch flags, image digest, model
+    revision, GPU telemetry and cgroup peak before the first request. A number without that
+    evidence is not reported here.</p>
+    <p><strong>Client:</strong> one AIPerf process measures all three, so time-to-first-token and
+    inter-token latency are computed identically rather than read from each engine's own log.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>The three stacks as they actually run. Only the middle two share a checkpoint.</caption>
+    <thead><tr><th>Stack</th><th>Checkpoint</th><th>Revision</th><th>PLE table (47.68 GiB)</th>
+      <th>KV cache</th><th>Speculation</th></tr></thead>
+    <tbody>
+      <tr><td>llama.cpp</td><td>UD-IQ4_XS (GGUF)</td><td class="cm">824f539b</td>
+        <td>host RAM, resident</td><td>f16</td><td>n-gram only</td></tr>
+      <tr><td>SGLang</td><td class="hi">NVFP4</td><td class="cm">7b719225</td>
+        <td>NVMe, io_uring</td><td>fp8_e4m3</td><td>NEXTN</td></tr>
+      <tr><td>FreeToken</td><td class="hi">NVFP4</td><td class="cm">7b719225</td>
+        <td>disk, O_DIRECT</td><td>bf16</td><td>none available</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="concept">
+    <p class="lab">What those placement words mean</p>
+    <p>The 47.68 GiB lookup table does not fit in VRAM beside the weights, so each engine puts it
+    somewhere else &mdash; and that choice is most of what separates them.
+    <strong>Host RAM, resident</strong> copies the table into ordinary system memory at load time:
+    fastest to read, and it costs you 48 GiB of RAM.
+    <strong>NVMe with io_uring</strong> leaves it on the SSD and fetches rows through the kernel's
+    asynchronous I/O interface, which lets many reads be in flight at once instead of blocking one at
+    a time. <strong>Disk with O_DIRECT</strong> also leaves it on the SSD but bypasses the operating
+    system's page cache entirely, reading straight into the engine's own buffers &mdash; no double
+    copy, no cache to compete with the weights for RAM, and no help from the cache either.</p>
+    <p>So llama.cpp trades RAM for speed, and the other two trade speed for RAM. Section 09 measures
+    what that trade is actually worth, and section 10 measures a fourth option.</p>
+  </div>
+
+  <p class="table-key"><strong>The one controlled pair:</strong> SGLang and FreeToken run the same
+  files at the same revision. Differences between those two are the engine and its kernels, not the
+  weights. llama.cpp cannot be brought into that comparison &mdash; no engine loads both formats, so
+  that axis is confounded permanently and is reported as a stack difference, never as a quant result.</p>
+
+  <div class="tw"><table>
+    <caption>What is actually running. No engine here ships a release that supports this model, so
+    every build is pinned to a commit.</caption>
+    <thead><tr><th>Stack</th><th>Build</th><th>Where it comes from</th></tr></thead>
+    <tbody>
+      <tr><td>llama.cpp</td><td class="cm">b10666</td>
+        <td>the shipped <code>ggml-org/llama.cpp:server-cuda13</code> image &mdash; the control</td></tr>
+      <tr><td>llama.cpp + MTP</td><td class="cm">d1a92352</td>
+        <td>built from <code>danielhanchen/llama.cpp</code> branch <code>qwen4exp/mtp</code>, the
+        checkpoint publisher's own fork &mdash; the draft head is in no release (section 11)</td></tr>
+      <tr><td>llama.cpp (placement arm)</td><td class="cm">c6a9e5c9</td>
+        <td>open PR <a href="https://github.com/ggml-org/llama.cpp/pull/28136">#28136</a>, built as a
+        separate tag (section 10)</td></tr>
+      <tr><td>SGLang</td><td class="cm">d91c3682 + 4 PRs</td>
+        <td>our own image: the 2026-08-17 nightly plus upstream PRs
+        <a href="https://github.com/sgl-project/sglang/pull/36567">#36567</a>,
+        <a href="https://github.com/sgl-project/sglang/pull/36556">#36556</a>,
+        <a href="https://github.com/sgl-project/sglang/pull/36749">#36749</a> and
+        <a href="https://github.com/sgl-project/sglang/pull/36750">#36750</a>, which carry this
+        model's SM120 kernels, plus one local patch for FP8 KV dequantisation on SM120
+        (<a href="https://github.com/sgl-project/sglang/issues/36545">#36545</a> is still open
+        upstream). Without that stack this model does not run on this card at all.</td></tr>
+      <tr><td>FreeToken</td><td class="cm">6eca2d7d</td>
+        <td>built from source at that commit &mdash; the released 0.1.2 predates this model and
+        cannot load it</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="table-key"><strong>Credit where the SGLang build is concerned:</strong> the four pull
+  requests above are other people's work, and our image is an overlay on them, not an independent
+  port. Every SGLang number in this report depends on them.</p>
+
+  <div class="concept">
+    <p class="lab">The two "4-bit" checkpoints are not the same kind of 4-bit</p>
+    <p>Read from the files themselves &mdash; the GGUF tensor headers and NVFP4's
+    <code>hf_quant_config.json</code> &mdash; rather than from their names.</p>
+  </div>
+
+  <div class="tw"><table>
+    <caption>What each format actually quantises. Percentages are share of all parameters.</caption>
+    <thead><tr><th>Component</th><th>UD-IQ4_XS</th><th>NVFP4</th></tr></thead>
+    <tbody>
+      <tr><td>Routed experts</td><td class="hi">44.6% at IQ3_S (~3.4 bpw)<br>49.3% at IQ4_NL</td>
+        <td>NVFP4, group size 16</td></tr>
+      <tr><td>Attention</td><td>Q8_0 / F32</td><td class="hi">not quantised</td></tr>
+      <tr><td>Linear / mamba attention</td><td>Q8_0 / F32</td><td class="hi">not quantised</td></tr>
+      <tr><td>PLE table</td><td>Q8_0 / F32</td><td>FP8</td></tr>
+      <tr><td>Shared experts, MoE gates</td><td>Q8_0 / F32</td><td class="hi">excluded</td></tr>
+      <tr><td>Embeddings, lm_head</td><td>IQ4_NL / Q8_0, Q6_K</td><td class="hi">excluded</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="table-key">Both formats protect attention and spend their budget on the experts. They
+  differ in how far they spend it: <strong>nearly half of every parameter in the GGUF sits at about
+  3.4 bits</strong>, where NVFP4 keeps 4 bits with a scale every 16 values and leaves attention,
+  gates and shared experts alone entirely. Calling both "4-bit" hides the actual variable.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Speed against context</h2>
+  <p class="sub">2K to 261K tokens &mdash; the main result</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Fixed input lengths, a pinned <b class="v">2,048</b>-token output, one request at a time,
+    three repeats per cell. Thinking mode off on every engine, so completion tokens are answer
+    tokens and the lengths are comparable. Prompts are sampled as contiguous slices of natural prose;
+    the alternative corpus was measured at 31.8&ndash;67.2% repeated 8-grams and disqualified.</p>
+    <p><strong>Cold prefill per cell:</strong> a per-request marker at token 0 defeats prefix
+    caching on every engine without depending on an engine-specific cache-flush endpoint.</p>
+  </div>
+
+  {{LADDER_TABLE}}
+
+
+
+  <figure class="png"><img src="assets/eb_decode_ladder.png" alt="">
+    <figcaption><strong>Decode against prompt length.</strong> llama.cpp is one colour in two treatments &mdash; solid without the draft head, dashed with it &mdash; because it is one engine with a feature switched on, not two engines. All four arms run every rung, 2K to 254K.</figcaption></figure>
+
+  <figure class="png"><img src="assets/eb_prefill_ladder.png" alt="">
+    <figcaption><strong>Prefill against prompt length.</strong> The engines are furthest apart here of anywhere in this report, and the ordering changes only once &mdash; FreeToken passes llama.cpp before 8K.</figcaption></figure>
+
+  <p class="takeaway"><strong>Three different shapes, not three speeds.</strong> llama.cpp decays on
+  both axes &mdash; decode falls from 101.9 to <b class="v">20.2</b>, a <b class="v">5&times;</b>
+  collapse across the ladder. FreeToken is almost flat: 100.1 down to 94.8 over <b class="v">127&times;</b>
+  the context, and its prefill <em>doubles</em> with length as fixed per-request costs amortise.
+  SGLang shows <strong>no decay at all</strong> &mdash; 191.5 at a quarter of a million tokens is
+  the same as it managed at 128K.</p>
+
+  <p class="takeaway"><strong>The draft head does not just lift llama.cpp &mdash; it changes its
+  shape.</strong> With the head on, decode goes 126.8, 125.0, 100.0, 100.8, 100.3 across the first
+  five rungs: it drops once and then holds level with FreeToken, where the undrafted line is still
+  sliding. The gap widens the whole way &mdash; <b class="v">2.9&times;</b> at 128K and
+  <b class="v">3.0&times;</b> at the top rung, 61.4 against 20.2. Speculation is worth most exactly
+  where the engine was weakest, because a drafted token costs the same whether the context behind it
+  is 2K or 254K.</p>
+
+  <p class="table-key"><strong>The one place it does give way</strong> is that last rung: the flat
+  stretch breaks and MTP falls from 100.3 to 61.4. Even there it is three times the undrafted build,
+  but a quarter-million tokens of context is finally enough to cost the drafted path something too.</p>
+
+  <p class="table-key"><strong>About that top rung.</strong> It is 259,584 tokens, not 262,144,
+  because the prompt and the answer share one window: this workload asks for a 2,048-token answer,
+  so that is what is left for input. An earlier version of the ladder asked for 261,120 <em>and</em>
+  2,048, which overruns the window &mdash; SGLang and llama.cpp refused the request outright, while
+  FreeToken served it anyway. Published as-is it would have read as a capability difference when it
+  was one engine being lenient about an invalid request. The rung was re-derived and re-run on all
+  four arms.</p>
+
+  <p class="table-key"><strong>The crossover:</strong> FreeToken starts slower than llama.cpp at 2K
+  (1,525 vs 1,869 prefill) and passes it before 8K, ending <b class="v">2.4&times;</b> ahead at 128K. Any comparison
+  taken at one prompt length would have reported a different winner.</p>
+</section>
+
+<section>
+  <h2><span class="num">04</span>The full window</h2>
+  <p class="sub">All four arms serve 262,144 tokens on one card</p>
+
+
+  <figure class="png"><img src="assets/eb_full_window.png" alt="">
+    <figcaption><strong>The full 262,144-token window.</strong> Left, how long before the first token arrives; right, how fast it writes once it starts. The draft head transforms the right-hand chart; the left one moves only a little, and that from the newer build rather than the drafter.</figcaption></figure>
+
+  {{FULL_TABLE}}
+
+  <p class="takeaway">Capacity is not the differentiator &mdash; all four fit the full window. The
+  differentiator is what it costs to use it: <strong>four minutes to first token against
+  thirty-five seconds</strong>, on the same prompt, on the same card.</p>
+
+  <p class="table-key"><strong>The draft head changes this row more than anywhere else.</strong> At
+  the full window llama.cpp's decode is its weakest number in the whole report &mdash; 20.3 tokens
+  per second, slower than a person reads. Switching the draft head on takes it to
+  <b class="v">52.6</b>, a <b class="v">2.6&times;</b> gain, the largest MTP delivers at any length
+  here, and it moves llama.cpp from a quarter of FreeToken's decode to three-fifths of it. Time to
+  first token improves too, from 258 to 210 seconds &mdash; but that part is the newer build rather
+  than the drafter, which never touches prefill. <strong>Three and a half minutes is still three and
+  a half minutes</strong>, and the ordering of this table does not change.</p>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Real code, and a lesson about measuring quality</h2>
+  <p class="sub">LiveCodeBench problems at 32K &mdash; and why the output check does not apply here</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>Real LiveCodeBench problems, with output length pinned to exactly
+    <b class="v">1,024</b> tokens on every engine, so no stack can look faster merely by writing
+    less.</p>
+  </div>
+
+  {{CODE_TABLE}}
+
+  <div class="limits">
+    <p class="lab">A withdrawn result, and why it was wrong</p>
+    <p>An earlier draft of this report carried an output-quality verdict in that last column, marking
+    two of the three stacks measured then <em>degenerate</em> for emitting repetition loops, and called the gap
+    between them the most interesting signal here. <strong>That was an artifact of our own
+    measurement, and it has been withdrawn.</strong></p>
+    <p>Pinning output length requires <code>ignore_eos</code> &mdash; the model is forbidden to stop
+    until it has produced exactly 1,024 tokens. All sixteen responses per cell have no natural finish
+    reason; not one of them stopped on its own. Forced past the end of its answer, a model emits
+    filler, and the two kinds we saw were exactly that: one stack repeated the empty turn marker
+    <code>&lt;|im_start|&gt;&lt;|im_end|&gt;</code> up to <b class="v">103</b> times, and both
+    restarted the answer, re-emitting <code>class Solution:</code> five times over.</p>
+    <p>A checker counting duplicate lines then scores that filler as a repetition loop. It was
+    measuring the harness, not the model &mdash; and the apparent difference between the stacks is
+    most likely how each one renders forced generation past end-of-turn, a detokenizer difference,
+    not a reasoning one. The checker now detects <code>ignore_eos</code> and withholds a verdict
+    instead of issuing one.</p>
+  </div>
+
+  <p class="takeaway"><strong>The general lesson is worth more than the retracted finding.</strong>
+  The flag that makes a speed comparison fair is the same flag that makes the output unjudgeable.
+  Speed and quality cannot be read off one run: quality has to be measured where the model is allowed
+  to stop when it is finished &mdash; which is what section 08 does.</p>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Speculation, and what a corpus decides</h2>
+  <p class="sub">Why the drafter you get is part of the engine you chose</p>
+
+  <div class="tw"><table>
+    <caption>Speculative decoding available to each stack for this model, September 2026.</caption>
+    <thead><tr><th>Stack</th><th>Mechanism</th><th>State</th><th>Measured effect</th></tr></thead>
+    <tbody>
+      <tr><td>SGLang</td><td>NEXTN (native draft head)</td><td class="ok">working</td>
+        <td>96.6 &rarr; 153.5 decode, but confounded &mdash; see below</td></tr>
+      <tr><td>llama.cpp</td><td><code>ngram-mod</code> (model-free)</td><td class="ok">working</td>
+        <td class="hi">+6.8% on real code; <b class="v">zero</b> effect on prose</td></tr>
+      <tr><td>llama.cpp</td><td><code>draft-mtp</code> (the same head)</td><td class="ok">working, fork build</td>
+        <td class="hi">94.9 &rarr; 155.1 at 8K, 83.1 &rarr; 140.4 at 32K &mdash; section 11</td></tr>
+      <tr><td>FreeToken</td><td>&mdash;</td><td class="dim">none available</td><td class="dim">&mdash;</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="takeaway"><strong>New here: n-gram speculation's benefit is a property of the workload,
+  not the engine.</strong> The first report measured the n-gram drafter's average rate; what it could
+  not see, with one corpus, is that the mechanism does not engage at all on the other one. On natural
+  prose <code>ngram-mod</code> generated <b class="v">zero</b> drafts
+  &mdash; the flag was accepted and the mechanism never engaged, because it drafts by finding a
+  24-token exact match and prose at ~1.5% repeated 8-grams never supplies one. On real code the same
+  flag produced 59 drafts at <b class="v">37.6%</b> acceptance and +6.8% decode at one request.</p>
+
+  <p class="table-key">This is why the corpus audit mattered. The obvious alternative corpus measures
+  31.8&ndash;67.2% repeated 8-grams; benchmarking a drafter on it would have produced a large, real,
+  reproducible number that measured the corpus and reported it as engine speed.</p>
+
+  <div class="concept">
+    <p class="lab">NEXTN and MTP are the same idea &mdash; and SGLang had it working all along</p>
+    <p>The checkpoint ships one extra layer trained to guess the next few tokens. SGLang calls
+    running it <strong>NEXTN</strong>; llama.cpp calls it <strong>draft-mtp</strong>. Same layer,
+    same trick, different name. <strong>SGLang has been using it in every number in this report</strong>
+    &mdash; which is part of why its decode is flat across the ladder &mdash; while llama.cpp could
+    not load the file at all until the build in section 11.</p>
+    <p>That is worth saying plainly, because it means the engines were never on equal terms: one
+    was running the model's own accelerator and the other was not. Section 11 is what happens when
+    both do. It also means EAGLE and the like are not in play here &mdash; nobody needed to train a
+    separate draft model, because this checkpoint brings its own.</p>
+  </div>
+
+  <div class="limits">
+    <p class="lab">One thing not established, and one now settled</p>
+    <p><strong>The NEXTN pair is confounded.</strong> The speculation-off arm ran at a smaller KV
+    pool fraction than the speculation-on arm, so those two differ in more than the drafter. At one
+    request the pool should not move decode, but this pair does not prove it, and +58.9% is not a
+    publishable speculation delta until the arms match.</p>
+    <p><strong>The llama.cpp draft head was blocked, and is not any more.</strong> The published
+    file holds one layer and nothing else &mdash; 32 tensors, all from layer 48, sharing the base
+    model's embedding table &mdash; and llama.cpp loads a draft as if it were a complete model, so it
+    refused the file for having no embedding table of its own. The layer is not inside the main
+    weights either: both quantised files stop at layer 47. Two upstream pull requests would fix that
+    and neither has merged. <strong>Section 11 gets it running anyway</strong>, from the checkpoint
+    publisher's own fork, and measures what it is worth.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07</span>Tuning levers that were measured</h2>
+  <p class="sub">Two knobs, both of which paid</p>
+
+  <div class="tw"><table>
+    <caption>Each measured as a matched pair, one variable changed. Levers the first report already
+    settled &mdash; microbatch size, memory placement at that placement, the quant pair &mdash; are
+    not repeated.</caption>
+    <thead><tr><th>Lever</th><th>Stack</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>KV pool fraction 0.90 &rarr; 0.93</td><td>SGLang</td>
+        <td class="ok">pool 166,720 &rarr; <b class="v">262,144</b> tokens for +1.3 GB VRAM &mdash; the full window, speculation kept</td></tr>
+      <tr><td>Decode graph captured at batch 8</td><td>SGLang</td>
+        <td class="ok">201.6 tok/s aggregate at two concurrent requests over a 20-minute soak, zero
+        errors, zero restarts &mdash; against ~115 at one request</td></tr>
+    </tbody>
+  </table></div>
+
+  <p class="table-key">The pool-fraction result is the largest free win among the levers here: three
+  hundredths of a memory fraction buys 57% more KV cache and the entire 262,144-token window, at a
+  cost of 1.3 GB. It has no equivalent in the first report because it is an SGLang setting.</p>
+</section>
+
+<section>
+  <h2><span class="num">08</span>Does the cheaper quantisation still think?</h2>
+  <p class="sub">Exact-match accuracy &mdash; validated against a published number first</p>
+
+  <div class="how">
+    <p class="lab">How this test runs</p>
+    <p>GSM8K (1,319 problems) and MATH-500, scored by exact match &mdash; the final number for GSM8K,
+    a symbolic checker for MATH-500. No model is ever used to judge another model's output. Each
+    engine runs at its best-known configuration with the same non-thinking sampler as the speed runs,
+    and every prompt, raw response, extracted answer and verdict is written to disk so a score can be
+    recomputed without re-running the model.</p>
+  </div>
+
+  <div class="concept">
+    <p class="lab">What this can and cannot answer</p>
+    <p><strong>It cannot measure absolute quantisation damage.</strong> A 16-bit copy of this model
+    is roughly 250 GB against 96 GB of VRAM, so there is no full-precision reference on this machine.
+    Nothing here can say "this format loses N points". What it can measure is
+    <em>disagreement</em>: where two stacks differ, by how much, and whether the difference changes
+    an answer.</p>
+    <p>One external anchor exists. The NVFP4 checkpoint ships its own published GSM8K score of
+    <b class="v">97.27%</b>, measured on these exact files. Reproducing it is the first gate &mdash;
+    if our pipeline cannot, nothing downstream of it is trustworthy.</p>
+  </div>
+
+  <p><strong>The gate passes.</strong> Scored end to end through this pipeline, the NVFP4
+  checkpoint returns <b class="v">95.22%</b> on GSM8K against the published
+  <b class="v">97.27%</b> &mdash; our non-thinking sampler against their longer-budget one. The
+  pipeline reproduces the published number, so the rest of this section can be trusted.</p>
+
+  <p>Scoring is deterministic and re-runnable. Because every prompt, raw response, extracted
+  answer and verdict is written to disk, any figure in this section can be recomputed from the
+  stored evidence without putting the model back on the GPU &mdash; a scoring change costs a
+  re-score, never a re-run.</p>
+
+
+  <figure class="png"><img src="assets/eb_accuracy.png" alt="">
+    <figcaption><strong>Accuracy with 95% confidence intervals.</strong> Every interval overlaps every other one, on both benchmarks. The speed charts above span 7.3&times;; this spans eight-tenths of a point.</figcaption></figure>
+
+  {{ACC_BLOCK}}
+
+  <p class="table-key"><strong>All four arms land within eight-tenths of a point of each other on
+  both benchmarks.</strong> Nothing in the speed table &mdash; where the spread reaches
+  <b class="v">7.3&times;</b> &mdash; has any echo here.</p>
+
+  <h3>The comparison that actually has power</h3>
+
+  <p>Because the scores land so close together, comparing the two percentages directly settles
+  nothing &mdash; and it throws away most of the evidence. Every stack answered the <em>same</em>
+  problems, so the items they both got right, and the items they both got wrong, say nothing about
+  which one is better. Only the items where they <em>disagree</em> carry any information. The table
+  below lays out exactly that split, pair by pair.</p>
+
+  <div class="concept">
+    <p class="lab">How to read the table</p>
+    <p>Each row pairs two stacks on one benchmark and sorts every question into four buckets:
+    <b>both right</b>, <b>both wrong</b>, <b>only A right</b>, and <b>only B right</b>. The first
+    two buckets are the agreements &mdash; they are large, and they are ignored. The question is
+    whether the two disagreement buckets are lopsided. If one stack is genuinely better, it should
+    win noticeably more of the items where the two differ.</p>
+    <p><b>McNemar's test</b> is what turns that into a number. It asks a single question: given
+    this many disagreements in total, how surprising is the split between them? It is the same
+    reasoning as a coin flip &mdash; 30 disagreements splitting 16/14 is what you would expect from
+    chance, while 30 splitting 28/2 is not. The <b>p-value</b> is the probability of seeing a split
+    at least this lopsided if the two stacks were in truth equally good. A small p (below 0.05)
+    means the imbalance is hard to explain as luck; a large p means it is entirely ordinary. Only
+    the two disagreement columns feed the calculation.</p>
+  </div>
+
+  {{PAIRED_BLOCK}}
+
+  <p class="takeaway"><strong>Nine comparisons, nine nulls.</strong> Every pairing on both benchmarks
+  comes back indistinguishable, with the smallest p-value at <b class="v">0.30</b>. The stacks
+  disagree on only 2&ndash;5% of items, and those disagreements split near-evenly every time.</p>
+
+  <p>The clearest sign that this is noise rather than a small real effect is that
+  <strong>the ranking flips between the two benchmarks.</strong> FreeToken leads on GSM8K and comes
+  last on MATH-500; SGLang does the exact opposite. A genuine quantisation deficit does not reverse
+  itself when the questions get harder.</p>
+
+  <p class="takeaway"><strong>The aggressive quantisation carries no measurable penalty here.</strong>
+  The checkpoint with <b class="v">44.6%</b> of its parameters at about 3.4 bits scores within half a
+  point of the one that leaves attention, gates and shared experts at full precision &mdash; ahead of
+  SGLang on GSM8K, behind it on MATH-500, neither by enough to matter.</p>
+
+  <p class="table-key"><strong>What that does and does not establish.</strong> With 22&ndash;41
+  discordant items per pair, this rules out a gap larger than roughly a point and a half. It is not
+  proof of equality, and both benchmarks sit near this model's ceiling &mdash; 92&ndash;96% correct
+  is exactly where a quantisation difference is least likely to surface.</p>
+
+  <p><strong>These are deliberately modest tests.</strong> GSM8K and MATH-500 are short, standard,
+  well-understood suites, and 1,819 items per stack is what fits in an evening: the whole section
+  above is <b class="v">5.0</b> GPU-hours, between <b class="v">0.5</b> and <b class="v">2.1</b>
+  hours per arm. Sharpening the result means more disagreements, and more disagreements means
+  proportionally more questions &mdash; resolving a half-point gap rather than a point-and-a-half
+  one needs roughly ten times the items, which is on the order of <b class="v">50</b> GPU-hours, or
+  two days of continuous running before any repeat at a second seed. That is a reasonable thing to
+  spend if a difference is suspected. Nothing here suggests one is.</p>
+
+  <p>The test with something left to reveal is long-context retrieval &mdash; which has been run on
+  one engine, below, but not as a three-way comparison.</p>
+
+  <h3>Can it still find things at full length?</h3>
+
+  <p>A separate check, run to hunt a specific upstream report rather than to compare engines: after
+  a server slot has been used and released, does recall quietly degrade? It is asked as a
+  needle-in-a-haystack test, with the answer planted at a known depth in the context.</p>
+
+  {{NIAH_BLOCK}}
+
+</section>
+
+<section>
+  <h2><span class="num">09</span>Why <code>--load-mode none</code>, and not <code>mlock</code>?</h2>
+  <p class="sub">A viewer's question, answered with the five modes worth measuring</p>
+
+  <div class="how">
+    <p class="lab">What was known before this test</p>
+    <p><strong>This revises a result in the first report.</strong> That one measured memory
+    placement as <code>mmap</code> against RAM-resident and found resident
+    <b class="v">1.87&times;</b> faster on prefill. That measurement was correct for the configuration
+    it ran in, and the configuration has since changed &mdash; which is exactly what this section is
+    about.</p>
+    <p>The llama.cpp build in this study offers six loading modes: <code>auto</code>,
+    <code>none</code>, <code>mmap</code>, <code>mlock</code>, <code>mmap+mlock</code> and
+    <code>dio</code>. The headline runs use <code>none</code> &mdash; copy the host-side tensors into
+    ordinary RAM rather than memory-mapping the file &mdash; for two reasons. The loader itself warns
+    that keeping tensors on the CPU under <code>mmap</code> is "not the fast path" and suggests
+    <code>none</code>. And an earlier controlled pair measured it: <b class="v">1.87&times;</b>
+    prefill over <code>mmap</code> at identical placement, decode unchanged &mdash; a placement, it
+    turns out, that matters: that pair computed 23 expert layers on the CPU, which the headline no
+    longer does.</p>
+    <p><strong>What had never been run:</strong> <code>mlock</code> and <code>mmap+mlock</code>,
+    which pin the mapped pages so the kernel cannot evict them.</p>
+    <p>All five on the same image and placement, ubatch 1024, real coding prompts at 8K and 32K.
+    The pinning arms run under a host-memory guard, because the llama.cpp container has no memory
+    cap of its own and pinning the whole mapping could exceed RAM &mdash; an out-of-memory there is a
+    capacity finding, recorded rather than retried.</p>
+  </div>
+
+
+  <figure class="png"><img src="assets/eb_loadmode.png" alt="">
+    <figcaption><strong>Five load modes, two prompt lengths.</strong> The bars are the answer to the question: they are the same height.</figcaption></figure>
+
+  {{LOADMODE_BLOCK}}
+</section>
+
+<section>
+  <h2><span class="num">10</span>Reading the lookup table straight from disk</h2>
+  <p class="sub">llama.cpp PR #28136 &mdash; a placement arm for machines without the RAM</p>
+
+  <div class="how">
+    <p class="lab">How this test runs, and what it is not</p>
+    <p>An open pull request adds a direct-read mode for the lazy PLE path: when the 47.68 GiB table
+    is left on disk rather than loaded, its rows are fetched with explicit reads instead of demand
+    paging a memory map. Its author reports large cold-prefill gains on a small unified-memory
+    machine.</p>
+    <p><strong>This does not touch the headline configuration.</strong> The headline keeps the table
+    resident in host RAM (<code>--load-mode none</code>); the direct-read mode only applies when the
+    table is <em>not</em> resident. It is the arm for a machine with a fast SSD and not enough RAM
+    &mdash; a placement-study result, never a replacement for the resident baseline.</p>
+    <p>Built as a separate image tag, with the shipped build untouched as the control. One caveat
+    governs the whole section: the shipped image and the pull request are separated by 44 upstream
+    commits and a different CUDA toolchain, so a difference between them is not necessarily the
+    pull request. Isolating it would mean building the request's own base commit as a third tag;
+    that build was queued and never ran. Then lazy off, on, and on-direct under <code>mmap</code>
+    at 8K and 32K, and &mdash; because the newer build turned out faster under <code>mmap</code> &mdash; the
+    same build at the resident headline configuration, to separate the build from the placement.
+    <strong>These are warm-page-cache numbers</strong> &mdash; the pull request's headline is cold
+    prefill, which needs the page cache dropped between runs and is a follow-up.</p>
+  </div>
+
+  {{PLACEMENT_BLOCK}}
+</section>
+
+<section>
+  <h2><span class="num">11</span>The fastest speculation this model ships</h2>
+  <p class="sub">Multi-token prediction &mdash; the checkpoint author's own claim, tested</p>
+
+  <div class="how">
+    <p class="lab">The claim, and how it is built</p>
+    <p>The people who publish this checkpoint claim multi-token prediction makes it
+    <strong>1.3 to 1.7&times; faster with no accuracy degradation</strong>, and they name this exact
+    card: <b class="v">170</b> tokens per second against a <b class="v">100</b> token baseline. The
+    model ships its own draft head to do it &mdash; a small extra layer that guesses several tokens
+    ahead, which the full model then confirms in one pass. No llama.cpp release can load that head,
+    so this section builds the checkpoint author's own fork, pinned to a commit, exactly as their
+    guide does. Speed is therefore measured against that same build with the head switched off
+    &mdash; the fork is older than the image used everywhere else here, so only it can be its own
+    control.</p>
+</div>
+
+
+  <figure class="png"><img src="assets/eb_mtp_gain.png" alt="">
+    <figcaption><strong>The same build, draft head off against on.</strong> The multiplier grows with the prompt because the baseline decays with context and the drafted path does not.</figcaption></figure>
+
+  {{MTP_BLOCK}}
+</section>
+
+<section>
+  <h2><span class="num">12</span>How hot does it actually get?</h2>
+  <p class="sub">Temperature, power and clocks while the card is working</p>
+
+  <div class="how">
+    <p class="lab">Where these numbers come from</p>
+    <p>Every arm in this study writes a GPU trace beside it &mdash; temperature, power, clocks, and the
+    card's own throttle flags, sampled every five seconds &mdash; because a benchmark on a desk-side
+    machine is worthless if the card was quietly slowing itself down. That data was collected for
+    guard-rail reasons and is read here as a result in its own right.</p>
+    <p>Only samples where the GPU is actually busy are counted. Including the idle stretches between
+    requests would reward whichever engine spends longest booting, which is the opposite of the truth.</p>
+  </div>
+
+
+  <figure class="png"><img src="assets/eb_thermal.png" alt="">
+    <figcaption><strong>Temperature under load at the full window.</strong> Bars are the median, diamonds the hottest single sample, and the dashed line is the card's own thermal limit.</figcaption></figure>
+
+  {{THERMAL_BLOCK}}
+
+  <figure class="png"><img src="assets/eb_energy.png" alt="">
+    <figcaption><strong>Energy for one 262,144-token request.</strong> Median power under load multiplied by the time that request holds the card. Read the ratio rather than the joules &mdash; it is a median, not an integration.</figcaption></figure>
+
+  <div class="concept">
+    <p class="lab">Why the fast engine is also the cheap one to run</p>
+    <p>A GPU under load draws roughly its working power whatever it is doing; it does not draw less
+    because the work is easy. So the energy a request costs is mostly <em>how long the card is
+    held</em>, and finishing sooner is the only real lever. That is why the efficiency spread here
+    (<b class="v">8.9&times;</b>) is far wider than the power spread (about
+    <b class="v">1.4&times;</b>, 358 W against 489 W).</p>
+    <p>At one full-window request an hour, the slowest stack costs roughly
+    <b class="v">32 W</b> averaged over that hour against the fastest stack's <b class="v">4 W</b>
+    &mdash; on a machine that idles at about 6 W between requests. Over a working day of that duty
+    cycle the difference is on the order of <b class="v">0.2 kWh</b>, which is small in absolute
+    terms and completely changes the shape of the bill once the machine is shared, rack-mounted, or
+    metered. <strong>The engine that answers fastest is not merely nicer to wait for; it is the one
+    that leaves the card free.</strong></p>
+    <p class="evid">Derived from the traces the harness already writes: median power over busy
+    samples, times time-to-first-token plus decode time. It is an estimate, and the ranking is what
+    it supports.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">13</span>The cost nobody benchmarks: starting up</h2>
+  <p class="sub">Time from cold container to a served answer, repeated</p>
+
+  <div class="how">
+    <p class="lab">Why measure this at all</p>
+    <p>Every other number here assumes the server is already running. On one workstation it is not:
+    you start it when you sit down, and you restart it every time you change a flag. Nobody publishes
+    that cost, and on this box it varies by more than an order of magnitude between engines.</p>
+    <p>Three or four boots back to back per engine, every attempt reported rather than an average.
+    <strong>The page cache cannot be cleared without root</strong>, so the first attempt is the
+    coldest and later ones read from RAM; that spread is the cache effect and it is part of the
+    result, not noise to be smoothed away.</p>
+  </div>
+
+  {{BOOT_BLOCK}}
+
+  <figure class="png"><img src="assets/eb_boot.png" alt="">
+    <figcaption><strong>Cold container to an answer.</strong> The tick marks where <code>/health</code> first returns 200 &mdash; on FreeToken that is 79 seconds before the engine can actually serve, which is why polling it would rank this chart backwards.</figcaption></figure>
+
+</section>
+
+<section>
+  <h2><span class="num">14</span>Resizing the cache without restarting</h2>
+  <p class="sub">FreeToken's live pool rebuild &mdash; and what KV size actually buys</p>
+
+  <div class="how">
+    <p class="lab">What this is</p>
+    <p>FreeToken can resize its KV, expert and state pools on a <em>running</em> server
+    (<code>ft ctl cache --kv N</code>, or a POST to its rebuild endpoint), with no restart. That is
+    worth having on its own &mdash; but it is also what makes the question underneath cheap to
+    answer. How much KV cache does a workload actually need? Normally that costs one full model load
+    per setting, on the engine whose load is the most expensive here. Live resizing turns it into
+    four requests against a single server.</p>
+    <p>One prompt, built once and reused at every size, so the pool is the only variable. Each size
+    is requested through the engine's own client, which converts tokens into the pool's page unit
+    against the live geometry, so the size actually applied is read back rather than assumed &mdash;
+    it matched the requested size exactly at every step. Every request carries a unique prefix,
+    because an identical repeat is answered from the prefix cache: an earlier pass without that
+    marker read 4.5 s where this one reads 9.0.</p>
+  </div>
+
+  {{FTCACHE_BLOCK}}
+</section>
+
+<section>
+  <h2><span class="num">15</span>Would this run on a smaller card?</h2>
+  <p class="sub">The VRAM ladder, revisited with the draft head &mdash; a viewer's question</p>
+
+  <div class="how">
+    <p class="lab">Where this comes from</p>
+    <p>A viewer of the first report asked about a 24 GB card with 64 GB of system RAM. The first
+    report's ladder answers the VRAM half of that &mdash; it runs this model from an 8 GiB card down
+    to no GPU at all &mdash; but it predates multi-token prediction working here, and section 11
+    measured the draft head only on the full 96 GB card, where it is worth 1.6&times;. Whether that
+    holds on a small card is a different question, and the answer turns out to be no.</p>
+    <p>A helper holds GPU memory so the 96 GB card presents a smaller pool, and each tier keeps the
+    expert offload the first report chose for it &mdash; from 48 of 48 expert layers on the CPU at
+    8 GiB, down to none at 96 GiB. Only the draft head changes between arms.</p>
+  </div>
+
+  <div class="note">
+    <p class="lab">The viewer's questions, answered</p>
+    <p><strong>"I have an RTX 4090 with 24 GB of VRAM &mdash; will this model run?"</strong>
+    <strong class="v">Yes, at about 35 tokens per second.</strong> At a 24 GiB budget the model
+    serves at <b class="v">34.7</b> tok/s decode on a 2,048-token prompt, with 42 of its 48 expert
+    layers computed on the CPU. That is roughly a third of what the same model does with the whole
+    96 GB card (99.8 tok/s), and it is entirely usable.</p>
+    <p><strong>"Should I turn on multi-token prediction to speed it up?"</strong>
+    <strong class="v">No &mdash; on a 24 GB card it makes things 3.4&times; slower</strong>
+    (10.2 against 34.7 tok/s). The 1.3&ndash;1.7&times; speed-up the checkpoint's publisher advertises
+    is real, but only when every expert sits on the GPU. Putting the draft head on the CPU instead
+    does not rescue it either.</p>
+    <p><strong>"But I only have 64 GB of system RAM &mdash; does that still work?"</strong>
+    <strong class="v">Yes.</strong> Measured in a container hard-capped at 64 GB, and again at 56 GB
+    to leave room for an operating system: <b class="v">34.4</b> and <b class="v">34.7</b> tok/s,
+    the same speed as with the whole 91 GiB of this box. One flag makes the difference &mdash;
+    <code>--lazy-mode on</code>, which reads the 27 GiB lookup table from the SSD instead of holding
+    it in RAM. With it the server uses about <b class="v">3 GiB</b>. Without it the model still runs
+    at the same speed, but streams itself off the disk continuously to stay under the limit.</p>
+  </div>
+
+  <div class="how">
+    <p class="lab">The MTP setup, exactly as run</p>
+    <p><strong>Build:</strong> <code>llamacpp-mtp:d1a92352</code>, built from
+    <code>danielhanchen/llama.cpp</code> branch <code>qwen4exp/mtp</code> &mdash; the checkpoint
+    publisher's own fork, because the draft head is in no llama.cpp release. The MTP-off baseline
+    runs the <em>same image</em>, so the build is never a variable between arms.</p>
+    <p><strong>Draft head:</strong> <code>mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf</code> &mdash;
+    2.6 GiB, Q8_0, 32 tensors, all of them layer 48, sharing the base model's embedding table.
+    <code>--spec-type draft-mtp</code>, <code>--spec-draft-n-max 5</code>, and
+    <code>--n-gpu-layers-draft</code> at <b class="v">99</b> for the "on GPU" arm or
+    <b class="v">0</b> for "on CPU". Acceptance at the 24 GiB tier ran 49&ndash;74%.</p>
+    <p><strong>Everything else held fixed:</strong> UD-IQ4_XS, the lookup table on the CPU
+    (<code>-ot per_layer_token_embd=CPU</code>), <code>--load-mode mmap</code>, microbatch 512,
+    a 4,096-token context, one slot, one request at a time, 2,048-token LiveCodeBench prompts with
+    256-token answers, thinking off. <code>--n-cpu-moe</code> is the only thing that changes with the
+    tier, and it takes the value the first report's ladder chose for that tier.</p>
+    <p><strong>One caveat that applies to every arm here:</strong> this build reads the on-demand
+    tensor flag under a different name than the harness sets (section 10), so all of these ran at the
+    build's default, <code>auto</code>. Both arms of every pair carried it, so the comparison holds,
+    but these are numbers for a lookup table streamed from SSD, not held resident.</p>
+  </div>
+
+  <figure class="png"><img src="assets/eb_tier_mtp.png" alt="Decode tok/s by VRAM tier with the draft head off and on: the head is a large loss at every tier that offloads experts to the CPU, and a 1.61x gain only at 96 GiB where no experts are offloaded">
+    <figcaption><strong>The feature reverses sign.</strong> Bars are the same engine with the draft
+    head off and on; the second line under each tier is how many of the 48 expert layers had to be
+    pushed to the CPU.</figcaption></figure>
+
+  {{TIER_BLOCK}}
+</section>
+
+<section>
+  <h2><span class="num">16</span>What would invalidate these runs</h2>
+  <p class="sub">Stated so a reader can check rather than trust</p>
+
+  <div class="limits">
+    <p class="lab">Known limits of this comparison</p>
+    <p><strong>The quantisation axis is confounded and always will be.</strong> No engine loads both
+    formats, so "which quantisation is better" is not answerable on this hardware. Only "which stack
+    answers better" is.</p>
+    <p><strong>The 8-bit KV cache is untested directly, though the accuracy result is
+    reassuring.</strong> SGLang runs an 8-bit KV cache with a defaulted scale and FreeToken a 16-bit
+    one, on the same checkpoint; they are statistically identical on both benchmarks. That is
+    encouraging but not a measurement of the cache: it is confounded with the engine, and neither
+    benchmark uses enough context for cache precision to bite. Measuring one engine both ways, at
+    length, is the outstanding work.</p>
+    <p><strong>Speculation availability is welded to engine choice.</strong> SGLang has a native
+    draft head, llama.cpp has model-free n-gram lookup and, on an unreleased fork build, the
+    checkpoint's own draft head (section 11), FreeToken has nothing. Every decode number
+    is the engine <em>and</em> whatever drafter it happens to offer.</p>
+    <p><strong>All three engines run unreleased code.</strong> That is a fact about a model this new,
+    and it belongs in any reading of these numbers.</p>
+  </div>
+
+  <div class="how">
+    <p class="lab">Corrections made during this study</p>
+    <p>Six findings were corrected or withdrawn after checking, and are recorded here rather than
+    quietly fixed.</p>
+    <p><strong>An output checker read the wrong path</strong> and marked every single-request run
+    degenerate without ever opening its saved responses &mdash; 71 KB of good output per run went
+    unread because the file it wanted sits at the top level for a single cell and one directory down
+    for a sweep.</p>
+    <p><strong>An output-quality verdict was measuring our own harness</strong> (section 05). The
+    finding it produced was withdrawn entirely.</p>
+    <p><strong>A speculation comparison ran at the wrong input length</strong>, comparing 32K against
+    2K and reporting the difference as a speculation gain. Discarded and re-run matched, where the
+    real figure is +6.8%.</p>
+    <p><strong>A rebuild step failed on our own command.</strong> The queue that was to rebuild
+    FreeToken at its newest commit omitted the Dockerfile path; Docker found no file and the step
+    failed in under a second. The queue logged it and skipped the dependent runs rather than
+    retrying, so nothing here is affected. The image was rebuilt on retry with the path corrected,
+    but <strong>the accuracy re-run on that newer FreeToken build has not been done</strong>, so
+    section 08 reports FreeToken at the older one.</p>
+    <p><strong>A planned rebuild check was dropped as unusable.</strong> Comparing token-for-token
+    output between two builds only works if an engine reproduces itself, and neither of these does:
+    the same request sent twice to one unchanged server comes back different (llama.cpp 13 of 16
+    prompts, SGLang 16 of 16, with speculation off in both). Rebuilds are checked by scoring answers
+    instead &mdash; section 08.</p>
+    <p><strong>The host reset once</strong>, in the middle of a 32K placement arm that read the
+    lookup table lazily from a memory map. The journal ends on routine traffic with no out-of-memory
+    kill, no GPU fault and no panic, so the cause is unknown; the interrupted arm is kept and marked
+    void, and its re-run is scheduled last, under a host-memory guard.</p>
+  </div>
+</section>

@@ -14,11 +14,111 @@ FINDINGS.md
 FUTURE_TESTS.md
 add_report.md
 
-# local engine builder (the repo uses the upstream image)
-scripts/build_llamacpp.sh
+# scripts/build_llamacpp.sh WAS ignored here on the grounds that "the repo uses
+# the upstream image". That stopped being true: the MTP result (report sections
+# 11 and 15) runs on an image this script builds from the checkpoint publisher's
+# fork, and section 10's arms come from an open pull request. Without it those
+# sections are not reproducible, so it ships.
 
-# raw outputs and scratch
-artifacts/
+# raw outputs and scratch: artifacts/ is ignored by default and the runs the
+# engine benchmark report actually reads are allow-listed back in below. The
+# list is generated from bench/report_data.py's own globs, not hand-typed, so
+# it cannot drift from what the report cites. Left out on purpose: _quarantine/
+# (rejected runs), the void arms (V-01/02/03, B-22, B-23 — see artifacts/README.md),
+# empty shells, and every run superseded by a later one.
+artifacts/*
+!artifacts/README.md
+# thermal: the report reads the traces behind the full-window and ladder
+# tables (section 12). The other ~148 belong to arms nobody cites.
+!artifacts/thermal/
+artifacts/thermal/*
+!artifacts/thermal/context_fn_ctxladder_freetoken_20260906T174446Z.csv
+!artifacts/thermal/context_fn_ctxladder_llamacpp_20260906T175538Z.csv
+!artifacts/thermal/context_fn_ctxladder_sglang_20260906T173725Z.csv
+!artifacts/thermal/context_fn_maxctx_freetoken_20260903T162420Z.csv
+!artifacts/thermal/context_fn_maxctx_llamacpp_20260903T173832Z.csv
+!artifacts/thermal/context_fn_maxctx_llamacpp_20260906T111813Z.csv
+!artifacts/thermal/context_fn_maxctx_sglang_20260903T204814Z.csv
+!artifacts/boot_freetoken_20260906T134213Z/
+!artifacts/boot_llamacpp_20260906T132928Z/
+!artifacts/boot_sglang_20260906T133125Z/
+!artifacts/context_fn_ctxladder_freetoken_20260903T210949Z/
+!artifacts/context_fn_ctxladder_freetoken_20260903T214035Z/
+!artifacts/context_fn_ctxladder_freetoken_20260906T174446Z/
+!artifacts/context_fn_ctxladder_llamacpp_20260903T212404Z/
+!artifacts/context_fn_ctxladder_llamacpp_20260903T220644Z/
+!artifacts/context_fn_ctxladder_llamacpp_20260906T145514Z/
+!artifacts/context_fn_ctxladder_llamacpp_20260906T175538Z/
+!artifacts/context_fn_ctxladder_llamacpp_20260906T182130Z/
+!artifacts/context_fn_ctxladder_sglang_20260903T205922Z/
+!artifacts/context_fn_ctxladder_sglang_20260903T212624Z/
+!artifacts/context_fn_ctxladder_sglang_20260906T173725Z/
+!artifacts/context_fn_maxctx_freetoken_20260903T162420Z/
+!artifacts/context_fn_maxctx_llamacpp_20260903T173832Z/
+!artifacts/context_fn_maxctx_llamacpp_20260906T111813Z/
+!artifacts/context_fn_maxctx_sglang_20260903T204814Z/
+!artifacts/fn_code_tune_freetoken_20260903T225554Z/
+!artifacts/fn_code_tune_freetoken_20260903T231437Z/
+!artifacts/fn_code_tune_llamacpp_20260905T111107Z/
+!artifacts/fn_code_tune_llamacpp_20260905T111656Z/
+!artifacts/fn_code_tune_llamacpp_20260905T112254Z/
+!artifacts/fn_code_tune_llamacpp_20260905T112840Z/
+!artifacts/fn_code_tune_llamacpp_20260905T113438Z/
+!artifacts/fn_code_tune_llamacpp_20260905T114020Z/
+!artifacts/fn_code_tune_llamacpp_20260905T115053Z/
+!artifacts/fn_code_tune_llamacpp_20260905T120142Z/
+!artifacts/fn_code_tune_llamacpp_20260905T121218Z/
+!artifacts/fn_code_tune_llamacpp_20260905T122300Z/
+!artifacts/fn_code_tune_llamacpp_20260905T125130Z/
+!artifacts/fn_code_tune_llamacpp_20260905T125706Z/
+!artifacts/fn_code_tune_llamacpp_20260905T130224Z/
+!artifacts/fn_code_tune_llamacpp_20260905T130741Z/
+!artifacts/fn_code_tune_llamacpp_20260905T220259Z/
+!artifacts/fn_code_tune_llamacpp_20260905T220846Z/
+!artifacts/fn_code_tune_llamacpp_20260905T222024Z/
+!artifacts/fn_code_tune_llamacpp_20260905T222937Z/
+!artifacts/fn_code_tune_llamacpp_20260906T155752Z/
+!artifacts/fn_code_tune_llamacpp_20260906T160724Z/
+!artifacts/fn_code_tune_llamacpp_20260906T161624Z/
+!artifacts/fn_code_tune_llamacpp_20260906T162141Z/
+!artifacts/fn_code_tune_sglang_20260903T225048Z/
+!artifacts/fn_code_tune_sglang_20260903T230845Z/
+!artifacts/fn_fast_sglang_20260905T104808Z/
+!artifacts/ftcache_20260906T120411Z/
+!artifacts/quality_freetoken_20260904T193052Z/
+!artifacts/quality_llamacpp_20260904T180528Z/
+!artifacts/quality_llamacpp_20260906T135854Z/
+!artifacts/quality_sglang_20260904T164329Z/
+# The two repeatability controls. The report no longer shows them (the greedy
+# tables were cut), but BLOCKERS B-21 names them as the evidence that greedy
+# token identity is not a usable gate on this box, and a record that cites an
+# artifact should be able to produce it. 350 KB.
+!artifacts/greedy_mtprep_llamacpp_20260905T221716Z/
+!artifacts/greedy_specoffrep_sglang_20260906T144959Z/
+# VRAM tier x MTP (section 15): the arms results/tier_mtp/verdicts.json cites.
+!artifacts/fn_tier_llamacpp_20260907T154504Z/
+!artifacts/fn_tier_llamacpp_20260907T154728Z/
+!artifacts/fn_tier_llamacpp_20260907T155448Z/
+!artifacts/fn_tier_llamacpp_20260907T160057Z/
+!artifacts/fn_tier_llamacpp_20260907T170140Z/
+!artifacts/fn_tier_llamacpp_20260907T170445Z/
+!artifacts/fn_tier_llamacpp_20260907T171148Z/
+!artifacts/fn_tier_llamacpp_20260907T171406Z/
+!artifacts/fn_tier_llamacpp_20260907T172015Z/
+!artifacts/fn_tier_llamacpp_20260907T173126Z/
+!artifacts/fn_tier_llamacpp_20260907T173341Z/
+!artifacts/fn_tier_llamacpp_20260907T173903Z/
+!artifacts/fn_tier_llamacpp_20260907T174109Z/
+!artifacts/fn_tier_llamacpp_20260907T174611Z/
+!artifacts/fn_tier_llamacpp_20260907T174757Z/
+!artifacts/fn_tier_llamacpp_20260907T175131Z/
+!artifacts/fn_tier_llamacpp_20260907T175237Z/
+!artifacts/fn_tier_llamacpp_20260907T191441Z/
+!artifacts/fn_tier_llamacpp_20260907T191720Z/
+!artifacts/fn_tier_llamacpp_20260907T191934Z/
+!artifacts/fn_tier_llamacpp_20260907T192627Z/
+!artifacts/fn_tier_llamacpp_20260907T192857Z/
+
 benchmark/bench_results/
 benchmark/results_speed_v2.csv
 
@@ -58,3 +158,45 @@ results/corrections/*
 !results/corrections/20260830T182917Z_SPEC-01-rate/
 !results/corrections/20260830T193552Z_CONC-01/
 !results/corrections/20260830T200958Z_THINK-01/
+
+# second report: the two evidence directories it reads, and the two documents it
+# refers to. results/*.log stays out (run logs, up to 1 MB each).
+!results/gates/
+results/gates/*
+!results/gates/mtp0_20260905T220208Z/
+!results/tier_mtp/
+results/tier_mtp/*.log
+!results/CONFIG_COVERAGE.md
+
+# transfer bundles built by hand, not part of the repo
+*.zip
+
+# Inside a shipped run directory, drop what no reader opens. The soak arm alone
+# carried 44 MB of these for a single cited number.
+artifacts/*/phases/
+artifacts/*/*timeslices*
+artifacts/*/server_metrics_export.*
+artifacts/*/profile_export.jsonl
+artifacts/*/gpu_telemetry_export.jsonl
+artifacts/*/inputs.json
+artifacts/*/*/inputs.json
+artifacts/*/logs/
+artifacts/*/*/server_metrics_export.*
+artifacts/*/*/*timeslices*
+artifacts/*/*/profile_export.jsonl
+artifacts/*/*/gpu_telemetry_export.jsonl
+artifacts/*/*/logs/
+# server.log.after is up to 2.2 MB per arm and only two are ever parsed - the
+# MTP acceptance rates in section 11 come from these two.
+artifacts/*/server.log.after
+!artifacts/fn_code_tune_llamacpp_20260905T220846Z/server.log.after
+!artifacts/fn_code_tune_llamacpp_20260905T222937Z/server.log.after
+
+# Working notes, not deliverables. The lab record (every defect, every void run,
+# the queue of what to try next) is written for the operator, not for someone
+# cloning the repo - same reason FINDINGS.md / TODO.md / PLAN.md / NOTES.md are
+# ignored above. Anything a reader needs is stated in the report itself, which
+# cites no blocker IDs.
+auto_run/
+results/BLOCKERS.md
+results/SLIDES.md

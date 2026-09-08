@@ -1,0 +1,17 @@
+{
+  "engine": "llamacpp",
+  "container": "q38n",
+  "scope": "null",
+  "state": "running",
+  "restart_count": 0,
+  "oom_killed": false,
+  "cgroup": "/sys/fs/cgroup/system.slice/docker-7edbb82f70d1c4c545a978295c021fe62914198c6918180ad3647fd2c9497ef3.scope",
+  "memory_peak_bytes": 2968113152,
+  "memory_swap_peak_bytes": 0,
+  "memory_events": {"low": 0, "high": 0, "max": 0, "oom": 0, "oom_kill": 0, "oom_group_kill": 0, "sock_throttled": 0},
+  "host_swap_used_bytes": 0,
+  "cap_bytes": null,
+  "cap_readback": "not-verified",
+  "note_cap": "cap_bytes is what was ASKED for; cap_readback is want/docker_mem/docker_swap/cgroup_max/cgroup_swap_max as verify_mem_cap read them back. Trust the readback.",
+  "note": "restart_count>0 voids the arm (every service is restart:no). oom_killed=true is a capacity finding. memory.events.oom_kill>0 with oom_killed=false means the HOST killer fired."
+}

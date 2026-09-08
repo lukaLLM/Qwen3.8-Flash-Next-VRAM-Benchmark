@@ -1,0 +1,9 @@
+{
+  "error": null,
+  "mamba_slots": 8,
+  "moe_cache_size": 24576,
+  "num_pages": 1024,
+  "num_swa_pages": 0,
+  "request_id": "c87d1b72-2cb8-47e0-aa2c-5e4bd5644044",
+  "status": "ok"
+}

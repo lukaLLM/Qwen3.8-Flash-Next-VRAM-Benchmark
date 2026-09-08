@@ -11,6 +11,33 @@ to decode. The largest free speed lever is not the card, it is
 model reaches **36 tok/s on an 8 GB card** and **8.5 tok/s with no GPU**. A
 larger microbatch buys **+30.8% prefill for about 1 GiB of VRAM**.
 
+<img alt="Decode tok/s by VRAM tier with the draft head off and on: multi-token prediction is a large loss at every tier that offloads experts to the CPU and a 1.61x gain only at 96 GiB" src="assets/eb_tier_mtp.png">
+
+**Answering a viewer: an RTX 4090, 24 GB VRAM, 64 GB system RAM.**
+
+- **Does it run? Yes — about 34 tok/s.** Verified in a container hard-capped at
+  64 GB, and again at 56 GB to leave room for an OS: 34.4 and 34.7 tok/s, the same
+  speed this box gets at that VRAM tier with all 91 GiB.
+- **Should you turn on MTP? No.** On a 24 GB card the draft head is **3.4× slower**
+  (10.2 vs 34.7 tok/s). Its advertised 1.3–1.7× is real, but only when every expert
+  is on the GPU — at 96 GiB it is 1.61×. Putting the head on the CPU does not help.
+- **The flags that matter**, on top of the usual ones:
+
+```bash
+--n-cpu-moe 42                    # 42 of 48 expert layers on the CPU
+-ot per_layer_token_embd=CPU      # the 27 GiB lookup table stays off the GPU
+--load-mode mmap
+--lazy-mode on                    # read that table from SSD; server sits at ~3 GiB
+-ub 512
+```
+
+Without `--lazy-mode on` it still runs at the same speed, but streams the model off
+the disk continuously to stay under the limit — 611 MB/s, all run long.
+
+The chart below is the original ladder, kept for reference. It ran on this box's
+**91 GiB of host RAM**, which the chart itself never stated — the new one above is
+the version with the RAM budget tested rather than assumed.
+
 <img alt="Decode tok/s by VRAM tier: no GPU 8.3, 8 GiB 35.7, 16 GiB 37.9, 24 GiB 39.0, 32 GiB 42.2, 48 GiB 51.7, 96 GiB 109.1" src="assets/ladder_decode.png">
 
 The full write-up, with a diagram per result and every limit stated, is
@@ -18,6 +45,118 @@ The full write-up, with a diagram per result and every limit stated, is
 
 We discuss it here: [Reddit thread](https://www.reddit.com/r/LocalLLaMA/comments/1w3pl64/qwen38flashnext_in_llamacpp_from_cpuonly_to_96gb/)
 
+
+---
+
+# Second report: three engines, one card
+
+The first report above is one engine. **[`engine_benchmark_report.html`](engine_benchmark_report.html)**
+is the follow-up: the same model on the same card served three ways — llama.cpp,
+SGLang and FreeToken — plus everything measured since. Open it in a browser; it is
+one self-contained file with every chart embedded.
+
+<img alt="Decode tok/s against prompt length for four arms: SGLang flat near 180, FreeToken flat near 100, llama.cpp sliding 102 to 34, llama.cpp with MTP holding near 100" src="assets/eb_decode_ladder.png">
+
+**What it measures, and what came out:**
+
+- **Speed against context, 2K to 262K.** Three different shapes, not three speeds.
+  SGLang holds ~180 tok/s decode; FreeToken is almost flat; llama.cpp collapses
+  3× across the ladder. Prefill spreads **7.3×** at the full window.
+- **Accuracy.** GSM8K (1,319 problems) and MATH-500, exact match, no LLM judge.
+  All four arms land within eight-tenths of a point, and **nine paired tests come
+  back null.** Which stack you pick changes how long you wait, not what you get back.
+- **Multi-token prediction, working for the first time.** The checkpoint ships its
+  own draft head; llama.cpp could not load it until a fork build. It is worth
+  **1.63× at 8K, 1.69× at 32K and 2.6× at the full window**, and it changes the
+  shape of the curve rather than just lifting it. Accuracy with it on: 95.75%
+  against 95.60%, paired p = 0.87.
+- **Why `--load-mode none` and not `mlock`** — a viewer's question from the last
+  video, answered with all five modes measured. They are the same within 4%.
+- **GPU temperature, power and energy.** Nothing ever throttled; peak 82 °C with
+  12 °C of headroom. The interesting number is energy per request: **8.9× between
+  the fastest and slowest stack**, because a GPU draws its working power whatever
+  it is doing and the only lever is finishing sooner.
+- **Startup cost**, which nobody publishes and which ranks the engines backwards:
+  llama.cpp answers in 16 s, SGLang 108 s, FreeToken 126 s — and FreeToken's
+  `/health` returns 200 **79 seconds before it can serve**.
+- **Resizing the KV cache on a running server** (FreeToken): ~1 s against 82 s to
+  restart, and the pool turns out to be a wall, not a slope.
+
+<img alt="Energy for one full-window request: SGLang 13 kJ, FreeToken 33 kJ, llama.cpp with MTP 104 kJ, llama.cpp 116 kJ" src="assets/eb_energy.png">
+
+Every number in that report is generated from saved evidence by
+`bench/report_data.py` — nothing is typed in by hand. The runs it reads are in
+[`artifacts/`](artifacts/README.md), with the void ones listed and explained.
+
+## The configuration that won, per engine
+
+Every number below is the configuration its own artifact recorded, not a
+recommendation reconstructed afterwards. One compose file per engine, all of it
+driven by environment variables, so a configuration *is* a set of variables.
+
+| Engine | Decode / prefill at 32K | The settings that made it |
+|---|---|---|
+| **SGLang** — fastest overall | **183 / 8,088 tok/s** | NVFP4, `ENGINE_CTX=262144`, `MEM_FRACTION=0.90`, `PREFILL_BUDGET=8192`, KV `fp8_e4m3`, NEXTN speculation on |
+| **llama.cpp + MTP** — fastest llama.cpp | **160 tok/s at 2K** (1.61× over the same build without it) | `LLAMA_IMAGE=llamacpp-mtp:d1a92352`, `SPEC_TYPE=draft-mtp`, `SPEC_DRAFT_N_MAX=5`, `SPEC_DRAFT_NGL=99`, **and `--n-cpu-moe 0`** |
+| **FreeToken** | 99 / 3,026 tok/s | NVFP4, `--moe-backend offload` **and** `--ple-backend disk` together |
+| **llama.cpp** (stock image) | 69 / 1,859 tok/s | `LOAD_MODE=none`, `-ot per_layer_token_embd=CPU`, `UBATCH=1024`, `-ngl 999`, `--n-cpu-moe 0` |
+
+Four settings carry most of the difference, and each is a measured pair:
+
+- **`-ot per_layer_token_embd=CPU`** — the 27 GiB lookup table on the CPU. On the
+  GPU instead: **55.6× slower** to decode. This one setting is why the model fits.
+- **`--moe-backend offload` + `--ple-backend disk`** (FreeToken) — neither alone
+  fits. Experts 63.32 GiB + pinned table 47.68 GiB = 111 GiB on a 91 GiB box;
+  streaming the table from NVMe leaves 63.32 GiB, which fits.
+- **`UBATCH=1024`** (llama.cpp) — +8.8% prefill over 512. 2048 is no better.
+- **`SPEC_TYPE=draft-mtp`** — **1.61× decode, but only at `--n-cpu-moe 0`.** With
+  any expert offload it is a 0.29–0.38× *loss*. See the chart at the top.
+
+**On a 24 GB card**, the answer is different: `--n-cpu-moe 42`,
+`-ot per_layer_token_embd=CPU`, `--load-mode mmap`, **`--lazy-mode on`**, `-ub 512`,
+and **MTP off**. That runs at ~34 tok/s in 64 GB of system RAM.
+
+```bash
+# llama.cpp, the stock-image baseline
+LOAD_MODE=none UBATCH=1024 ./scripts/serve.sh --ctx 262144
+
+# llama.cpp with the draft head (build the image first, see below)
+LLAMA_IMAGE=llamacpp-mtp:d1a92352 SPEC_TYPE=draft-mtp SPEC_DRAFT_N_MAX=5 \
+  ./scripts/serve.sh --ctx 262144
+
+# SGLang and FreeToken have their own compose files
+docker compose -f docker/docker-compose.sglang.yaml    up -d
+docker compose -f docker/docker-compose.freetoken.yaml up -d
+```
+
+## Reproduce the second report
+
+```bash
+uv sync                                  # pinned by pyproject.toml + uv.lock
+./scripts/download_models.sh             # weights, resumable and sha256-verified
+
+# one engine, one workload, fully recorded (plan gate: prints its plan without --execute)
+./bench/run.sh --execute --plan-id FLASHNEXT-R1 llamacpp fn_code_tune
+./bench/run.sh --execute --plan-id FLASHNEXT-R1 sglang   fn_ctxladder
+
+uv run --with matplotlib bench/make_charts.py   # assets/eb_*.png
+uv run bench/build_report.py                    # engine_benchmark_report.html
+```
+
+One engine runs at a time, behind a lock; every arm boots fresh, settles the card,
+and records its resolved flags, image digest and telemetry before the first request.
+
+**A note on the SGLang image.** It is our own overlay: an Aug 17 nightly plus four
+upstream pull requests that carry this model's SM120 kernels
+([#36567](https://github.com/sgl-project/sglang/pull/36567),
+[#36556](https://github.com/sgl-project/sglang/pull/36556),
+[#36749](https://github.com/sgl-project/sglang/pull/36749),
+[#36750](https://github.com/sgl-project/sglang/pull/36750)) and one local patch for
+FP8 KV dequantisation. Those are other people's work and every SGLang number here
+depends on them. There is no build script in this repo for that overlay;
+`docker/docker-compose.sglang.yaml` documents exactly how the image is run.
+
+---
 ## YouTube
 
 LOCAL AI SERIES:
@@ -450,14 +589,22 @@ arm's VRAM to be released and for the card to cool, then holds a floor delay.
 scripts/download_models.sh   sequential, resumable, sha256-verified. aria2c, not
                              `hf download`, which cannot resume.
 scripts/serve.sh             quant name -> cache path -> server.
-docker/docker-compose.yaml   one service; SPEC_TYPE, OT, LAZY, KV_UNIFIED, NGL,
-                             UBATCH, N_CPU_MOE, PARALLEL.
-benchmark/                   the harnesses and controllers. See benchmark/README.md.
-docs/                        operational notes: GPU monitoring and cooldown,
-                             the run lifecycle and locking, a one-line test map.
-results/                     saved evidence for every published number.
-assets/                      the README charts, as dark PNG files.
-report.html                  the full write-up, with diagrams and limits.
+docker/                      one compose file per engine: docker-compose.yaml
+                             (llama.cpp), .sglang.yaml, .freetoken.yaml, plus the
+                             FreeToken image and the no-speculation override.
+benchmark/                   the first report's harnesses. See benchmark/README.md.
+bench/                       the second report's harness: run.sh and the engine
+                             library, the workload .conf files, the accuracy and
+                             boot/cache/greedy arms, and the report generators
+                             (report_data.py -> build_report.py, make_charts.py).
+artifacts/                   the saved runs the second report reads. See
+                             artifacts/README.md for the map and the void list.
+results/                     saved evidence for the first report, and the tier
+                             experiment's verdicts and cgroup traces.
+assets/                      the charts for both reports, as dark PNG files.
+report.html                  first report: one engine, why the model fits.
+engine_benchmark_report.html second report: three engines, self-contained.
+pyproject.toml, uv.lock      the pinned Python environment (uv).
 ```
 
 ## References

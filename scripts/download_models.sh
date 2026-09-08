@@ -132,6 +132,29 @@ cd "$REPO_ROOT"
 # a single number. Interrupting costs nothing either way - a finished shard is
 # symlinked into the snapshot, and an in-flight one resumes at its offset.
 GGUF_MODELS=(
+  # MTP draft head for the llama.cpp speculative arm. 2.79 GB, one file.
+  #
+  # Unsloth published native MTP for Qwen3.8-Flash-Next claiming 1.3-1.7x decode
+  # with no accuracy change - 170 tok/s on this exact card against a ~100 tok/s
+  # baseline. Our own measured baseline is 109.1 tok/s at 2048, so the claim is
+  # in the right neighbourhood and worth testing rather than repeating.
+  #
+  # WHICH FILE AND WHY. The repo publishes six MTP variants (BF16/Q8_0/Q4_K_M,
+  # each plain and "shared"). The guide names the SHARED Q8_0 specifically, and
+  # shared is the smaller of the two families (2.79 vs 4.14 GB at Q8_0) because
+  # it reuses the base model's embeddings instead of carrying its own. Q8_0
+  # rather than Q4_K_M for the draft head: a drafter that is too lossy just gets
+  # its tokens rejected, which costs speed without saving anything that matters.
+  #
+  # This is a DRAFT HEAD, not a model - it is useless on its own and pairs with
+  # the UD-IQ4_XS base we already have. It needs a llama.cpp build that can load
+  # a draft-head-only GGUF; our current one cannot. See PLAN.
+  # NOTE: the "repo:PATTERN@REV" pin form was planned but never implemented -
+  # the spec is not split on "@", so a pin lands inside the glob and the repo id
+  # fails Hub validation. Record the revision here instead of faking a pin:
+  #   38bb39ee97821de2c9009abb7e93950eec396e66  (checked 2026-09-02)
+  "unsloth/Qwen3.8-Flash-Next-GGUF:mtp-Qwen3.8-Flash-Next-shared-Q8_0"
+
   "unsloth/Qwen3.8-Flash-Next-GGUF:UD-IQ4_XS"    #  93.7 GB
   "unsloth/Qwen3.8-Flash-Next-GGUF:UD-Q4_K_XL"   # 111.3 GB
   # "unsloth/Qwen3.8-Flash-Next-GGUF:UD-Q3_K_XL" #  90.0 GB, the one quant with
@@ -146,6 +169,7 @@ GGUF_MODELS=(
 # since the upstream converter drops it. Left commented so nobody starts a
 # 355 GB transfer by answering "all" at the prompt.
 HF_MODELS=(
+
 
   # The BF16 safetensors are 355 GB and are only worth pulling if we end up
   # converting our own GGUF - see the note above.

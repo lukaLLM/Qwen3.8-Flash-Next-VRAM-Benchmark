@@ -1,0 +1,34 @@
+  [1/16] item-0  733 chars  ids=256
+  [2/16] item-1  835 chars  ids=256
+  [3/16] item-2  894 chars  ids=256
+  [4/16] item-3  1088 chars  ids=256
+  [5/16] item-4  950 chars  ids=256
+  [6/16] item-5  1021 chars  ids=256
+  [7/16] item-6  795 chars  ids=256
+  [8/16] item-7  980 chars  ids=256
+  [9/16] item-8  878 chars  ids=256
+  [10/16] item-9  885 chars  ids=256
+  [11/16] item-10  875 chars  ids=256
+  [12/16] item-11  903 chars  ids=256
+  [13/16] item-12  861 chars  ids=256
+  [14/16] item-13  900 chars  ids=256
+  [15/16] item-14  895 chars  ids=256
+  [16/16] item-15  1123 chars  ids=256
+  basis=token_ids  errors=0  -> /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/greedy_mtprep_llamacpp_20260905T221716Z/c1
+  [1/16] item-0  733 chars  ids=256
+  [2/16] item-1  1028 chars  ids=256
+  [3/16] item-2  883 chars  ids=256
+  [4/16] item-3  1065 chars  ids=256
+  [5/16] item-4  977 chars  ids=256
+  [6/16] item-5  1021 chars  ids=256
+  [7/16] item-6  832 chars  ids=256
+  [8/16] item-7  957 chars  ids=256
+  [9/16] item-8  875 chars  ids=256
+  [10/16] item-9  897 chars  ids=256
+  [11/16] item-10  875 chars  ids=256
+  [12/16] item-11  850 chars  ids=256
+  [13/16] item-12  857 chars  ids=256
+  [14/16] item-13  1047 chars  ids=256
+  [15/16] item-14  929 chars  ids=256
+  [16/16] item-15  1101 chars  ids=256
+  basis=token_ids  errors=0  -> /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/greedy_mtprep_llamacpp_20260905T221716Z/c1_r2

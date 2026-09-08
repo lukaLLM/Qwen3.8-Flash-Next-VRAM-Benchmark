@@ -1,0 +1,57 @@
+{
+  "engine": "llamacpp",
+  "workload": "fn_ctxladder",
+  "stamp": "20260903T212404Z",
+  "admission_slots": 1,
+  "native_context": 262144,
+  "osl": 512,
+  "ladder": [
+    {
+      "requested_isl": 2048,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 2049.0,
+      "ttft_ms": 1088.303883,
+      "ttft_p95_ms": 1088.303883,
+      "errors": 0
+    },
+    {
+      "requested_isl": 8192,
+      "served": false,
+      "void_thermal": false,
+      "rejected_by_server": true
+    },
+    {
+      "requested_isl": 32768,
+      "served": false,
+      "void_thermal": false,
+      "rejected_by_server": true
+    },
+    {
+      "requested_isl": 65536,
+      "served": false,
+      "void_thermal": false,
+      "rejected_by_server": true
+    },
+    {
+      "requested_isl": 131072,
+      "served": false,
+      "void_thermal": false,
+      "rejected_by_server": true
+    },
+    {
+      "requested_isl": 261120,
+      "served": false,
+      "void_thermal": false,
+      "rejected_by_server": true
+    }
+  ],
+  "capability_probe": {
+    "allocator_reported_candidate_limit": null,
+    "candidate_is_proof_of_capacity": false,
+    "requested_isl": null,
+    "result": "not_run",
+    "note": "per-engine capability finding; ISL differs per engine by construction so this is NOT a paired comparison and must be reported apart from the ladder"
+  }
+}

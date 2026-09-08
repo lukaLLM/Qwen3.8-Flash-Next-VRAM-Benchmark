@@ -1,0 +1,4 @@
+[
+{"attempt":1,"boot_s":81.84,"health_ok_s":3.33,"first_gen_s":43.67,"gen_ok":1,"host_cached_mib":17756,"host_available_mib":89708},
+{"attempt":2,"boot_s":81.83,"health_ok_s":3.06,"first_gen_s":43.78,"gen_ok":1,"host_cached_mib":17529,"host_available_mib":89491},
+{"attempt":3,"boot_s":81.84,"health_ok_s":3.32,"first_gen_s":43.72,"gen_ok":1,"host_cached_mib":17616,"host_available_mib":89247}]

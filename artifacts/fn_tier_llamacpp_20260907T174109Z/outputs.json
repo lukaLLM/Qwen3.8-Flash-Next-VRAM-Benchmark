@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "data": [
+    {
+      "session_num": 0,
+      "conversation_id": "session_000001",
+      "turn_index": 0,
+      "x_request_id": "6ac72027-ff13-4ea9-80d4-0e2dc3155dc4",
+      "request_start_ns": 1788802924063257391,
+      "request_end_ns": 1788803004431802033,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 80368.299911,
+        "time_to_first_token": 8423.122985,
+        "inter_token_latency": 282.1379487294118
+      },
+      "response_text": "Let me break down this problem step by step:\n\n1. We have n boxes with weights a[0], a[1], ..., a[n-1] arranged in a row\n2. For each possible k (from 1 to n), we can divide the boxes into groups of size k\n3. This is only valid if k divides n evenly (so we get exactly n/k trucks)\n4. For each valid k, we calculate the total weight of each truck (consecutive groups of k boxes)\n5. We want the maximum absolute difference between any two truck weights across ALL valid k values\n6. If there's only one truck (k=n), the difference is 0\n\nKey insights:\n- k must be a divisor of n\n- For each divisor k of n, we compute the sum of each consecutive block of size k\n- We find max_sum - min_sum for that k\n- We take the maximum of this difference over all valid divisors k\n\nAlgorithm:\n1. Find all divisors of n\n2. For each divisor k:\n   a. If k == n, skip (only one truck, difference = 0)\n   b. Otherwise, compute prefix sums to quickly get sum"
+    },
+    {
+      "session_num": 1,
+      "conversation_id": "session_000002",
+      "turn_index": 0,
+      "x_request_id": "583c21a4-648c-47e3-8a71-19be0e25b08d",
+      "request_start_ns": 1788803004433298989,
+      "request_end_ns": 1788803080943223623,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 76509.924634,
+        "time_to_first_token": 8621.307987,
+        "inter_token_latency": 266.22986920392157
+      },
+      "response_text": "```python\nclass Solution:\n    def minExtraChar(self, s: str, dictionary: List[str]) -> int:\n        \"\"\"\n        Dynamic Programming approach to find minimum extra characters.\n        \n        Let dp[i] be the minimum number of extra characters needed for the prefix s[0:i].\n        \n        Base case: dp[0] = 0 (empty string needs 0 extra chars)\n        \n        Transition: For each position i from 1 to n:\n          - Option 1: Consider s[i-1] as an extra character. Then dp[i] = dp[i-1] + 1.\n          - Option 2: Try all substrings ending at i-1 that are in the dictionary. \n            If s[j:i] is in dictionary, then dp[i] = min(dp[i], dp[j]).\n        \n        Answer is dp[n].\n        \n        Time Complexity: O(n^2 * k) where n is length of s and k is max word length (for string slicing/comparison)\n        Space Complexity: O(n + d*k) for dp array and dictionary set\n        \"\"\"\n        n = len(s)\n        # Convert dictionary to a set for O(1"
+    },
+    {
+      "session_num": 2,
+      "conversation_id": "session_000003",
+      "turn_index": 0,
+      "x_request_id": "169caa4f-f32f-4ca0-8e0f-f66ce9b8abad",
+      "request_start_ns": 1788803080945523601,
+      "request_end_ns": 1788803143622926801,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 62677.4032,
+        "time_to_first_token": 8726.306472,
+        "inter_token_latency": 211.57292834509803
+      },
+      "response_text": "```python\nclass Solution:\n    def longestSemiRepetitiveSubstring(self, s: str) -> int:\n        \"\"\"\n        Find the length of the longest semi-repetitive substring.\n        A semi-repetitive string has at most one consecutive pair of same digits.\n        \n        Approach: Sliding window with tracking of consecutive pairs.\n        We maintain a window [left, right] and count how many consecutive duplicate pairs exist in it.\n        If the count exceeds 1, we shrink the window from the left until it's valid again.\n        \"\"\"\n        n = len(s)\n        if n <= 1:\n            return n\n        \n        max_len = 0\n        left = 0\n        # Count of consecutive duplicate pairs in current window [left, right]\n        dup_count = 0\n        \n        for right in range(n):\n            # Check if s[right-1] and s[right] form a new consecutive pair\n            if right > 0 and s[right] == s[right - 1]:\n                dup_count += 1\n            \n            # Shrink window from left until we have at most 1 consecutive pair\n            while dup_count > 1:\n               "
+    },
+    {
+      "session_num": 3,
+      "conversation_id": "session_000004",
+      "turn_index": 0,
+      "x_request_id": "e819d825-b7ce-4590-8b6d-cd02129beacb",
+      "request_start_ns": 1788803143624476307,
+      "request_end_ns": 1788803157865156474,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 14240.596097,
+        "time_to_first_token": 7088.1295359999995,
+        "inter_token_latency": 28.048888474509805
+      },
+      "response_text": "```python\nclass Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        \"\"\"\n        To minimize the sum of a k-avoiding array of length n, we should pick the smallest possible distinct positive integers.\n        \n        Key insight:\n        - We want to pick numbers starting from 1, 2, 3, ... as long as adding a new number doesn't create a pair that sums to k.\n        - For any number x we consider adding, if there's already a number y in our set such that x + y = k, then we cannot add x.\n        - Since we're picking numbers in increasing order, when we consider a number x:\n          - If x >= k, then for any previously picked number y (which is < x), we have y + x > k only if y > k - x. But since y < x and x >= k, then k - x <= 0, so y + x > k always holds? Not quite.\n          - Actually, let's think differently. The constraint is that no two distinct elements sum to k.\n          - If we pick a number x where x < k, then we cannot"
+    }
+  ]
+}

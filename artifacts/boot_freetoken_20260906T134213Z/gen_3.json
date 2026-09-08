@@ -1,0 +1,1 @@
+{"id":"chatcmpl-0","object":"chat.completion","created":1788703075,"model":"qwen3.8-flash-next","choices":[{"index":0,"message":{"role":"assistant","content":"","reasoning_content":"We need to respond to user: \"Say hello.\" Simple. Need final"},"finish_reason":"length"}],"usage":{"prompt_tokens":55,"completion_tokens":15,"total_tokens":70}}

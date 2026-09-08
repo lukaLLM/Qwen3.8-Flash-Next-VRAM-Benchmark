@@ -1,0 +1,5 @@
+[
+{"attempt":1,"boot_s":15.87,"health_ok_s":15.50,"first_gen_s":0.38,"gen_ok":1,"host_cached_mib":51298,"host_available_mib":88823},
+{"attempt":2,"boot_s":15.80,"health_ok_s":12.75,"first_gen_s":0.41,"gen_ok":1,"host_cached_mib":38712,"host_available_mib":88864},
+{"attempt":3,"boot_s":15.80,"health_ok_s":10.74,"first_gen_s":0.38,"gen_ok":1,"host_cached_mib":50986,"host_available_mib":88851},
+{"attempt":4,"boot_s":15.81,"health_ok_s":12.76,"first_gen_s":0.42,"gen_ok":1,"host_cached_mib":59658,"host_available_mib":88852}]

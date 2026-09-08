@@ -1,0 +1,60 @@
+{
+  "stamp": "20260903T225554Z",
+  "workload": "fn_code_tune",
+  "engine": "freetoken",
+  "engine_version": "0.1.2",
+  "image_digest": "freetoken@sha256:9748b8072459f13c96a536906dc208f3175240f83a8d5685ea5cd53f66762074",
+  "model": "Qwen3.8-Flash-Next",
+  "model_revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+  "kv_report_from_engine_log": "none reported by freetoken",
+  "parity_flags": {
+    "context": "19456",
+    "mem_fraction": "0.90",
+    "prefill_budget": "8192",
+    "admission_slots": "2",
+    "cudagraph_max_bs": "1",
+    "prefix_cache": "disabled",
+    "kv_cache_dtype": "bfloat16"
+  },
+  "workload_params": {
+    "isl": "8192",
+    "osl": "1024",
+    "concurrency": "1",
+    "duration_s": "0",
+    "warmup": "2",
+    "seed": "42",
+    "goodput_slo": "time_to_first_token:30000 inter_token_latency:100",
+    "sampling": "thinking=off temperature=0.7,top_p=0.80,top_k=20,presence=1.5",
+    "input_file": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/data/lcb_code_8192.jsonl",
+    "input_sha256": "bb56de89b0a23017d13d9e0da548f62a36053f664cccc3a48e9fe40f9d7156e8",
+    "custom_dataset_type": "single_turn"
+  },
+  "thermal_trace": "/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/thermal/fn_code_tune_freetoken_20260903T225554Z.csv",
+  "server_boot_args": "serve --model /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 --served-model-name Qwen3.8-Flash-Next --host 0.0.0.0 --port 8000 --nvfp4-backend auto --moe-backend offload --memory-ratio 0.90 --max-running-requests 2 --max-seq-len-override 19456 --max-prefill-length 8192 --cuda-graph-max-bs 1 --cache-type radix --sampling-defaults model --enable-cache-report --ple-backend disk --expert-load serial",
+  "server_backend_lines": "\u001b[1m[2026-09-03|22:56:29|core|rank=0]\u001b[0m \u001b[32mINFO    \u001b[0m Auto-selected attention backend: qsa_sparse\n\u001b[1m[2026-09-03|22:56:33|core|rank=0]\u001b[0m \u001b[32mINFO    \u001b[0m NVFP4 auto backend: b12x is runnable but moe_intermediate_size=640 < 1024; using the Triton decode kernels (faster at single-stream M=1 deco",
+  "runtime_route_probe": {
+    "/health": "200",
+    "/v1/models": "200",
+    "/metrics": "404",
+    "/engine/health": "404",
+    "/engine/status": "404",
+    "/engine/metrics": "404",
+    "/engine/stats": "404"
+  },
+  "aiperf_version": "0.12.0",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 97887 MiB, 595.84, 600.00 W",
+  "gpu_at_start": "40, 2610 MHz, 76.89 W",
+  "gpu_thermal_margin_at_start_c": "53",
+  "gpu_power_limit_w": "600.00 W",
+  "cuda": "CUDA Version: 13.2",
+  "host_kernel": "7.1.1-070101-generic",
+  "host_cores": "32",
+  "aiperf_module": "/home/luke/Documents/Code/Inference_Engines/aiperf/src/aiperf",
+  "source_commits": {
+    "repo": "518a52dafcfc707ca2f7d5349635350d0b2fe831",
+    "aiperf": "9e96b499d1e942e1b338010fa5d99d9d9c96e074"
+  },
+  "model_repo": "RadixArk/Qwen3.8-Flash-Next-NVFP4",
+  "model_quant": "NVFP4",
+  "engine_args": "tokenizer=7b719225242aacd3dbd3f9407468c2ee9a9d2594 dataset=lcb_code_8192.jsonl type=single_turn cache_bust=system_prefix reset=none extra=ignore_eos:true"
+}

@@ -1,0 +1,35 @@
+[mtp-gate 22:02:08] image   llamacpp-mtp:d1a92352
+[mtp-gate 22:02:08] base    /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+[mtp-gate 22:02:08] sidecar /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf  (2.6G)
+[mtp-gate 22:02:08] spec    draft-mtp  n-max 5  ctx 8192
+ Network llamacpp_qwen38_flash_next_server Creating 
+ Network llamacpp_qwen38_flash_next_server Created 
+ Container q38n-mtp Creating 
+ Container q38n-mtp Created 
+ Container q38n-mtp Starting 
+ Container q38n-mtp Started 
+[mtp-gate 22:02:09] booting - a cold IQ4_XS start reads ~88 GB off disk
+[mtp-gate 22:02:24] --- draft/MTP lines from the boot log ---
+0.07.369.734 I common_speculative_init_result: loading draft model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+[mtp-gate 22:02:24] MTP-0 PASS: server healthy with the sidecar configured
+[mtp-gate 22:02:24] generating (256 tokens) to measure acceptance
+[mtp-gate 22:02:25] --- acceptance evidence ---
+0.07.369.734 I common_speculative_init_result: loading draft model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+0.16.607.312 I slot print_timing: id  0 | task 0 | draft acceptance = 0.59091 (  130 accepted /   220 generated), mean len =  3.95
+# HELP llamacpp:spec_decode_num_draft_tokens_total Speculative: Total draft tokens generated
+# TYPE llamacpp:spec_decode_num_draft_tokens_total counter
+llamacpp:spec_decode_num_draft_tokens_total 220
+# HELP llamacpp:spec_decode_num_accepted_tokens_total Speculative: Total draft tokens accepted by the target model
+# TYPE llamacpp:spec_decode_num_accepted_tokens_total counter
+llamacpp:spec_decode_num_accepted_tokens_total 130
+# HELP llamacpp:spec_decode_num_drafts_total Speculative: Total speculative decoding verification steps
+# TYPE llamacpp:spec_decode_num_drafts_total counter
+llamacpp:spec_decode_num_drafts_total 44
+# HELP llamacpp:spec_decode_num_accepted_tokens_per_pos_total Accepted tokens per draft position
+# TYPE llamacpp:spec_decode_num_accepted_tokens_per_pos_total counter
+llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position="0"} 31
+llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position="1"} 27
+llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position="2"} 26
+llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position="3"} 24
+llamacpp:spec_decode_num_accepted_tokens_per_pos_total{position="4"} 22
+[mtp-gate 22:02:25] evidence in /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/results/gates/mtp0_20260905T220208Z

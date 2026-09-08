@@ -19,26 +19,66 @@
 # -----------------------------------------------------------------------------
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-NAME=dcgm-prof
+# Two exporters are wanted on this box and they are NOT interchangeable:
+#
+#   :9402  dcgm-prof   benchmark/dcgm-counters.csv   PROF_* profiling counters,
+#                      what FINDINGS.md 4 was measured with
+#   :9401  dcgm-bench  bench/dcgm_metrics.csv        the DEV_* superset the ported
+#                      AIPerf harness asserts on (bench/lib.sh preflight dies
+#                      without SM_CLOCK, and post_gate fails every cell)
+#
+# Same script, parameterised, rather than a second near-identical copy.
+# Defaults are unchanged so existing callers keep working.
+NAME="${DCGM_NAME:-dcgm-prof}"
 PORT="${DCGM_PROF_PORT:-9402}"
+COUNTERS="${DCGM_COUNTERS:-benchmark/dcgm-counters.csv}"
+# The field whose presence proves the exporter is actually serving THIS set. A
+# row in a counter file is not proof of a column: an unknown field makes the
+# exporter exit 1, but a known-yet-unsupported one exports nothing SILENTLY.
+READY_FIELD="${DCGM_READY_FIELD:-DCGM_FI_PROF_PIPE_TENSOR_ACTIVE}"
 IMAGE=nvidia/dcgm-exporter:4.2.3-4.1.3-ubi9
+
+# --- STABILITY GUARD, added after the 2026-09-02 hard lockup --------------
+# Ten profiling exporters started and torn down in nine minutes preceded a hard
+# lockup of this machine (results/incidents/2026-09-02_gpu_lockup.md). Repeated
+# acquisition of DCGM DCP profiling watches appears to destabilise the driver,
+# and the first symptom is PROF columns flapping between present and absent -
+# which reads as a measurement puzzle and invites more probing. It is not a
+# puzzle; it is the warning.
+#
+# So: refuse to start again within COOLDOWN seconds of the last start. Start one
+# exporter, leave it up for the whole arm, stop it once.
+STAMP_FILE="${TMPDIR:-/tmp}/.dcgm_exporter_last_start"
+COOLDOWN="${DCGM_START_COOLDOWN:-120}"
+
 
 case "${1:-up}" in
   up)
+    if [ -f "$STAMP_FILE" ]; then
+      last=$(cat "$STAMP_FILE" 2>/dev/null || echo 0)
+      age=$(( $(date +%s) - last ))
+      if [ "$age" -lt "$COOLDOWN" ]; then
+        echo "refusing: last exporter start was ${age}s ago, cooldown is ${COOLDOWN}s." >&2
+        echo "  Rapid profiling-watch cycling hard-locked this box on 2026-09-02." >&2
+        echo "  See results/incidents/2026-09-02_gpu_lockup.md. Override: DCGM_START_COOLDOWN=0" >&2
+        exit 75
+      fi
+    fi
+    date +%s > "$STAMP_FILE"
     docker rm -f "$NAME" >/dev/null 2>&1 || true
     docker run -d --name "$NAME" --rm \
       --gpus all --cap-add SYS_ADMIN --runtime nvidia \
       -p "${PORT}:9400" \
-      -v "$PWD/benchmark/dcgm-counters.csv:/etc/dcgm-exporter/custom.csv:ro" \
+      -v "$PWD/$COUNTERS:/etc/dcgm-exporter/custom.csv:ro" \
       "$IMAGE" -f /etc/dcgm-exporter/custom.csv >/dev/null
     echo "  started $NAME on :$PORT - waiting for first scrape"
     for _ in $(seq 1 30); do
       sleep 2
-      if curl -s --max-time 3 "http://localhost:$PORT/metrics" | grep -q DCGM_FI_PROF_PIPE_TENSOR_ACTIVE; then
-        echo "  profiling metrics live"; exit 0
+      if curl -s --max-time 3 "http://localhost:$PORT/metrics" | grep -q "^${READY_FIELD}{"; then
+        echo "  live: $READY_FIELD is a real column"; exit 0
       fi
     done
-    echo "  WARNING: exporter up but no PROF_ metrics after 60s." >&2
+    echo "  WARNING: exporter up but $READY_FIELD absent after 60s." >&2
     echo "  Profiling needs a driver/GPU that supports DCP and no other client" >&2
     echo "  holding the profiling watches. Logs:" >&2
     docker logs --tail 15 "$NAME" 2>&1 | sed 's/^/    /' >&2

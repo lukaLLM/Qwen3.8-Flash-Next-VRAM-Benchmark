@@ -1,0 +1,15 @@
+MODEL=/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+CTX=4096
+PARALLEL=1
+BATCH=2048
+UBATCH=512
+OT=per_layer_token_embd=CPU
+LOAD_MODE=mmap
+LAZY=off
+N_CPU_MOE=48
+SPEC_TYPE=draft-mtp
+SPEC_DRAFT_MODEL=/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+SPEC_DRAFT_N_MAX=5
+SPEC_DRAFT_NGL=0
+LLAMA_HOST_PORT=8000
+CONTAINER_NAME=q38n

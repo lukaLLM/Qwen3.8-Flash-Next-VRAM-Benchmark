@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "data": [
+    {
+      "session_num": 0,
+      "conversation_id": "session_000001",
+      "turn_index": 0,
+      "x_request_id": "82ebc273-ab14-4da5-99c6-d0a43140b2d2",
+      "request_start_ns": 1788803220838780914,
+      "request_end_ns": 1788803232076249725,
+      "metrics": {
+        "input_sequence_length": 2064,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 11237.37795,
+        "time_to_first_token": 5842.908396,
+        "inter_token_latency": 21.154782564705883
+      },
+      "response_text": "```python\nimport sys\n\ndef solve():\n    \"\"\"\n    For each test case:\n    - We have n boxes with weights a[0..n-1].\n    - For each k from 1 to n such that k divides n, we split the array into n/k groups of size k.\n    - Each group's sum is computed. The answer for this k is max(group_sums) - min(group_sums).\n    - We want the maximum such difference over all valid k (divisors of n).\n    \n    Note: If there's only one truck (k = n), the difference is 0.\n    \n    Approach:\n    - Precompute prefix sums to quickly compute sum of any contiguous subarray.\n    - For each divisor k of n (where k <= n and n % k == 0):\n        * Compute all group sums: groups are [0:k], [k:2k], ..., [(n/k-1)*k : n]\n        * Find max and min among these group sums.\n        * Update global answer with max(global_answer, max_sum - min_sum)\n    - Since sum of n across test cases is <= 150,00"
+    },
+    {
+      "session_num": 1,
+      "conversation_id": "session_000002",
+      "turn_index": 0,
+      "x_request_id": "8526cc97-bfa2-43f9-971f-4d053b0b657d",
+      "request_start_ns": 1788803232078054832,
+      "request_end_ns": 1788803243390671639,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 11312.544116,
+        "time_to_first_token": 5987.099918999999,
+        "inter_token_latency": 20.884094890196078
+      },
+      "response_text": "```python\nclass Solution:\n    def minExtraChar(self, s: str, dictionary: List[str]) -> int:\n        \"\"\"\n        We use dynamic programming to find the minimum number of extra characters.\n        \n        Let dp[i] be the minimum extra characters needed for the prefix s[0:i].\n        We want to compute dp[n] where n = len(s).\n        \n        Base case: dp[0] = 0 (empty string has 0 extra chars)\n        \n        For each position i from 1 to n:\n            - Initially, assume s[i-1] is an extra character: dp[i] = dp[i-1] + 1\n            - Then, for every word in the dictionary that ends at position i-1,\n              if the substring s[j:i] matches a word in the dictionary (where j = i - len(word)),\n              then we can update dp[i] = min(dp[i], dp[j])\n        \n        This works because if s[j:i] is in the dictionary, then the extra chars for prefix ending at i\n        can be the same as extra chars for prefix ending at j (since s[j:i] uses no extra chars).\n        \"\"\""
+    },
+    {
+      "session_num": 2,
+      "conversation_id": "session_000003",
+      "turn_index": 0,
+      "x_request_id": "350f644c-824f-4d8b-8dd6-26b6b755e1f1",
+      "request_start_ns": 1788803243392788557,
+      "request_end_ns": 1788803254624798380,
+      "metrics": {
+        "input_sequence_length": 2063,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 11231.955882999999,
+        "time_to_first_token": 5940.572576,
+        "inter_token_latency": 20.75052277254902
+      },
+      "response_text": "```python\nclass Solution:\n    def longestSemiRepetitiveSubstring(self, s: str) -> int:\n        \"\"\"\n        Find the length of the longest semi-repetitive substring.\n        A semi-repetitive string has at most one consecutive pair of same digits.\n        \n        Approach: Sliding window (two pointers)\n        - Maintain a window [left, right] that contains at most one consecutive pair.\n        - Expand right pointer and count the number of consecutive pairs in the current window.\n        - If we have more than 1 consecutive pair, shrink from left until we have <= 1.\n        - Track the maximum length of valid windows.\n        \n        We need to carefully track when a new consecutive pair is formed or broken.\n        \"\"\"\n        n = len(s)\n        if n == 0:\n            return 0\n        \n        # Use sliding window approach\n        left = 0\n        max_len = 1\n        # Count of consecutive pairs in current window [left, right]\n        pair_count = 0\n        \n        for right in range(1, n):\n            # Check if s[right-1] == s[right], forming a new consecutive pair"
+    },
+    {
+      "session_num": 3,
+      "conversation_id": "session_000004",
+      "turn_index": 0,
+      "x_request_id": "c561ae45-30cd-42a1-9674-b044a2f6cca9",
+      "request_start_ns": 1788803254626356607,
+      "request_end_ns": 1788803264721037710,
+      "metrics": {
+        "input_sequence_length": 2060,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 10094.579482,
+        "time_to_first_token": 4995.644584,
+        "inter_token_latency": 19.995823129411765
+      },
+      "response_text": "```python\nclass Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        \"\"\"\n        To find the minimum sum of a k-avoiding array of length n, we should pick the smallest distinct positive integers that do not form any pair summing to k.\n        \n        Strategy:\n        1. We start picking integers from 1 upwards.\n        2. For each candidate integer x, we check if adding it would create a pair with an already chosen number y such that x + y = k. This means we cannot pick x if (k - x) is already in our set of chosen numbers.\n        3. Since we want the minimum sum, greedily picking the smallest valid integers works.\n        \n        Alternatively, we can reason about which numbers are forbidden:\n        - The numbers from 1 to min(n, k-1) are candidates. But if we pick a number x < k, then k-x is forbidden (if k-x > 0).\n        - Actually, a simpler greedy approach: iterate through integers starting from 1, and keep adding them to our result set as long as for every already added number y, x + y != k"
+    }
+  ]
+}

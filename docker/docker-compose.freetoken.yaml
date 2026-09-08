@@ -1,0 +1,180 @@
+# FreeToken arm - Qwen3.8-Flash-Next NVFP4 on one RTX PRO 6000 Blackwell.
+#
+# Same checkpoint and revision as the SGLang arm, which is what makes those two
+# the only genuinely controlled pair in this study: identical weights, so the
+# comparison isolates PLE placement (pinned host RAM here, NVMe io_uring there).
+#
+# Build the image first (long job, operator runs it):
+#   docker build -f docker/freetoken.Dockerfile -t freetoken:local docker/
+#
+# WHICH MoE BACKEND, AND WHY MY FIRST ANSWER WAS EXACTLY BACKWARDS.
+#
+# I reasoned from memory alone: experts 63.32 GiB, PLE fp8 47.68 GiB, bf16 14.91.
+#   offload / cpu / hybrid  keep experts in HOST RAM: 63.32 + 47.68 = 111.00 GiB
+#                           against 91 GiB installed -> "infeasible"
+#   fused                   keeps experts on the GPU  -> "the only one that fits"
+# and defaulted this file to `fused`. FT-4 rejected it outright:
+#
+#   ValueError: nvfp4 experts require --moe-backend offload or cpu, got 'fused'
+#
+# engine.py:1470 refuses any expert_quant outside ("none", "fp8_block") on a
+# non-offload backend. `fused` keeps experts GPU-resident with no host banks, so
+# it cannot serve NVFP4 at all. The backend I called the only feasible one is the
+# one the engine forbids for this checkpoint.
+#
+# What actually makes the arm possible is the OTHER flag. With
+# `--ple-backend disk` the 47.68 GiB table streams from NVMe instead of being
+# pinned, so the host holds only the experts:
+#
+#   offload + ple pinned    63.32 + 47.68 = 111.00 GiB   does not fit
+#   offload + ple disk      63.32         =  63.32 GiB   fits in ~85 GiB
+#
+# So the two features are load-bearing TOGETHER: disk PLE is what buys the host
+# room for offloaded experts. Neither alone is enough. That is the finding, and
+# it is a better one than the arithmetic I started with.
+name: freetoken_qwen38_flash_next
+
+services:
+  freetoken:
+    image: ${FREETOKEN_IMAGE:-freetoken:local}
+    pull_policy: never
+    container_name: ${FREETOKEN_CONTAINER_NAME:-freetoken}
+
+    gpus: all
+    ipc: host
+    shm_size: 32gb
+
+    # Same cap as the SGLang arm on purpose. Both arms serve the same checkpoint,
+    # so an equal ceiling is part of the parity, and an allocator failure stays
+    # inside the container instead of taking the desktop with it. Equal memory
+    # and memory+swap also stop it spilling into host swap, where it would
+    # measure the disk while still looking healthy (FINDINGS.md 7).
+    mem_limit: ${FREETOKEN_MEM_LIMIT:-86g}
+    memswap_limit: ${FREETOKEN_MEM_LIMIT:-86g}
+
+    ports:
+      - "127.0.0.1:${FREETOKEN_HOST_PORT:-8002}:8000"
+
+    ulimits:
+      # THIS IS WHY THE ARM IS CONTAINERISED AND NOT A HOST PROCESS.
+      # FreeToken pins the 47.68 GiB PLE table in host RAM. The host's hard
+      # RLIMIT_MEMLOCK is 11.49 GiB (ulimit -Hl = 12053420 KiB), so a host
+      # process would die at 11.5 GiB no matter how much RAM were free, and
+      # raising it needs a root change plus a relogin. In a container the limit
+      # is simply lifted here.
+      memlock: -1
+      stack: 67108864
+      nofile:
+        soft: 1048576
+        hard: 1048576
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      # Never reach for the network mid-run: the checkpoint is already local and
+      # a silent re-download would mean the run no longer used the pinned revision.
+      HF_HOME: /hf
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+
+    volumes:
+      # Mount the cache ROOT, not just the snapshot: snapshot entries are
+      # relative symlinks into ../../blobs and would dangle in-container.
+      - type: bind
+        source: ${HF_HOME:-${HOME}/.cache/huggingface}
+        target: /hf
+        read_only: true
+
+    # ENTRYPOINT is `ft`, so this starts at the subcommand.
+    command:
+      - serve
+      - --model
+      - ${FREETOKEN_MODEL_PATH:-/hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594}
+      - --served-model-name
+      - Qwen3.8-Flash-Next
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      # offload, not fused: NVFP4 experts cannot be GPU-resident (see header).
+      # Feasible only in combination with --ple-backend disk below.
+      - --nvfp4-backend
+      - ${FREETOKEN_NVFP4_BACKEND:-auto}
+      - --moe-backend
+      - ${FREETOKEN_MOE_BACKEND:-offload}
+      - --memory-ratio
+      - "${FREETOKEN_MEMORY_RATIO:-0.90}"
+      - --max-running-requests
+      - "${MAX_RUNNING_REQUESTS:-1}"
+      - --max-seq-len-override
+      - "${ENGINE_CTX:-262144}"
+      - --max-prefill-length
+      - "${PREFILL_BUDGET:-8192}"
+      - --cuda-graph-max-bs
+      - "${CUDA_GRAPH_MAX_BS:-1}"
+      - --cache-type
+      - radix
+      - --sampling-defaults
+      - model
+      # Needed for the cold-prefill check: without it there is no cache-hit
+      # number to prove a prefill was not restored from the radix cache.
+      - --enable-cache-report
+      # PLE placement, and the whole point of the controlled pair.
+      #   (unset)  the documented default: 47.68 GiB PINNED in host RAM
+      #   disk     stream the table from NVMe via io_uring, added on main in
+      #            4c0bad3f "feat(qwen4_exp): stream the PLE n-gram table from
+      #            disk (--ple-backend disk)", 2026-09-01
+      # `disk` is the direct analogue of the SGLang arm's PR #36567 path, so the
+      # two engines can be compared on the SAME placement as well as on their
+      # defaults. It also changes the memory arithmetic - see the header note.
+      - --ple-backend
+      - ${FREETOKEN_PLE_BACKEND:-disk}
+      # Pin the loader the engine picks for itself anyway. On this box it logs
+      # "expert banks: low free RAM -> serial build (avoids parallel-reader OOM)".
+      # Stating it explicitly makes the run reproducible instead of dependent on
+      # how much RAM happened to be free at start.
+      - --expert-load
+      - ${FREETOKEN_EXPERT_LOAD:-serial}
+
+    # /health, NOT /v1/models and NOT /engine/health - and HTTP 200 ALONE is
+    # not enough. The front end answers during model loading. Measured on
+    # 2026-09-03: aiperf began 72 seconds before "API server is ready" and all
+    # 33,258 requests got HTTP 503 while Docker already called the container
+    # healthy. The payload becomes trustworthy only when maintenance=serving.
+    #
+    # MEASURED on the pinned-source build: /engine/health returns 404 and /health
+    # returns 200, so the container sat "starting" for 13 minutes while the engine
+    # was actually serving. /engine/health exists in the source but is mounted on a
+    # router this build does not expose.
+    #
+    # MEASURED 2026-09-02, FT-4: with /v1/models as the probe the container went
+    # "healthy" after TEN SECONDS while the engine subprocess had already died with
+    # `ValueError: Model architecture Qwen4ExpForConditionalGeneration not supported`.
+    # Peak memory was 1.65 GiB - nothing had loaded. The HTTP front end answers
+    # /v1/models from static config before, and regardless of whether, the engine
+    # comes up, so it is a liveness probe for the web server and not for the model.
+    #
+    # This is FINDINGS.md 7's rule again in a new costume: "a successful load is not
+    # proof". /engine/health is the engine's own status route - the docs list neither,
+    # but the server registers /health, /engine/health, /engine/status,
+    # /engine/metrics, /engine/stats.
+    #
+    # start_period is generous: 63 GiB of NVFP4 experts have to reach the GPU, plus
+    # the PLE (pinned, or streamed from disk with --ple-backend disk).
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - >-
+          import json, urllib.request;
+          d=json.load(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5));
+          assert d.get('status') == 'ok' and d.get('maintenance') == 'serving'
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 300s
+
+    # An OOM or a startup error must stay stopped, never become a loop.
+    # NOTES.md: `unless-stopped` once turned an OOM into a restart loop and cost
+    # a whole tier-ladder run.
+    restart: "no"

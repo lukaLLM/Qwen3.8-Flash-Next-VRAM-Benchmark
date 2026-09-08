@@ -1,0 +1,34 @@
+  [1/16] item-0  843 chars  ids=256
+  [2/16] item-1  899 chars  ids=256
+  [3/16] item-2  838 chars  ids=256
+  [4/16] item-3  727 chars  ids=256
+  [5/16] item-4  931 chars  ids=256
+  [6/16] item-5  1070 chars  ids=256
+  [7/16] item-6  948 chars  ids=256
+  [8/16] item-7  1172 chars  ids=256
+  [9/16] item-8  843 chars  ids=256
+  [10/16] item-9  1065 chars  ids=256
+  [11/16] item-10  1025 chars  ids=256
+  [12/16] item-11  840 chars  ids=224
+  [13/16] item-12  845 chars  ids=256
+  [14/16] item-13  974 chars  ids=256
+  [15/16] item-14  910 chars  ids=256
+  [16/16] item-15  1054 chars  ids=256
+  basis=token_ids  errors=0  -> /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/greedy_specoffrep_sglang_20260906T144959Z/c1
+  [1/16] item-0  867 chars  ids=256
+  [2/16] item-1  910 chars  ids=256
+  [3/16] item-2  994 chars  ids=256
+  [4/16] item-3  1070 chars  ids=256
+  [5/16] item-4  1021 chars  ids=256
+  [6/16] item-5  1061 chars  ids=256
+  [7/16] item-6  799 chars  ids=256
+  [8/16] item-7  1053 chars  ids=256
+  [9/16] item-8  864 chars  ids=256
+  [10/16] item-9  1032 chars  ids=256
+  [11/16] item-10  1016 chars  ids=256
+  [12/16] item-11  831 chars  ids=256
+  [13/16] item-12  984 chars  ids=256
+  [14/16] item-13  977 chars  ids=256
+  [15/16] item-14  1029 chars  ids=256
+  [16/16] item-15  1052 chars  ids=256
+  basis=token_ids  errors=0  -> /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/greedy_specoffrep_sglang_20260906T144959Z/c1_r2

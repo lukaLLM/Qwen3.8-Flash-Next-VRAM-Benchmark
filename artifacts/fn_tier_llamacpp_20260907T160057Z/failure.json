@@ -1,0 +1,13 @@
+{
+  "container_state": "running",
+  "exit_code": 0,
+  "oom_killed": false,
+  "cgroup_memory_max": "max",
+  "cgroup_memory_swap_max": "max",
+  "cgroup_memory_peak": "3890982912",
+  "memory_events": {"low": 0, "high": 0, "max": 0, "oom": 0, "oom_kill": 0, "oom_group_kill": 0, "sock_throttled": 0},
+  "mem_cap_readback": "not-verified",
+  "host_available_bytes": 88221372416,
+  "host_swap_used_bytes": 0,
+  "note": "Captured before engine_down. oom_killed=true is a capacity finding for THIS placement, not proof that no placement fits. A guard stop (host_mem_guard.sh) is NOT an OOM - it appears here as container_state=exited with oom_killed=false."
+}

@@ -1,0 +1,5 @@
+[
+{"kv_tokens_requested":65536,"rebuild_s":1.29,"rebuild_status":"ok","measured":1},
+{"kv_tokens_requested":16384,"rebuild_s":1.29,"rebuild_status":"ok","measured":1},
+{"kv_tokens_requested":8192,"rebuild_s":1.04,"rebuild_status":"ok","measured":0},
+{"kv_tokens_requested":4096,"rebuild_s":0.95,"rebuild_status":"ok","measured":0}]

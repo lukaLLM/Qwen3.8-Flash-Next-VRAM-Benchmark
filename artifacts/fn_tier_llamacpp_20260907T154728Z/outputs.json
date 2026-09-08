@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "data": [
+    {
+      "session_num": 0,
+      "conversation_id": "session_000001",
+      "turn_index": 0,
+      "x_request_id": "be303ccc-caa3-4970-a176-60ff69e075a8",
+      "request_start_ns": 1788796103817736562,
+      "request_end_ns": 1788796209270097937,
+      "metrics": {
+        "input_sequence_length": 2060,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 105452.361375,
+        "time_to_first_token": 10383.170723,
+        "inter_token_latency": 372.8203554980392
+      },
+      "response_text": "```python\nimport sys\n\ndef solve():\n    \"\"\"\n    For each test case:\n    - We are given n boxes with weights a_1, ..., a_n.\n    - For every k from 1 to n such that k divides n, we can split the array into n/k groups of size k.\n    - For each such valid k, compute the maximum absolute difference between any two group sums.\n      That is: max(group_sum) - min(group_sum). If only one group (k = n), difference is 0.\n    - We want the maximum such difference over all valid k.\n\n    Note: Only k that divides n are valid (since each truck must have exactly k boxes and all boxes must be loaded).\n\n    Approach:\n    1. Precompute prefix sums for fast range sum queries.\n    2. For each divisor k of n (where k <= n), we can compute the group sums:\n        Group i (0-indexed) has sum = prefix[(i+1)*k] - prefix[i*k]\n    3. For each such k, find max and min of these group sums, then compute diff = max - min.\n    4."
+    },
+    {
+      "session_num": 1,
+      "conversation_id": "session_000002",
+      "turn_index": 0,
+      "x_request_id": "a4b93ff8-5843-44a3-b920-1202fc21d008",
+      "request_start_ns": 1788796209271701953,
+      "request_end_ns": 1788796301539499782,
+      "metrics": {
+        "input_sequence_length": 2060,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 92267.797829,
+        "time_to_first_token": 10616.665001,
+        "inter_token_latency": 320.20052089411763
+      },
+      "response_text": "```python\nclass Solution:\n    def minExtraChar(self, s: str, dictionary: List[str]) -> int:\n        \"\"\"\n        Dynamic Programming approach to find minimum extra characters left over.\n        \n        Let dp[i] be the minimum number of extra characters for the prefix s[0:i].\n        We want dp[n] where n = len(s).\n        \n        For each position i from 1 to n:\n          - Option 1: Consider s[i-1] as an extra character, so dp[i] = dp[i-1] + 1\n          - Option 2: Try all substrings ending at i (i.e., s[j:i] for j < i) that are in dictionary.\n            If s[j:i] is in dictionary, then dp[i] = min(dp[i], dp[j])\n        \n        Initialize dp[0] = 0 (empty string has 0 extra chars).\n        \"\"\"\n        n = len(s)\n        dict_set = set(dictionary)\n        \n        # dp[i] represents the minimum extra characters for s[0:i]\n        dp = [float('inf')] * (n + 1)\n        dp[0] = "
+    },
+    {
+      "session_num": 2,
+      "conversation_id": "session_000003",
+      "turn_index": 0,
+      "x_request_id": "dc267d1b-f6b2-435e-ac40-e9d15219847f",
+      "request_start_ns": 1788796301541207608,
+      "request_end_ns": 1788796410127340331,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 108586.13272299999,
+        "time_to_first_token": 10802.809922,
+        "inter_token_latency": 383.4640109843137
+      },
+      "response_text": "```python\nclass Solution:\n    def longestSemiRepetitiveSubstring(self, s: str) -> int:\n        \"\"\"\n        Find the length of the longest semi-repetitive substring.\n        \n        A semi-repetitive string has at most one consecutive pair of same digits.\n        \n        Approach:\n        We use a sliding window (two pointers) technique to maintain a window [left, right]\n        that contains at most one \"consecutive pair\" (i.e., s[i] == s[i-1]).\n        \n        We iterate with 'right' pointer and keep track of the number of consecutive pairs\n        in the current window. When we exceed 1 consecutive pair, we move 'left' forward\n        until we have at most 1 consecutive pair again.\n        \n        To efficiently track consecutive pairs, when we add a new character at 'right',\n        if s[right] == s[right-1], we increment our count of consecutive pairs.\n        \n        When we need to shrink the window from the left, if s[left] == s[left+1], \n        removing s[left] will remove one consecutive pair (the pair at positions left and left+1),\n        so we decrement the"
+    },
+    {
+      "session_num": 3,
+      "conversation_id": "session_000004",
+      "turn_index": 0,
+      "x_request_id": "7c88c8f4-fc82-48f4-ac98-07ef16bd360d",
+      "request_start_ns": 1788796410128881617,
+      "request_end_ns": 1788796428593057592,
+      "metrics": {
+        "input_sequence_length": 2064,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 18464.094835,
+        "time_to_first_token": 8288.233214,
+        "inter_token_latency": 39.90533969019608
+      },
+      "response_text": "```python\nclass Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        \"\"\"\n        To find the minimum possible sum of a k-avoiding array of length n:\n        \n        A k-avoiding array has no two distinct elements that sum to k.\n        We want to pick the smallest positive integers possible to minimize the sum.\n        \n        Strategy:\n        1. Start picking numbers from 1 upwards.\n        2. For each number x we consider, check if it forms a pair with any already picked number that sums to k.\n           That is, if there exists y in chosen such that x + y == k, then we cannot pick x.\n        3. Since we pick numbers in increasing order and want minimum sum, we greedily pick the smallest valid numbers.\n        \n        Key insight:\n        - If we have already picked a number y, then we cannot pick k - y.\n        - So as we iterate from 1 upward, we maintain a set of forbidden numbers (those that would form a pair summing to k with already chosen numbers).\n        - Alternatively, note that if we choose x, then k-x becomes forbidden"
+    }
+  ]
+}

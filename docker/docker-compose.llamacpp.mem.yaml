@@ -1,0 +1,27 @@
+# Host-RAM cap for the llama.cpp arm. OVERRIDE ONLY - never used alone:
+#
+#   COMPOSE_OVERRIDE=docker-compose.llamacpp.mem.yaml LLAMA_MEM_LIMIT=64g \
+#   MEM_CAP_BYTES=$((64*1024**3)) ./bench/run.sh ... llamacpp <workload>
+#
+# WHY THIS FILE EXISTS. bench/lib.sh:702 states the house rule - "all three arms
+# sit behind the same cgroup memory guard; on a 91 GiB box that must not vary by
+# arm" - and the llama.cpp compose is the one that never had a cap. The sglang
+# and freetoken files cap at 86g; this one exists to answer a different
+# question: what happens on a machine with LESS RAM than this box, which is what
+# a viewer with 64 GB actually has.
+#
+# memswap_limit == mem_limit ON PURPOSE. Equal values mean the cgroup may not
+# swap AT ALL. FINDINGS.md 7 records a tier where the kernel swapped 7 GiB
+# instead of failing and the server stayed healthy - every number would have
+# measured swap while looking normal. With swap forbidden, memory pressure
+# surfaces as reclaim (file-backed pages, legitimate and slow) or as an OOM (a
+# capacity finding), and never as a silently disk-bound "success".
+#
+# NOTE: mapped file pages count toward this cap and are RECLAIMABLE, so an mmap
+# arm can survive well below its resident working set by paging from NVMe. That
+# is a real result, not a cheat - but it must be reported as "completes with
+# heavy paging", which is why the driver records disk reads and memory.stat.
+services:
+  q38n:
+    mem_limit: ${LLAMA_MEM_LIMIT:-64g}
+    memswap_limit: ${LLAMA_MEM_LIMIT:-64g}

@@ -15,9 +15,19 @@
 #     SPEC_TYPE=ngram-cache   model-free speculation, the classic lookup decode
 #     SPEC_TYPE=ngram-mod     the other model-free variant worth measuring
 #
-#   draft-mtp, draft-dspark and draft-dflash are all rejected for this model
-#   today: the published GGUF carries no MTP head and no sidecar drafter
-#   exists. PLAN.md has the evidence.
+#     SPEC_TYPE=draft-mtp     Unsloth's NextN/MTP head, as a SIDECAR GGUF
+#
+#   draft-mtp was rejected here until 2026-09-04 on the grounds that no sidecar
+#   drafter existed. It does now: unsloth/Qwen3.8-Flash-Next-GGUF ships
+#   MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf (2.6 GB) in snapshot 38bb39ee,
+#   a DIFFERENT snapshot from the base weights (824f539b) - pin both.
+#   Upstream build 10666 (4e97ac86e) accepts --spec-type draft-mtp and
+#   --spec-draft-model, so the danielhanchen fork the plan assumed is not
+#   needed. draft-dspark and draft-dflash remain unavailable for this model.
+#
+#   Set SPEC_DRAFT_MODEL to the sidecar path for that arm and leave it EMPTY
+#   otherwise: llama.cpp treats an empty draft path as "unused", so the
+#   non-speculative arms are unaffected. That is asserted at boot, not assumed.
 name: llamacpp_qwen38_flash_next
 
 networks:
@@ -44,6 +54,12 @@ services:
       CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
       # The whole A/B axis. "none" is a real, accepted value, not an absence.
       LLAMA_ARG_SPEC_TYPE: ${SPEC_TYPE:-none}
+      # The sidecar draft head, for SPEC_TYPE=draft-mtp only. Empty = unused.
+      LLAMA_ARG_SPEC_DRAFT_MODEL: ${SPEC_DRAFT_MODEL:-}
+      LLAMA_ARG_SPEC_DRAFT_N_MAX: ${SPEC_DRAFT_N_MAX:-3}
+      # The head is 2.6 GB of Q8_0; on the CPU it would bottleneck the very
+      # thing it exists to accelerate, so it goes fully on the GPU.
+      LLAMA_ARG_N_GPU_LAYERS_DRAFT: ${SPEC_DRAFT_NGL:-99}
       # Phase 0's central choice: keep the ~27 GiB PLE / n-gram table off the GPU
       # and everything that does matrix multiplication on it. The tensor is named
       # per_layer_token_embd.weight (verified in the shard 2 header); the per-block
@@ -61,7 +77,18 @@ services:
       # For a benchmark the tensor must be resident or the run measures storage.
       # Set LAZY=on deliberately to measure the disk-backed configuration, which
       # is the interesting one for anyone without enough RAM.
+      # TWO NAMES FOR ONE FLAG, and setting only the first silently did nothing
+      # on every build newer than b10666. Upstream renamed it:
+      #   b10666 (ghcr)          --tensor-read-lazy   LLAMA_ARG_TENSOR_READ_LAZY
+      #   PR #28136 / the MTP fork  --lazy-mode        LLAMA_ARG_LAZY_MODE
+      # Proved 2026-09-07 by feeding each build an invalid value: the name it
+      # reads is rejected at parse time, the name it does not read is ignored
+      # completely. So arms on the newer builds ran at the build DEFAULT, which
+      # is `auto` - i.e. streaming the ~25 GiB PLE from SSD - no matter what LAZY
+      # said. Both names are set here because an unknown LLAMA_ARG_* is ignored
+      # harmlessly, so one line is correct on every image (BLOCKERS B-25).
       LLAMA_ARG_TENSOR_READ_LAZY: ${LAZY:-off}
+      LLAMA_ARG_LAZY_MODE: ${LAZY:-off}
       # Unified KV shares one buffer across sequences; non-unified gives each slot
       # its own, and upstream reports it can be faster at batch 16 - a concurrency
       # variable, not a detail. Set through the env var, NOT the command list:

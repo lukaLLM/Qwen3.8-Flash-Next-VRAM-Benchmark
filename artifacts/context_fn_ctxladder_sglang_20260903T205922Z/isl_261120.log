@@ -1,0 +1,246 @@
+23:08:15.703 INFO     Starting AIPerf System (_single_run.py:81)
+23:08:15.706 INFO     [OK] Tokenizer /home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 detected (tokenizer_display.py:297)
+23:08:15.706 INFO     1 tokenizer validated | 0.0s (tokenizer_display.py:306)
+23:08:15.706 INFO     Prefetching 1 tokenizer into HF cache... (tokenizer_validator.py:129)
+23:08:16.462 INFO       Cached /home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594 (0.75s) (tokenizer_validator.py:146)
+23:08:16.467 INFO     1 tokenizer cached • 0.8s (tokenizer_validator.py:166)
+23:08:16.506 INFO     Custom GPU metrics file configured: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/dcgm_metrics.csv (resolvers.py:292)
+23:08:16.506 INFO     Validated 10 custom metrics from /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/dcgm_metrics.csv (resolvers.py:295)
+23:08:16.660 INFO     Server Metrics: Discovered 1 endpoints: ['http://localhost:8001/metrics'] (manager.py:97)
+23:08:16.670 INFO     Registered Dataset Manager (id: 'dataset_manager') (system_controller.py:411)
+23:08:16.673 INFO     Registered Gpu Telemetry Manager (id: 'gpu_telemetry_manager') (system_controller.py:411)
+23:08:16.674 INFO     Registered Server Metrics Manager (id: 'server_metrics_manager') (system_controller.py:411)
+23:08:16.675 INFO     GPU telemetry export enabled: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_20260903T205922Z/isl_261120/gpu_telemetry_export.jsonl (jsonl_writer.py:56)
+23:08:16.678 INFO     Telemetry streaming is disabled (set --otel-url and/or --mlflow-tracking-uri to enable) (otel_metrics_results_processor.py:127)
+23:08:16.678 INFO     Record metrics export enabled: /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_20260903T205922Z/isl_261120/profile_export.jsonl (record_export_jsonl_writer.py:62)
+23:08:16.694 INFO     Registered Records Manager (id: 'records_manager') (system_controller.py:411)
+23:08:16.740 INFO     Registered Timing Manager (id: 'timing_manager') (system_controller.py:411)
+23:08:16.755 INFO     Registered Worker Manager (id: 'worker_manager') (system_controller.py:411)
+23:08:16.775 INFO     Registered Record Processor (id: 'record_processor_e71482bb') (system_controller.py:411)
+23:08:16.854 INFO     Registered Worker (id: 'worker_727cea34') (system_controller.py:411)
+23:08:17.152 INFO     AIPerf System is CONFIGURING (system_controller.py:292)
+23:08:17.152 INFO     Configuring all services to start profiling (system_controller.py:305)
+23:08:17.153 INFO     Waiting for dataset to be configured before configuring timing (manager.py:126)
+23:08:17.153 INFO     Configuring tokenizers for inference result parser (resolve_alias: True) (inference_result_parser.py:86)
+23:08:17.153 INFO     Configuring tokenizer(s) for dataset manager (dataset_manager.py:240)
+23:08:17.160 WARNING  GPU Telemetry: http://localhost:9400/metrics is not reachable (manager.py:253)
+23:08:17.161 INFO     GPU Telemetry: Capturing baseline metrics from http://localhost:9401/metrics (manager.py:282)
+23:08:17.161 INFO     Server Metrics: Capturing baseline metrics... (manager.py:191)
+23:08:17.163 INFO     DCGM telemetry enabled - 1/1 endpoint(s) reachable (system_controller.py:533)
+23:08:17.163 INFO     Waiting for result domains: profile, server_metrics, telemetry (system_controller.py:824)
+23:08:17.175 WARNING  Dropping non-finite (NaN/Inf) sample(s) from metric 'sglang:fwd_occupancy': 1 in this scrape; affected data will be missing from server_metrics_export. Further occurrences for this metric name will not be logged. (data_collector.py:374)
+23:08:17.176 INFO     Server metrics enabled - 1/1 endpoint(s) reachable. (system_controller.py:559)
+23:08:17.911 INFO     Tokenizer(s) configured in 0.76 seconds (dataset_manager.py:244)
+23:08:17.911 INFO     Configuring dataset for dataset_manager (dataset_manager.py:250)
+23:08:17.989 INFO     Initialized tokenizers: {'Qwen3.8-Flash-Next': {'class': 'Qwen2Tokenizer', 'name_or_path': '/home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594'}} in 0.84 seconds (inference_result_parser.py:109)
+23:08:18.130 INFO     Memory-mapped backing store initialized (streaming to /tmp/aiperf_mmap_7c0634c6f37e/dataset.dat) (memory_map_utils.py:160)
+23:08:18.131 INFO     Data file finalized: 1 conversations, 1.09 MB (memory_map_utils.py:288)
+23:08:18.131 INFO     Index file created: /tmp/aiperf_mmap_7c0634c6f37e/index.dat (memory_map_utils.py:295)
+23:08:18.131 INFO     Backing store finalized: client_type=DatasetClientStoreType.MEMORY_MAP format=MemoryMapFormat.CONVERSATION data_file_path=PosixPath('/tmp/aiperf_mmap_7c0634c6f37e/dataset.dat') index_file_path=PosixPath('/tmp/aiperf_mmap_7c0634c6f37e/index.dat') conversation_count=1 total_size_bytes=1138878 compressed=False compressed_data_file_path=None compressed_index_file_path=None compressed_size_bytes=0 (dataset_manager.py:975)
+23:08:18.131 INFO     sampling strategy: sequential, unique conversations: 1, unique turn count: 1 (dataset_manager.py:993)
+23:08:18.131 INFO     Generating inputs.json file at /home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_20260903T205922Z/isl_261120/inputs.json (dataset_manager.py:495)
+23:08:18.132 INFO     inputs.json file generated in 0.00 seconds (dataset_manager.py:514)
+23:08:18.132 INFO     Initialized 2 phase(s): ['Warmup', 'Profiling'] (phase_orchestrator.py:341)
+23:08:18.211 INFO     Dataset client initialized and freed 1 conversations from memory (dataset_manager.py:333)
+23:08:18.211 INFO     Dataset configured in 0.30 seconds (dataset_manager.py:263)
+23:08:18.211 INFO     All services configured in 1.06 seconds (system_controller.py:316)
+23:08:18.212 INFO     AIPerf System is CONFIGURED (system_controller.py:294)
+23:08:18.212 INFO     Server Metrics: Started 1 collector(s) successfully (manager.py:281)
+23:08:18.212 INFO     All services started profiling successfully (system_controller.py:338)
+23:08:18.212 INFO     AIPerf System is PROFILING (system_controller.py:296)
+23:08:18.213 INFO     Creating interval generator: pattern=concurrency_burst, rate=None, smoothness=None (request_rate.py:116)
+23:08:18.214 NOTICE   Phase warmup (warmup) started | phase_index=0 | target: 1 requests (runner.py:630)
+23:08:18.214 INFO     Credit phase start: warmup (records_manager.py:976)
+23:08:18.214 INFO     Rate loop pacing via timerfd (kernel hrtimer) (request_rate.py:146)
+23:08:18.214 NOTICE   Phase warmup (warmup) sending complete | sent=1, completed=0, in_flight=1 | sessions: sent=1, completed=0 (runner.py:1073)
+Warmup: 0/1 |[33m          [0m|   0% [00:00<?]23:08:48.222 INFO     Phase warmup progress | returned=0/1 | sent=1 | in_flight=1 | errors=0 | elapsed=30.0s (runner.py:1288)
+23:08:57.452 NOTICE   Phase warmup (warmup) complete | completed=1, cancelled=0, errors=0 | sessions: completed=1, cancelled=0 | elapsed=39.24s (runner.py:1196)
+23:08:57.453 INFO     Creating interval generator: pattern=concurrency_burst, rate=None, smoothness=None (request_rate.py:116)
+23:08:57.452 INFO     Server Metrics: Warmup complete, capturing final warmup metrics... (manager.py:304)
+Warmup: 1/1 |[33m██████████[0m| 100% [00:39<00:00]23:08:57.453 NOTICE   Phase profiling (profiling) started | phase_index=1 | profiling_index=0 | target: 1 requests (runner.py:630)
+Warmup: 1/1 |[33m██████████[0m| 100% [00:39<00:00]23:08:57.453 INFO     Rate loop pacing via timerfd (kernel hrtimer) (request_rate.py:146)
+23:08:57.453 NOTICE   Phase profiling (profiling) sending complete | sent=1, completed=0, in_flight=1 | sessions: sent=1, completed=0 (runner.py:1073)
+23:08:57.453 INFO     Credit phase start: profiling (records_manager.py:976)
+23:08:57.453 INFO     Sent 1 requests. Waiting for all to complete... (records_manager.py:992)
+Processing Records: 0/1 |[34m          [0m|   0% [00:00<?]Profiling: 0/1 |[32m          [0m|   0% [00:00<?]23:09:36.067 NOTICE   Phase profiling (profiling) complete | completed=1, cancelled=0, errors=0 | sessions: completed=1, cancelled=0 | elapsed=38.61s (runner.py:1196)
+23:09:36.067 NOTICE   All credits completed (phase_orchestrator.py:358)
+23:09:36.067 INFO     Received CREDIT_PHASE_COMPLETE message, Phase complete: PhaseRecordsStats(phase=CreditPhase.PROFILING, phase_index=1, profiling_index=0, phase_name='profiling', phase_kind='profiling', start_ns=1788469737453152511, sent_end_ns=1788469737453624132, requests_end_ns=1788469776066982922, baseline_start_ns=1788469737453144131, baseline_end_ns=1788469776066987802, total_expected_requests=1, expected_duration_sec=None, expected_num_sessions=None, expected_grace_period_sec=None, final_requests_sent=None, final_requests_completed=1, final_requests_cancelled=0, final_request_errors=0, final_sent_sessions=None, final_completed_sessions=None, final_cancelled_sessions=None, timeout_triggered=False, grace_period_timeout_triggered=False, was_cancelled=False, records_end_ns=None, success_records=0, error_records=0) (records_manager.py:1018)
+23:09:36.067 INFO     Received credits complete from 'timing_manager' (system_controller.py:446)
+23:09:36.067 NOTICE   All requests have completed, please wait for the results to be processed (currently 0 of 1 records processed)... (records_manager.py:1029)
+23:09:36.067 INFO     All credits complete, please wait for the results to be processed... (records_manager.py:1055)
+Profiling: 1/1 |[32m██████████[0m| 100% [00:38<00:00]Profiling: 1/1 |[32m██████████[0m| 100% [00:38<00:00]Processing Records: 0/1 |[34m          [0m|   0% [00:00<?]23:09:36.362 INFO     Processed 1 valid requests and 0 errors (1 total). (records_manager.py:891)
+23:09:36.362 INFO     Received all records, processing now... (records_manager.py:897)
+23:09:36.362 INFO     GPU Telemetry: Profiling complete, capturing final metrics... (manager.py:422)
+23:09:36.362 INFO     Server Metrics: Profiling complete, capturing final metrics... (manager.py:355)
+23:09:36.363 INFO     Waiting 1.7s for server metrics flush period... (records_manager.py:951)
+Processing Records: 1/1 |[34m██████████[0m| 100% [00:00<00:00]Processing Records: 1/1 |[34m██████████[0m| 100% [00:00<00:00]23:09:38.068 INFO     Processing records results... (records_manager.py:1941)
+23:09:38.088 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.090 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET', 'status_code': '200'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.114 WARNING  Detected 1 counter reset(s) in counter metric with labels {'cache_type': 'UnifiedRadixCache'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 261632.00 (export_stats.py:348)
+23:09:38.141 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.178 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET', 'status_code': '200'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.201 WARNING  Detected 1 counter reset(s) in counter metric with labels {'cache_type': 'UnifiedRadixCache'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 261632.00 (export_stats.py:348)
+23:09:38.228 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.230 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET', 'status_code': '200'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 120.00 (export_stats.py:348)
+23:09:38.233 INFO     Waiting for result domains: server_metrics, telemetry (system_controller.py:824)
+23:09:38.234 INFO     Waiting for result domains: server_metrics (system_controller.py:824)
+23:09:38.254 WARNING  Detected 1 counter reset(s) in counter metric with labels {'cache_type': 'UnifiedRadixCache'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 261632.00 (export_stats.py:348)
+23:09:38.275 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 121.00 (export_stats.py:348)
+23:09:38.278 WARNING  Detected 1 counter reset(s) in counter metric with labels {'endpoint': '/metrics', 'method': 'GET', 'status_code': '200'}. This typically indicates server restart(s) during profiling. Statistics may be inaccurate. Raw delta: 121.00 (export_stats.py:348)
+23:09:38.324 INFO     _finalize_and_process_results completed (records_manager.py:958)
+23:09:38.331 INFO     All results received, initiating shutdown (system_controller.py:819)
+23:09:38.934 INFO     Exporting all records (exporter_manager.py:69)
+23:09:38.973 INFO     Exporting console data (exporter_manager.py:326)
+
+
+                                               NVIDIA AIPerf | LLM Metrics: Effective                                                
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━┓
+┃                                    Metric ┃        avg ┃       min ┃        max ┃        p99 ┃        p90 ┃        p50 ┃      std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━┩
+│          Effective Concurrency (requests) │       1.00 │      0.00 │       1.00 │       1.00 │       1.00 │       1.00 │     0.01 │
+│  Effective Decode Throughput (tokens/sec) │      13.23 │      0.00 │     338.86 │     169.16 │       0.00 │       0.00 │    45.08 │
+│ Effective Prefill Throughput (tokens/sec) │   6,762.34 │      0.00 │   7,347.73 │   7,347.73 │   7,347.73 │   7,347.73 │ 1,989.62 │
+│   Effective Decode Concurrency (requests) │       0.08 │      0.00 │       1.00 │       1.00 │       0.00 │       0.00 │     0.27 │
+│  Effective Prefill Concurrency (requests) │       0.92 │      0.00 │       1.00 │       1.00 │       1.00 │       1.00 │     0.27 │
+│   Effective Total Throughput (tokens/sec) │   6,775.58 │      0.00 │   7,347.73 │   7,347.73 │   7,347.73 │   7,347.73 │ 1,944.64 │
+│      Effective Decode Throughput Per User │      13.23 │      0.00 │     338.86 │     169.16 │       0.00 │       0.00 │    45.08 │
+│                         (tokens/sec/user) │            │           │            │            │            │            │          │
+│     Effective Prefill Throughput Per User │   6,762.34 │      0.00 │   7,347.73 │   7,347.73 │   7,347.73 │   7,347.73 │ 1,989.62 │
+│                         (tokens/sec/user) │            │           │            │            │            │            │          │
+│                 Tokens In Flight (tokens) │ 261,121.36 │      0.00 │ 261,632.00 │ 261,566.71 │ 261,120.00 │ 261,120.00 │ 2,228.31 │
+│         Effective Latency (CO-aware) (ms) │  38,612.70 │ 38,612.70 │  38,612.70 │  38,612.70 │  38,612.70 │  38,612.70 │     0.00 │
+└───────────────────────────────────────────┴────────────┴───────────┴────────────┴────────────┴────────────┴────────────┴──────────┘
+                                          NVIDIA AIPerf | LLM Metrics: Active                                          
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓
+┃                                 Metric ┃      avg ┃      min ┃      max ┃      p99 ┃      p90 ┃      p50 ┃      std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩
+│  Active Decode Throughput (tokens/sec) │   166.26 │     0.00 │   338.86 │   211.38 │   169.74 │   166.33 │     9.39 │
+│ Active Prefill Throughput (tokens/sec) │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │     0.00 │
+│      Active Decode Throughput Per User │   166.26 │     0.00 │   338.86 │   211.38 │   169.74 │   166.33 │     9.39 │
+│                      (tokens/sec/user) │          │          │          │          │          │          │          │
+│     Active Prefill Throughput Per User │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │     0.00 │
+│                      (tokens/sec/user) │          │          │          │          │          │          │          │
+│   Active Total Throughput (tokens/sec) │ 6,776.07 │   166.26 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 7,347.73 │ 1,943.85 │
+└────────────────────────────────────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+                                                     NVIDIA AIPerf | LLM Metrics                                                      
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━┓
+┃                                        Metric ┃        avg ┃        min ┃        max ┃        p99 ┃        p90 ┃        p50 ┃  std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━┩
+│                      Time to First Token (ms) │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │ 0.00 │
+│                     Time to Second Token (ms) │      13.48 │      13.48 │      13.48 │      13.48 │      13.48 │      13.48 │ 0.00 │
+│               Time to First Output Token (ms) │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │  35,537.52 │ 0.00 │
+│                          Request Latency (ms) │  38,611.02 │  38,611.02 │  38,611.02 │  38,611.02 │  38,611.02 │  38,611.02 │ 0.00 │
+│                          Decode Duration (ms) │   3,073.51 │   3,073.51 │   3,073.51 │   3,073.51 │   3,073.51 │   3,073.51 │ 0.00 │
+│                      Inter Token Latency (ms) │       6.01 │       6.01 │       6.01 │       6.01 │       6.01 │       6.01 │ 0.00 │
+│              Output Token Throughput Per User │     166.26 │     166.26 │     166.26 │     166.26 │     166.26 │     166.26 │ 0.00 │
+│                             (tokens/sec/user) │            │            │            │            │            │            │      │
+│ E2E Output Token Throughput (tokens/sec/user) │      13.26 │      13.26 │      13.26 │      13.26 │      13.26 │      13.26 │ 0.00 │
+│               Output Sequence Length (tokens) │     512.00 │     512.00 │     512.00 │     512.00 │     512.00 │     512.00 │ 0.00 │
+│                Input Sequence Length (tokens) │ 261,120.00 │ 261,120.00 │ 261,120.00 │ 261,120.00 │ 261,120.00 │ 261,120.00 │ 0.00 │
+│          Output Token Throughput (tokens/sec) │      13.26 │        N/A │        N/A │        N/A │        N/A │        N/A │  N/A │
+│           Input Token Throughput (tokens/sec) │   6,762.34 │        N/A │        N/A │        N/A │        N/A │        N/A │  N/A │
+│             Request Throughput (requests/sec) │       0.03 │        N/A │        N/A │        N/A │        N/A │        N/A │  N/A │
+│                        Request Error Rate (%) │       0.00 │        N/A │        N/A │        N/A │        N/A │        N/A │  N/A │
+│                      Request Count (requests) │       1.00 │        N/A │        N/A │        N/A │        N/A │        N/A │  N/A │
+└───────────────────────────────────────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴────────────┴──────┘
+
+
+╭──────────────────────────────────────────── GPU Telemetry Platform ─────────────────────────────────────────────╮
+│  Platform: nvidia                                                                                               │
+│  Metric semantics are platform-specific; cross-platform comparisons require workload and collector validation.  │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+            GPU Power Efficiency (NVIDIA)             
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃                                Metric ┃        avg ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│            Energy Delay Product (J*s) │ 848,912.21 │
+│ Performance per Watt (requests/sec/W) │       0.00 │
+│     Output Tokens per Second per Watt │       0.02 │
+│                        (tokens/sec/W) │            │
+│                 Average GPU Power (W) │     569.39 │
+│                  Total GPU Energy (J) │  21,986.27 │
+│                   Total GPU Power (W) │     409.48 │
+│     Energy per Total Token (mJ/token) │      84.04 │
+│    Energy per Output Token (mJ/token) │  42,941.93 │
+│   Energy per Request (joules/request) │  21,986.27 │
+│    Output Tokens per Joule (tokens/J) │       0.02 │
+│         Energy per User (joules/user) │  21,986.27 │
+└───────────────────────────────────────┴────────────┘
+
+ NVIDIA AIPerf | Server Metrics: Speculative Decoding 
+┏━━━━━━━━━━━━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┳━━━━━━┓
+┃ Metric          ┃ mean ┃  min ┃  max ┃  p50 ┃  p90 ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━╇━━━━━━┩
+│ Accept Rate (%) │ 34.5 │ 32.5 │ 75.8 │ 32.5 │ 32.8 │
+│ Accept Length   │ 2.04 │ 1.98 │ 3.27 │ 1.98 │ 1.99 │
+└─────────────────┴──────┴──────┴──────┴──────┴──────┘
+
+
+                                                    AIPerf | GPU Telemetry Summary                                                     
+                                                    1/1 telemetry sources reachable                                                    
+                                                          • localhost:9401 ✔                                                           
+                                                                                                                                       
+                              localhost:9401 | GPU 0 | NVIDIA RTX PRO 6000 Blackwell Workstation Edition                               
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━┓
+┃                                              Metric ┃       avg ┃       min ┃       max ┃       p99 ┃       p90 ┃       p50 ┃   std ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━┩
+│                          NVIDIA GPU Power Usage (W) │    409.48 │    405.18 │    413.78 │    413.78 │    413.78 │    409.48 │  4.97 │
+│                      NVIDIA Energy Consumption (MJ) │      0.02 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                          NVIDIA GPU Utilization (%) │      4.50 │      0.00 │      9.00 │      9.00 │      9.00 │      4.50 │  5.20 │
+│                       NVIDIA Memory Utilization (%) │     49.50 │     45.00 │     51.00 │     51.00 │     51.00 │     51.00 │  3.00 │
+│                         NVIDIA GPU Memory Used (GB) │     96.43 │     96.43 │     96.44 │     96.44 │     96.44 │     96.43 │  0.00 │
+│                         NVIDIA GPU Temperature (°C) │     56.00 │     55.00 │     57.00 │     57.00 │     57.00 │     56.00 │  1.15 │
+│                      NVIDIA Decoder Utilization (%) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                      NVIDIA Encoder Utilization (%) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                           NVIDIA XID Errors (count) │      0.00 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                         NVIDIA Power Violation (us) │      0.00 │       N/A │       N/A │       N/A │       N/A │       N/A │   N/A │
+│                            SM Clock Frequency (MHz) │  2,744.50 │  2,707.00 │  2,782.00 │  2,782.00 │  2,782.00 │  2,744.50 │ 43.30 │
+│                        Memory Clock Frequency (MHz) │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │ 13,365.00 │  0.00 │
+│                             Memory Temperature (°C) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│                        Framebuffer Memory Free (MB) │  5,281.00 │  5,278.00 │  5,284.00 │  5,284.00 │  5,284.00 │  5,281.00 │  3.46 │
+│ Throttling Duration Due To Thermal Constraints (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│         Throttling Duration Due To Board Limit (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│   Throttling Duration Due To Reliability Limit (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│          Throttling Duration Due To Sync Boost (us) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+│     Throttling Duration Due To Low Utilization (us) │  3.93e+13 │  3.93e+13 │  3.93e+13 │  3.93e+13 │  3.93e+13 │  3.93e+13 │  0.00 │
+│                         PCIE Replay Counter (count) │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │      0.00 │  0.00 │
+└─────────────────────────────────────────────────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────────┴───────┘
+
+CLI Command: aiperf profile --model 'Qwen3.8-Flash-Next' --url 'http://localhost:8001' 
+--endpoint-type 'chat' --streaming --osl 512 --osl-stddev 0 --tokenizer 
+'/home/luke/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242a
+acd3dbd3f9407468c2ee9a9d2594' --cache-bust 'system_prefix' --prompt-corpus 'sonnet' --extra-inputs 
+'ignore_eos:true' --reset-kv-cache --reset-kv-cache-path '/flush_cache' --extra-inputs 
+'temperature:0.7' --extra-inputs 'top_p:0.80' --extra-inputs 'top_k:20' --extra-inputs 
+'presence_penalty:1.5' --extra-inputs '{"chat_template_kwargs": {"enable_thinking": false}}' 
+--gpu-telemetry 'localhost:9401' 
+'/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/bench/dcgm_metrics.csv' --slice-duration 5 
+--concurrency 1 --random-seed 42 --ui 'simple' --extra-inputs 'min_tokens:512' --isl 261120 
+--isl-stddev 0 --request-count 1 --warmup-request-count 1 --output-artifact-dir 
+'/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_20260
+903T205922Z/isl_261120'
+Benchmark Duration: 38.61 sec
+CSV Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/profile_export_aiperf.csv
+JSON Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/profile_export_aiperf.json
+Server Metrics CSV Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/server_metrics_export.csv
+Server Metrics JSON Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/server_metrics_export.json
+Timeslice CSV Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/profile_export_aiperf_timeslices.csv
+Timeslice JSON Export: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/profile_export_aiperf_timeslices.json
+Log File: 
+/home/luke/Documents/Code/Qwen3.8-Flash-Next-rtx6000pro/artifacts/context_fn_ctxladder_sglang_202609
+03T205922Z/isl_261120/logs/aiperf.log
+

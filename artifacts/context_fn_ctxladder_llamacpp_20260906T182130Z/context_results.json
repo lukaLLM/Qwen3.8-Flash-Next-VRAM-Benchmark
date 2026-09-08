@@ -1,0 +1,27 @@
+{
+  "engine": "llamacpp",
+  "workload": "fn_ctxladder",
+  "stamp": "20260906T182130Z",
+  "admission_slots": 1,
+  "native_context": 262144,
+  "osl": 2048,
+  "ladder": [
+    {
+      "requested_isl": 259584,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 259585.33333333334,
+      "ttft_ms": 247704.47427799998,
+      "ttft_p95_ms": 291146.4643015,
+      "errors": 0
+    }
+  ],
+  "capability_probe": {
+    "allocator_reported_candidate_limit": null,
+    "candidate_is_proof_of_capacity": false,
+    "requested_isl": null,
+    "result": "not_run",
+    "note": "per-engine capability finding; ISL differs per engine by construction so this is NOT a paired comparison and must be reported apart from the ladder"
+  }
+}

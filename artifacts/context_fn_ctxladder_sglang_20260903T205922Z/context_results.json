@@ -1,0 +1,77 @@
+{
+  "engine": "sglang",
+  "workload": "fn_ctxladder",
+  "stamp": "20260903T205922Z",
+  "admission_slots": 1,
+  "native_context": 262144,
+  "osl": 512,
+  "ladder": [
+    {
+      "requested_isl": 2048,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 2049.0,
+      "ttft_ms": 277.284464,
+      "ttft_p95_ms": 277.284464,
+      "errors": 0
+    },
+    {
+      "requested_isl": 8192,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 8193.0,
+      "ttft_ms": 1038.606364,
+      "ttft_p95_ms": 1038.606364,
+      "errors": 0
+    },
+    {
+      "requested_isl": 32768,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 32770.0,
+      "ttft_ms": 4015.873302,
+      "ttft_p95_ms": 4015.873302,
+      "errors": 0
+    },
+    {
+      "requested_isl": 65536,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 65538.0,
+      "ttft_ms": 8056.148937,
+      "ttft_p95_ms": 8056.148937,
+      "errors": 0
+    },
+    {
+      "requested_isl": 131072,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 131074.0,
+      "ttft_ms": 16512.697318,
+      "ttft_p95_ms": 16512.697318,
+      "errors": 0
+    },
+    {
+      "requested_isl": 261120,
+      "served": true,
+      "void_thermal": false,
+      "rejected_by_server": false,
+      "actual_input_tokens": 261120.0,
+      "ttft_ms": 35537.515225999996,
+      "ttft_p95_ms": 35537.515225999996,
+      "errors": 0
+    }
+  ],
+  "capability_probe": {
+    "allocator_reported_candidate_limit": 262144,
+    "candidate_is_proof_of_capacity": false,
+    "requested_isl": null,
+    "result": "not_run",
+    "note": "per-engine capability finding; ISL differs per engine by construction so this is NOT a paired comparison and must be reported apart from the ladder"
+  }
+}

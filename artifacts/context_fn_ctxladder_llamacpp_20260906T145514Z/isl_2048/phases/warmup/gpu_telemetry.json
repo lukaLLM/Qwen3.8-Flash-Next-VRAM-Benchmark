@@ -1,0 +1,40 @@
+{
+  "data": {
+    "endpoints": {
+      "localhost:9401": {
+        "gpus": {
+          "gpu_0": {
+            "gpu_index": 0,
+            "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+            "gpu_uuid": "GPU-af9f36c6-304a-a609-3da5-290993b4b4d0",
+            "hostname": "71ea804271ca",
+            "metrics": {},
+            "platform": "nvidia"
+          }
+        }
+      }
+    },
+    "error_summary": [],
+    "summary": {
+      "end_time": "2026-09-06T16:57:07.421111",
+      "endpoints_configured": [
+        "http://localhost:9401/metrics"
+      ],
+      "endpoints_successful": [
+        "http://localhost:9401/metrics"
+      ],
+      "start_time": "2026-09-06T16:56:49.873836"
+    }
+  },
+  "phase": {
+    "end_ns": 1788706627421107390,
+    "phase_index": 0,
+    "phase_kind": "warmup",
+    "phase_name": "warmup",
+    "profiling_index": null,
+    "start_ns": 1788706609873843096,
+    "was_cancelled": false
+  },
+  "schema_version": 1,
+  "warnings": []
+}

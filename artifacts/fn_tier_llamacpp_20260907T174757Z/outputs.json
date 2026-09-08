@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "data": [
+    {
+      "session_num": 0,
+      "conversation_id": "session_000001",
+      "turn_index": 0,
+      "x_request_id": "449c8a7e-ffe2-497d-86cc-18cca09fb829",
+      "request_start_ns": 1788803327466444735,
+      "request_end_ns": 1788803380113735559,
+      "metrics": {
+        "input_sequence_length": 2062,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 52647.290823999996,
+        "time_to_first_token": 5951.81344,
+        "inter_token_latency": 183.11951915294117
+      },
+      "response_text": "```python\nimport sys\n\ndef solve():\n    \"\"\"\n    Problem Analysis:\n    We have n boxes with weights a[0..n-1]. For a given k, we split the array into n/k groups of size k.\n    Let S_j be the sum of the j-th group (0-indexed).\n    The value for this k is max(S_j) - min(S_j). If there's only one group (k=n), the difference is 0.\n    We need to find the maximum such difference over all valid k (where k divides n).\n\n    Naive approach: For each divisor k of n, compute sums of all groups and find max-min.\n    Number of divisors of n is small (at most ~128 for n <= 150,000).\n    However, computing group sums naively for each k takes O(n) time.\n    Total complexity would be O(d(n) * n) per test case, where d(n) is the number of divisors.\n    Sum of n over all test cases <= 150,000. In worst case, if we have many small test cases with highly composite numbers, this might"
+    },
+    {
+      "session_num": 1,
+      "conversation_id": "session_000002",
+      "turn_index": 0,
+      "x_request_id": "5cbae329-5c19-4c89-9e37-e16ad653a85d",
+      "request_start_ns": 1788803380115452046,
+      "request_end_ns": 1788803428899482085,
+      "metrics": {
+        "input_sequence_length": 2060,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 48784.030039,
+        "time_to_first_token": 6025.994552,
+        "inter_token_latency": 167.6785705372549
+      },
+      "response_text": "```python\nclass Solution:\n    def minExtraChar(self, s: str, dictionary: List[str]) -> int:\n        \"\"\"\n        Approach: Dynamic Programming\n        \n        We use dp[i] to represent the minimum number of extra characters needed \n        for the substring s[0:i].\n        \n        For each position i in the string (from 1 to len(s)):\n        - Start with the worst case: dp[i] = dp[i-1] + 1 (the character at i-1 is extra)\n        - Check all possible substrings ending at i that are in the dictionary.\n          For each such substring s[j:i], we can update:\n          dp[i] = min(dp[i], dp[j])\n        \n        The answer is dp[len(s)].\n        \n        Time Complexity: O(n^2 * k) where n is length of s and k is max word length in dictionary\n        Space Complexity: O(n + m) where m is total characters in dictionary\n        \"\"\"\n        n = len(s)\n        dict_set = set(dictionary)\n        \n        # dp[i] represents minimum extra characters for s[0:i]\n        dp = [0] * (n + 1"
+    },
+    {
+      "session_num": 2,
+      "conversation_id": "session_000003",
+      "turn_index": 0,
+      "x_request_id": "bc234a02-8a10-410a-bf95-0929f70b693d",
+      "request_start_ns": 1788803428901131281,
+      "request_end_ns": 1788803469398215404,
+      "metrics": {
+        "input_sequence_length": 2063,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 40497.084123,
+        "time_to_first_token": 6167.286448,
+        "inter_token_latency": 134.6266575490196
+      },
+      "response_text": "```python\nclass Solution:\n    def longestSemiRepetitiveSubstring(self, s: str) -> int:\n        \"\"\"\n        Find the length of the longest semi-repetitive substring.\n        A semi-repetitive string has at most one consecutive pair of the same digits.\n        \n        Approach: Sliding window with two pointers.\n        We maintain a window [left, right] and count the number of consecutive pairs \n        (i.e., positions where s[i] == s[i-1]) within the window.\n        If the count exceeds 1, we shrink the window from the left until it's valid again.\n        \"\"\"\n        n = len(s)\n        if n <= 1:\n            return n\n        \n        max_len = 1\n        left = 0\n        # Count of consecutive pairs in current window [left, right]\n        pair_count = 0\n        \n        for right in range(1, n):\n            # Check if s[right] forms a new consecutive pair with s[right-1]\n            if s[right] == s[right - 1]:\n                pair_count += 1\n            \n            # Shrink window from left until pair_count <= 1\n"
+    },
+    {
+      "session_num": 3,
+      "conversation_id": "session_000004",
+      "turn_index": 0,
+      "x_request_id": "47b7378b-b519-4fda-abf5-dc7084e1566f",
+      "request_start_ns": 1788803469399669711,
+      "request_end_ns": 1788803479195393292,
+      "metrics": {
+        "input_sequence_length": 2063,
+        "output_token_count": 256,
+        "output_sequence_length": 256,
+        "request_latency": 9795.644371,
+        "time_to_first_token": 5074.547388999999,
+        "inter_token_latency": 18.514105811764704
+      },
+      "response_text": "```python\nclass Solution:\n    def minimumSum(self, n: int, k: int) -> int:\n        \"\"\"\n        Find the minimum possible sum of a k-avoiding array of length n.\n        \n        A k-avoiding array has distinct positive integers where no two distinct elements sum to k.\n        \n        Approach:\n        - We want to pick the smallest positive integers that don't violate the k-avoiding property.\n        - Greedily iterate through positive integers starting from 1.\n        - For each integer x, check if adding it would create a pair summing to k with any already selected number.\n          That is, if (k - x) is already in our selected set, we cannot select x.\n        - Since we're picking greedily from smallest to largest, this gives the minimum sum.\n        \n        Time Complexity: O(n * min(n, k)) in worst case, but effectively O(n) since we only check against selected elements.\n        Space Complexity: O(n) for storing selected numbers.\n        \"\"\"\n        selected = set()\n        total = 0\n        num = 1\n        \n        while len(selected) < n:\n            # Check"
+    }
+  ]
+}

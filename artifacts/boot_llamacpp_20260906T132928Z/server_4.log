@@ -1,0 +1,20 @@
+warn: LLAMA_ARG_HOST environment variable is set, but will be overwritten by command line argument --host
+0.00.185.275 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.185.557 W srv  llama_server: -----------------
+0.00.185.558 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.185.558 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.185.558 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.185.559 W srv  llama_server: -----------------
+0.00.186.735 I srv    load_model: loading model '/hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf'
+0.12.209.006 I cmn          init: llama threadpool init, n_threads = 16
+0.12.302.606 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 8192, kv_unified = 'true'
+0.12.307.278 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.12.307.372 I srv  llama_server: model loaded
+0.12.307.375 I srv  llama_server: listening on http://0.0.0.0:8000
+0.15.523.233 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.15.523.328 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.15.932.215 I slot print_timing: id  0 | task 0 | prompt eval time =     260.54 ms /    55 tokens (    4.74 ms per token,   211.10 tokens per second)
+0.15.932.217 I slot print_timing: id  0 | task 0 |        eval time =     148.32 ms /    16 tokens (    9.89 ms per token,   101.13 tokens per second)
+0.15.932.218 I slot print_timing: id  0 | task 0 |       total time =     408.86 ms /    71 tokens
+0.15.932.221 I slot print_timing: id  0 | task 0 |    graphs reused =         15
+0.15.932.248 I slot      release: id  0 | task 0 | stop processing: n_tokens = 70, truncated = 0

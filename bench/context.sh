@@ -119,6 +119,36 @@ fi
 # reason to abandon the sweep - later rungs still run so the failure boundary is
 # located rather than merely encountered.
 # ---------------------------------------------------------------------------
+
+# EVIDENCE PER RUNG. This script captured NO server log at all until 2026-09-10,
+# while run.sh has always captured server.log.after. Auto_Bench.md 5 step 6 asks
+# for exactly that, and for a reason this study then hit:
+#
+# B-31 - the published SGLang full-window decode bar (126.91) did not reproduce
+# (154.03, +21.4%) on a byte-identical argv, while TTFT and prefill reproduced
+# within 2.5%. Decode there is NEXTN speculative decoding, so the obvious
+# hypothesis is acceptance-rate variance - and it could not be tested, because
+# neither artifact contains a server log or a metrics scrape. The evidence died
+# with the containers.
+#
+# So: the server's own log and its /metrics scrape, per rung, after the requests.
+# `spec_accept_length` is the metric that decides the decode rate on this
+# engine; without it a decode number cannot be explained, only reported.
+capture_rung_evidence() {
+  local cell="$1"
+  [[ -n "${CONTAINER:-}" ]] || return 0
+  docker logs "$CONTAINER" > "$cell/server.log.after" 2>&1 || true
+  if [[ "${SERVER_METRICS:-0}" == "1" ]]; then
+    curl -fsS --max-time 10 "${BASE}${METRICS_PATH:-/metrics}" \
+      > "$cell/server_metrics.after.txt" 2>/dev/null || true
+    # Pull the speculative-acceptance figures out where a reader will find them
+    # rather than leaving them in a 200KB Prometheus dump.
+    grep -aE '^[a-z_:]*(spec_accept|accept_length|spec_verify)' \
+      "$cell/server_metrics.after.txt" 2>/dev/null \
+      | tee "$cell/acceptance.txt" | sed 's/^/    /' || true
+  fi
+}
+
 for isl in "${LADDER[@]}"; do
   cell="$OUT/isl_${isl}"
   log "rung ISL=$isl"
@@ -131,6 +161,7 @@ for isl in "${LADDER[@]}"; do
         --request-count "${CONTEXT_REQUESTS:-10}" \
         --warmup-request-count "${WARMUP:-1}" \
         --output-artifact-dir "$cell" 2>&1 | tee "$OUT/isl_${isl}.log" >/dev/null; then
+      capture_rung_evidence "$cell"
       echo "  served"; break
     fi
     # A thermally-killed rung is VOID, not a capacity finding. Conflating the two
@@ -238,6 +269,20 @@ for isl in e["LADDER"].split():
         row["ttft_ms"] = (d.get("time_to_first_token") or {}).get("avg")
         row["ttft_p95_ms"] = (d.get("time_to_first_token") or {}).get("p95")
         row["errors"] = (d.get("error_request_count") or {}).get("avg", 0)
+        row["decode_tok_s"] = (d.get("output_token_throughput_per_user") or {}).get("avg")
+    # Speculative acceptance, if the engine reports it. This is the quantity
+    # that sets the decode rate under NEXTN, so a decode number without it can
+    # be reported but not explained (B-31). Absent on engines that do not
+    # expose it, which is recorded as null rather than guessed.
+    acc = cell / "acceptance.txt"
+    if acc.exists():
+        for line in acc.read_text().splitlines():
+            parts = line.split()
+            if len(parts) >= 2 and "accept" in parts[0]:
+                try:
+                    row.setdefault("acceptance", {})[parts[0].split("{")[0]] = float(parts[-1])
+                except ValueError:
+                    pass
         if actual is not None and actual + osl > ctx:
             row["WARNING"] = (f"actual prompt {actual:.0f} + OSL {osl} exceeds native window {ctx} "
                               "after chat template - this rung is out of window")

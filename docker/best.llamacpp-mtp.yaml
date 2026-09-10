@@ -1,0 +1,191 @@
+# THE WINNING LLAMA.CPP CONFIGURATION - 160 tok/s at 2K, 1.61x over the SAME
+# build with speculation off. One RTX PRO 6000 Blackwell (96 GB) + 96 GB DDR5.
+#
+#   docker compose -f docker/best.llamacpp-mtp.yaml up -d
+#
+# Self-contained on purpose: no env file, no override, no script. The two model
+# paths below are written out in full, pinned to their snapshot commits.
+#
+# NO BUILD STEP TO RUN FIRST. llamacpp-mtp:d1a92352 is not a registry tag -
+# nothing MTP-related has merged upstream, so it is built from danielhanchen's
+# qwen4exp/mtp branch. The `build:` block below does that on `up` if the tag is
+# missing: BuildKit clones the pinned commit itself, so there is no source tree
+# to fetch by hand. Once built the tag is reused; `--build` forces a rebuild.
+#
+# It is a CUDA compile and it is not quick. If nvcc runs out of memory, the
+# cause is the Dockerfile's hardcoded `cmake --build -j$(nproc)` - ~32
+# concurrent nvcc at ~2.5 GB each on a 32-thread box. scripts/build_llamacpp.sh
+# --jobs N exists for exactly that case and produces the identical tag.
+#
+# THE 1.61x HOLDS ONLY AT --n-cpu-moe 0. With any expert offload the same draft
+# head is a 0.29-0.38x LOSS. It is not a free win you can bolt onto a smaller
+# card - on a 24 GB card use best.llamacpp-24gb.yaml, which has MTP off.
+#
+# THE DRAFT HEAD IS A DIFFERENT SNAPSHOT FROM THE BASE WEIGHTS. Base weights are
+# under 824f539b, the MTP sidecar under 38bb39ee, in the same repo. If either
+# path below does not exist, the checkpoint was re-uploaded; find yours with:
+#   ls ~/.cache/huggingface/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/*/UD-IQ4_XS/*-00001-of-*.gguf
+#   ls ~/.cache/huggingface/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/*/MTP/*.gguf
+# Pick the snapshot that holds ALL THREE shards - a partial one is on disk too,
+# and llama.cpp only discovers the missing tail minutes into the load.
+name: best_llamacpp_mtp_qwen38_flash_next
+
+services:
+  q38n:
+    image: llamacpp-mtp:d1a92352
+    # sm_120a, which is what this card actually is - the published tags use
+    # generic arch flags. The context is the git ref itself, pinned to the
+    # commit the measurement was taken on.
+    build:
+      context: https://github.com/danielhanchen/llama.cpp.git#d1a92352cbd417fd840b4e765c0b82f5fe3d1d89
+      dockerfile: .devops/cuda.Dockerfile
+      target: server
+      args:
+        CUDA_VERSION: "13.3.0"
+        UBUNTU_VERSION: "24.04"
+        GCC_VERSION: "14"
+        CUDA_DOCKER_ARCH: 120a-real
+        APP_REVISION: d1a92352
+    container_name: q38n_mtp
+
+    gpus: all
+    ipc: host
+    ports:
+      - "8000:8000"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile: { soft: 1048576, hard: 1048576 }
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+
+      # THE SPECULATION ARM. All four of these matter.
+      LLAMA_ARG_SPEC_TYPE: draft-mtp
+      # NOT OPTIONAL, and the failure mode is silent: llama.cpp reads an EMPTY
+      # draft path as "unused", so a server with --spec-type draft-mtp and no
+      # draft model starts cleanly, reports draft-mtp, drafts nothing, and
+      # measures a 1.0x that looks like a real result.
+      LLAMA_ARG_SPEC_DRAFT_MODEL: /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/38bb39ee97821de2c9009abb7e93950eec396e66/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+      LLAMA_ARG_SPEC_DRAFT_N_MAX: "5"
+      # The head is 2.6 GB of Q8_0. On the CPU it would bottleneck the very
+      # thing it exists to accelerate, so all of it goes on the GPU.
+      LLAMA_ARG_N_GPU_LAYERS_DRAFT: "99"
+
+      # THE SINGLE MOST IMPORTANT SETTING IN THIS FILE. The ~27 GiB PLE lookup
+      # table goes on the CPU and everything that does matrix multiplication on
+      # it stays on the GPU. On the GPU instead: 55.6x slower to decode. This is
+      # why the model fits at all.
+      #
+      # The tensor is per_layer_token_embd.weight. The per-block PLE compute
+      # tensors are blk.N.ple_* and are deliberately NOT matched by this
+      # pattern, so they stay resident.
+      LLAMA_ARG_OVERRIDE_TENSOR: per_layer_token_embd=CPU
+
+      # OFF, and this matters far more than it looks.
+      #
+      # llama.cpp's default is `auto`: "read rows on demand from disk for any
+      # tensor over 4 GiB". The PLE table is ~25 GiB, so auto silently streams
+      # it from the SSD whenever mmap is in use. That produced 457 major
+      # faults/s in two runs that had to be voided - the flag working exactly as
+      # designed. For a benchmark the tensor must be resident, or the run is
+      # measuring storage.
+      #
+      # TWO NAMES FOR ONE FLAG. Upstream renamed it, and setting only the first
+      # silently did nothing on newer builds:
+      #   b10666 (ghcr)            --tensor-read-lazy   LLAMA_ARG_TENSOR_READ_LAZY
+      #   PR #28136 / the MTP fork --lazy-mode          LLAMA_ARG_LAZY_MODE
+      # An unknown LLAMA_ARG_* is ignored harmlessly, so setting both is correct
+      # on every image.
+      LLAMA_ARG_TENSOR_READ_LAZY: "off"
+      LLAMA_ARG_LAZY_MODE: "off"
+
+      # Unified KV shares one buffer across sequences. At one slot it is the
+      # right layout; for 8+ concurrent users the non-unified one can be faster.
+      # Must be set here and NOT in the command list: --kv-unified is a boolean
+      # that takes no value, and passing one fails startup with
+      # "error: invalid argument: true".
+      LLAMA_ARG_KV_UNIFIED: "true"
+
+    volumes:
+      # Read-only on purpose: a server has no business modifying the cache.
+      # Shard 1 of a split GGUF pulls its siblings in by relative path, so the
+      # whole snapshot has to be visible, not just the one file named below.
+      - ${HF_HOME:-${HOME}/.cache/huggingface}:/hf:ro
+
+    command:
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --model
+      - /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      - --alias
+      - qwen3.8-flash-next
+
+      - --ctx-size
+      - "262144"
+      # One slot. The server defaults to 4, which splits the KV cache across
+      # concurrent requests - fine for serving, wrong for a single-stream
+      # measurement.
+      - --parallel
+      - "1"
+
+      # Every layer on the GPU.
+      - --n-gpu-layers
+      - "999"
+      # ZERO expert offload - and the MTP speedup above depends on it. With the
+      # PLE table already off the GPU, IQ4_XS is ~87.2 GiB total minus ~27 GiB
+      # of PLE, so about 60 GiB of compute weights against ~92 GiB of usable
+      # VRAM. It fits outright. If it OOMs, raise this in small steps - but know
+      # that any value above 0 turns the draft head into a net loss.
+      - --n-cpu-moe
+      - "0"
+
+      # 16 = physical cores, not the 32 SMT threads. Decode here is memory
+      # bandwidth bound and the second thread on a core adds contention rather
+      # than bandwidth. Prompt processing is compute bound and does want all 32.
+      - --threads
+      - "16"
+      - --threads-batch
+      - "32"
+
+      - --batch-size
+      - "2048"
+      # +8.8% prefill over 512. 2048 is no better at this arm's settings.
+      - --ubatch-size
+      - "1024"
+
+      # Copy host-side weights into RAM instead of mmap: 1.87x prefill here.
+      # Needs the room in system RAM - see best.llamacpp-24gb.yaml for the
+      # configuration that does not have it.
+      - --load-mode
+      - none
+
+      # Unsloth's thinking-mode sampler defaults, from the model card. Instruct
+      # mode is 0.7 / 0.80 / 20 / 0.0 with presence_penalty 1.5.
+      - --temp
+      - "1.0"
+      - --top-p
+      - "0.95"
+      - --top-k
+      - "20"
+      - --min-p
+      - "0.0"
+
+      - --jinja
+      - --flash-attn
+      - "on"
+      - --metrics
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 360        # 90 min: a cold start reads the whole quant off disk,
+                          # ~87 GiB for IQ4_XS
+      start_period: 60s
+
+    # "no" on purpose. `unless-stopped` makes a server that cannot allocate its
+    # weights restart forever, which turns a clear OOM into a silent hang.
+    restart: "no"

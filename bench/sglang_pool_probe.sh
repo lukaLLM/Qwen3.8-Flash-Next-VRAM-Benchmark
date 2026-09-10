@@ -28,23 +28,49 @@ OUT="results/gates/sglang_pool_probe_$(date -u +%Y%m%dT%H%M%SZ).tsv"
 mkdir -p "$(dirname "$OUT")"
 printf 'spec\tmem_fraction\tmamba\tpool_tokens\tvram_mib\tstatus\n' > "$OUT"
 
+# The SPEC=off arm used to swap in docker-compose.sglang.nospec.yaml, which had
+# drifted: it defaulted mem-fraction to 0.90 against the base's 0.93, so the
+# spec/nospec rows of this very table were a TWO-VARIABLE comparison. The
+# override is now rendered from the base, which inherits mem-fraction by
+# construction. Any pre-2026-09-09 nospec row here should be re-read with that
+# in mind.
 probe() { # $1=spec on|off  $2=mem-fraction
-  local spec="$1" mf="$2" mamba over=""
-  [[ "$spec" == off ]] && { mamba=1; over="-f docker-compose.sglang.nospec.yaml"; } || mamba=5
+  local spec="$1" mf="$2" mamba over
+  # ALWAYS 5, even with speculation off. This used to set 1 for spec=off, on the
+  # belief that the 5 state slots were a NEXTN cost. They are not: mamba_ratio=5
+  # is a MODEL constant of Qwen3.8-Flash-Next's hybrid QSA/linear-attention
+  # design, so max_mamba_cache_size=1 cannot serve any request and the engine
+  # refuses to boot:
+  #   RuntimeError: Hybrid (mamba/linear-attention) state cache is too small to
+  #   serve any requests. max_mamba_cache_size=1, mamba_ratio=5
+  # results/FULL_CONTEXT.md recorded that correction on 2026-09-03 and lib.sh
+  # was fixed, but this script was not - so both spec=off rows of every table it
+  # has ever produced are FAILED, in the 2026-09-03 run and the 2026-09-09 one
+  # alike. Those rows measured this bug, not capacity.
+  mamba=5
+  over="$(mktemp -t sglang_pool_probe_XXXXXX.yaml)"
+  SPEC="$spec" python3 bench/sglang_render_compose.py \
+      docker/docker-compose.sglang.yaml "$over" || { rm -f "$over"; return 1; }
   docker rm -f flashnext >/dev/null 2>&1; sleep 6
   ( cd docker && SGLANG_CONTEXT_LENGTH=262144 SGLANG_MAX_TOTAL_TOKENS=262144 \
       SGLANG_MAX_RUNNING_REQUESTS=1 SGLANG_MAX_MAMBA_CACHE_SIZE=$mamba \
       SGLANG_MEM_FRACTION_STATIC="$mf" SGLANG_CHUNKED_PREFILL_SIZE=8192 \
-      docker compose -f docker-compose.sglang.yaml $over up -d --wait flashnext >/dev/null 2>&1 )
+      docker compose -f docker-compose.sglang.yaml -f "$over" up -d --wait flashnext >/dev/null 2>&1 )
   local rc=$? pool="" vram="" status="booted"
   if [[ $rc -ne 0 ]]; then
-    status="FAILED:$(docker logs flashnext 2>&1 | grep -aoE 'ValueError: [^.]{0,70}' | head -1)"
+    # RuntimeError as well as ValueError: the state-cache refusal above is a
+    # RuntimeError, so the old pattern matched nothing and every failure row
+    # read "FAILED:" with no reason - which is how this went unexplained for six
+    # days. Never discard the launcher's stderr (Auto_Bench.md 4).
+    status="FAILED:$(docker logs flashnext 2>&1 \
+      | grep -aoE '(ValueError|RuntimeError|AssertionError|error): [^.]{0,90}' | head -1)"
   else
     pool=$(docker logs flashnext 2>&1 | grep -aoE 'max_total_num_tokens=[0-9]+' | tail -1 | grep -oE '[0-9]+')
     vram=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1)
   fi
   printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$spec" "$mf" "$mamba" "${pool:-?}" "${vram:-?}" "$status" | tee -a "$OUT"
   docker rm -f flashnext >/dev/null 2>&1; sleep 6
+  rm -f "$over"
 }
 
 echo "  spec mem   mamba pool      vram   status"

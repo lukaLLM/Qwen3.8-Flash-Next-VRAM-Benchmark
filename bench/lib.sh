@@ -125,11 +125,19 @@ bench_init() {
       : "${MODEL_REVISION:=7b719225242aacd3dbd3f9407468c2ee9a9d2594}"
       : "${MODEL_QUANT:=NVFP4}"
       COMPOSE_FILE="docker-compose.sglang.yaml"; SERVICE="flashnext"
-      # SPEC=off swaps in the generated no-speculation override. Without NEXTN a
-      # request needs 1 mamba state slot instead of 5, so admission is no longer
-      # pinned by the state cache - the mamba sizing below accounts for that.
+      # SPEC=off removes the four NEXTN flags. Without NEXTN a request needs 1
+      # mamba state slot instead of 5, so admission is no longer pinned by the
+      # state cache - the mamba sizing below accounts for that.
+      #
+      # This USED to swap in a hand-maintained docker-compose.sglang.nospec.yaml,
+      # and that file had drifted: it defaulted --mem-fraction-static to 0.90
+      # against the base's 0.93, and hard-coded --cuda-graph-max-bs-decode 1
+      # where the base reads the env var. So every SPEC=off arm was a
+      # TWO-VARIABLE comparison and silently ignored CUDA_GRAPH_MAX_BS. The
+      # override is now RENDERED from the base by engine_env_map (see
+      # bench/sglang_render_compose.py), so those two values are inherited by
+      # construction and the drift is unrepresentable rather than policed.
       COMPOSE_OVERRIDE=""
-      [[ "${SPEC:-on}" == "off" ]] && COMPOSE_OVERRIDE="docker-compose.sglang.nospec.yaml"
       CONTAINER="${SGLANG_CONTAINER_NAME:-flashnext}"
       : "${ENGINE_HOST_PORT:=8001}"
       RESET_PATH="/flush_cache"
@@ -202,7 +210,19 @@ bench_init() {
   local _sweepable=(ISL ISL_LADDER OSL CONCURRENCY DURATION WARMUP SEED GOODPUT PROMPT_CORPUS
                     ENGINE_CTX PREFILL_BUDGET MAX_RUNNING_REQUESTS CUDA_GRAPH_MAX_BS
                     UBATCH LOAD_MODE LAZY THINKING SPEC SPEC_TYPE
-                    SPEC_DRAFT_MODEL SPEC_DRAFT_N_MAX SPEC_DRAFT_NGL)
+                    SPEC_DRAFT_MODEL SPEC_DRAFT_N_MAX SPEC_DRAFT_NGL
+                    # CONTEXT_REQUESTS was missing until 2026-09-10 and queue 6
+                    # lost its whole repeat design to it: exported 3, conf said
+                    # 1, conf won, and `workload_overrides` recorded None so the
+                    # evidence did not show the request had been dropped.
+                    CONTEXT_REQUESTS THERMAL_RETRIES
+                    SGLANG_MEM_FRACTION_STATIC
+                    SGLANG_LINEAR_ATTN_DECODE_BACKEND SGLANG_LINEAR_ATTN_PREFILL_BACKEND
+                    SGLANG_MAMBA_SSM_DTYPE SGLANG_SPEC_DRAFT_QUANT
+                    SGLANG_SLEEP_ON_IDLE SGLANG_DISABLE_FI_AUTOTUNE
+                    SGLANG_PYTORCH_ALLOC_CONF SGLANG_MAMBA_CONV_DTYPE_VAL
+                    SGLANG_NUMA_BIND_V2_VAL SGLANG_OMP_NUM_THREADS
+                    SGLANG_JIT_CACHE_HOST_DIR)
   local _ov=() _n _val
   for _n in "${_sweepable[@]}"; do
     [[ -n "${!_n:-}" ]] && _ov+=("${_n}=${!_n}")
@@ -685,7 +705,81 @@ engine_env_map() {
         "SGLANG_CHUNKED_PREFILL_SIZE=${PREFILL_BUDGET:-8192}"
         "SGLANG_CUDA_GRAPH_MAX_BS_DECODE=${CUDA_GRAPH_MAX_BS:-1}"
         "SGLANG_HOST_PORT=${ENGINE_HOST_PORT}"
+
+        # MEM FRACTION WAS NEVER IN THIS MAP, and record_provenance defaulted
+        # its parity field to 0.90 while the compose defaults to 0.93. Every
+        # spec-on artifact therefore RECORDS 0.90 and RAN 0.93 - checked against
+        # quality_sglang_20260904T160940Z, whose server_boot_args says 0.93.
+        # Naming it here, at the compose's own default, makes the two agree by
+        # construction instead of by coincidence.
+        "SGLANG_MEM_FRACTION_STATIC=${SGLANG_MEM_FRACTION_STATIC:-0.93}"
+
+        # OPTIONAL LAUNCH KNOBS. EMPTY IS THE CONTROL: an empty value emits NO
+        # argument at all (bench/sglang_render_compose.py), so an arm with none
+        # of these set reproduces the argv every existing artifact was measured
+        # with - verified byte-for-byte against the base command list.
+        #
+        # They are listed here EVEN WHEN EMPTY on purpose. `env "${ENV_MAP[@]}"`
+        # only ADDS to the inherited environment; it does not clear it. Without
+        # these lines a stray `export SGLANG_MAMBA_SSM_DTYPE=...` in the
+        # operator's shell would reach the renderer and switch a knob on with
+        # nothing in the evidence saying so.
+        #
+        # --gdn-mtp-cache-mode is deliberately NOT here: bench/sglang_flagcap.sh
+        # proved this image's argparse does not have it (it is a source-level
+        # feature of jpezzulli/sglang-rtxpro6000). Offering it would only
+        # produce boot failures.
+        #
+        # COUPLED PAIR, not two knobs: on SM100+ the engine raises ValueError
+        # for --linear-attn-decode-backend flashinfer unless the ssm dtype is
+        # bfloat16, AND setting the ssm dtype to bfloat16 alone auto-promotes
+        # decode (and verify) to flashinfer. See
+        # results/gates/sglang_flagcap_*/FINDING.md.
+        "SGLANG_LINEAR_ATTN_DECODE_BACKEND=${SGLANG_LINEAR_ATTN_DECODE_BACKEND:-}"
+        "SGLANG_LINEAR_ATTN_PREFILL_BACKEND=${SGLANG_LINEAR_ATTN_PREFILL_BACKEND:-}"
+        # NOT a free knob: it sets the dtype of the mamba TEMPORAL state, so it
+        # changes numerics and the per-slot state footprint that caps admission.
+        # Compare max_total_num_tokens, not only tok/s.
+        "SGLANG_MAMBA_SSM_DTYPE=${SGLANG_MAMBA_SSM_DTYPE:-}"
+        # Unset, the draft head INHERITS --quantization (modelopt_fp4).
+        "SGLANG_SPEC_DRAFT_QUANT=${SGLANG_SPEC_DRAFT_QUANT:-}"
+        # Empty/0 = off. Never enable inside a published ladder: this harness
+        # idles the server 45-240s between cells and settle_gpu asserts on
+        # freed VRAM, so a sleeping server puts wake latency into TTFT.
+        "SGLANG_SLEEP_ON_IDLE=${SGLANG_SLEEP_ON_IDLE:-}"
+        "SGLANG_DISABLE_FI_AUTOTUNE=${SGLANG_DISABLE_FI_AUTOTUNE:-}"
+
+        # CONTAINER-SIDE ENVIRONMENT. Prefixed selectors, so setting one does
+        # not also change the harness's own process environment. These can never
+        # appear in server_boot_args (docker .Args is argv only) - the same
+        # blind spot that made LAZY unattributable in B-25 - so each one gets a
+        # named parity field in record_provenance.
+        "SGLANG_PYTORCH_ALLOC_CONF=${SGLANG_PYTORCH_ALLOC_CONF:-}"
+        "SGLANG_MAMBA_CONV_DTYPE_VAL=${SGLANG_MAMBA_CONV_DTYPE_VAL:-}"
+        "SGLANG_NUMA_BIND_V2_VAL=${SGLANG_NUMA_BIND_V2_VAL:-}"
+        "SGLANG_OMP_NUM_THREADS=${SGLANG_OMP_NUM_THREADS:-}"
+        # One switch for the persistent-JIT group. OFF by default: a warm JIT
+        # cache changes BOOT TIME, which bench/boot_time.sh publishes.
+        "SGLANG_JIT_CACHE_HOST_DIR=${SGLANG_JIT_CACHE_HOST_DIR:-}"
       )
+
+      # Render the run-scoped override from the base compose. Done HERE because
+      # engine_env_map runs at the top of both engine_up and engine_down, so
+      # teardown cannot end up using a different file than boot did.
+      #
+      # The generated file is EVIDENCE, not a temp file: record_provenance
+      # copies it into the artifact. That finally gives the SGLang arm the
+      # resolved-launch-config record Auto_Bench.md 5.1 requires and that only
+      # the llama.cpp arm has had.
+      SGLANG_GEN_COMPOSE="$REPO/artifacts/_compose/sglang_${STAMP}.gen.yaml"
+      env "${ENV_MAP[@]}" SPEC="${SPEC:-on}" \
+        python3 "$BENCH_DIR/sglang_render_compose.py" \
+          "$COMPOSE_DIR/$COMPOSE_FILE" "$SGLANG_GEN_COMPOSE" \
+        || die "sglang compose render failed - refusing to boot an unspecified server"
+      # Absolute path, and ALWAYS second: engine_up cd's to $COMPOSE_DIR and the
+      # project directory comes from the FIRST -f, which is what makes
+      # `security_opt: seccomp=./sglang/seccomp-io_uring.json` resolve.
+      COMPOSE_OVERRIDE="$SGLANG_GEN_COMPOSE"
       ;;
     freetoken)
       ENV_MAP=(
@@ -746,7 +840,7 @@ engine_up() {
          # anything else can read it (measured 2026-09-07, t8_gpu, which left an
          # EMPTY artifact dir because capture_failure found nothing to inspect).
          [[ -n "${OUT:-}" && -d "${OUT:-}" ]] && \
-           docker logs --tail 200 "$CONTAINER" > "$OUT/server.log.failure" 2>&1 || true
+           docker logs --tail 5000 "$CONTAINER" > "$OUT/server.log.failure" 2>&1 || true
          # `docker logs`, NOT `docker compose logs`: compose would re-interpolate
          # the file without ENV_MAP and report a missing MODEL that IS set,
          # burying the real error under a fake one.
@@ -965,7 +1059,13 @@ JSON
   events="{}"
   [[ -r "$cg/memory.events" ]] && events=$(awk 'BEGIN{printf "{"} {printf "%s\"%s\": %s", (NR>1?", ":""), $1, $2} END{printf "}"}' "$cg/memory.events")
 
-  docker logs --tail 200 "$CONTAINER" > "$out/server.log.failure" 2>&1 || true
+  # 5000, not 200. A failing server's LAST 200 lines are its shutdown cascade;
+  # the cause is further up. On 2026-09-09 the S1 arm hung for 600s and died on
+  # SGLang's own warmup timeout - the 200-line capture contained the teardown
+  # traceback and not one line of its own, so the backend resolution that would
+  # have named the loaded kernel was gone with the container. Auto_Bench.md 4:
+  # never discard the launcher's stderr.
+  docker logs --tail 5000 "$CONTAINER" > "$out/server.log.failure" 2>&1 || true
   printf '%s\n' "${ENV_MAP[@]+"${ENV_MAP[@]}"}" > "$out/attempted_env.txt" 2>/dev/null || true
 
   cat > "$out/failure.json" <<JSON
@@ -1062,6 +1162,85 @@ preflight() {
     | python3 -c 'import sys,json;print(json.load(sys.stdin)["data"][0]["id"])')
   [[ "$served" == "$MODEL" ]] || die "server has '$served', expected '$MODEL'"
   echo "  model            $served"
+
+  # ------------------------------------------------------------------------
+  # SGLANG LAUNCH-KNOB ASSERTS (Auto_Bench.md 3: assert the RESOLVED
+  # configuration, and prove the feature is ACTIVE, not merely configured).
+  #
+  # The failure this exists to prevent: the renderer emits nothing for an empty
+  # selector, so a typo'd selector name would boot the CONTROL while the queue
+  # script, the artifact name and the report all say "arm". That is a wrong
+  # number with correct-looking provenance, which is worse than a crash.
+  # ------------------------------------------------------------------------
+  if [[ "$ENGINE" == "sglang" ]]; then
+    local argv resolved
+    argv="$(docker inspect --format '{{join .Args " "}}' "$CONTAINER" 2>/dev/null)" \
+      || die "cannot read argv for $CONTAINER"
+    resolved="$(docker logs "$CONTAINER" 2>&1 | grep -a 'server_args=ServerArgs(' | tail -1)"
+
+    # 0. CAPABILITY. Refuse a flag this image's argparse does not have, using
+    #    the newest bench/sglang_flagcap.sh manifest. Absent manifest is not a
+    #    pass: run the probe, it costs 30s and no GPU.
+    local capfile
+    capfile="$(ls -1dt "$REPO"/results/gates/sglang_flagcap_*/flags.tsv 2>/dev/null | head -1)"
+
+    local _sel _name _flag _val _argname _rest
+    for _sel in \
+      "SGLANG_LINEAR_ATTN_DECODE_BACKEND:--linear-attn-decode-backend:linear_attn_decode_backend" \
+      "SGLANG_LINEAR_ATTN_PREFILL_BACKEND:--linear-attn-prefill-backend:linear_attn_prefill_backend" \
+      "SGLANG_MAMBA_SSM_DTYPE:--mamba-ssm-dtype:mamba_ssm_dtype" \
+      "SGLANG_SPEC_DRAFT_QUANT:--speculative-draft-model-quantization:speculative_draft_model_quantization"
+    do
+      # triple is  SELECTOR:--flag:serverargs_attr_name
+      _name="${_sel%%:*}"; _rest="${_sel#*:}"
+      _flag="${_rest%%:*}"; _argname="${_rest#*:}"
+      _val="${!_name:-}"
+      if [[ -n "$_val" ]]; then
+        if [[ -n "$capfile" ]] && ! awk -v f="$_flag" '$1==f && $2 ~ /^yes/' "$capfile" | grep -q .; then
+          die "$_flag is not in this image's argparse (see $capfile) - do not guess, run bench/sglang_flagcap.sh"
+        fi
+        # 1. POSITIVE: the flag and its value must be in the argv that booted.
+        grep -q -- "$_flag $_val" <<<"$argv" \
+          || die "requested $_flag $_val is NOT in the booted argv - the render was a no-op and this arm is measuring the control"
+        # 3. RESOLVED, not merely requested. A flag can be accepted at boot and
+        #    then overridden by the engine's own _handle_* resolution.
+        if [[ -n "$resolved" ]]; then
+          grep -q "${_argname}='${_val}'" <<<"$resolved" \
+            || warn "$_flag requested $_val but ServerArgs resolved it differently - see server_args.txt"
+        fi
+        echo "  sglang knob      $_flag $_val"
+      else
+        # 2. NEGATIVE: an unset knob must be ABSENT. `env "${ENV_MAP[@]}"` only
+        #    ADDS to the inherited environment, so a stray export in the
+        #    operator's shell would otherwise switch a knob on invisibly.
+        grep -q -- "$_flag " <<<"$argv" \
+          && die "$_flag is in the booted argv but no selector requested it - the environment is contaminated"
+      fi
+    done
+
+    # 4. ACTIVE, not merely configured. The linear-attn backends are the whole
+    #    point of this campaign, and 'configured but inert' is exactly what the
+    #    MTP-1 gate was written to catch. The engine prints its resolution as
+    #      Linear attention kernel backend: decode=X, prefill=Y, verify=Z
+    if [[ -n "${SGLANG_LINEAR_ATTN_DECODE_BACKEND:-}${SGLANG_MAMBA_SSM_DTYPE:-}" ]]; then
+      local laline
+      laline="$(docker logs "$CONTAINER" 2>&1 | grep -a 'Linear attention kernel backend:' | tail -1)"
+      [[ -n "$laline" ]] || die "no 'Linear attention kernel backend:' line - cannot prove which kernel is live"
+      echo "  ${laline#*] }"
+      # bfloat16 ssm dtype auto-promotes decode AND verify to flashinfer, so a
+      # run that asked for either and still reports triton did not take effect.
+      if [[ "${SGLANG_MAMBA_SSM_DTYPE:-}" == "bfloat16" ]]; then
+        grep -q 'decode=flashinfer' <<<"$laline" \
+          || die "mamba-ssm-dtype=bfloat16 did not promote decode to flashinfer - got: $laline"
+      fi
+    fi
+
+    # 5. MEM FRACTION. Assert the argv value equals what provenance will record.
+    #    Not hypothetical: every spec-on artifact before 2026-09-09 recorded
+    #    0.90 while the server ran 0.93.
+    grep -q -- "--mem-fraction-static ${SGLANG_MEM_FRACTION_STATIC:-0.93}" <<<"$argv" \
+      || die "argv mem-fraction disagrees with SGLANG_MEM_FRACTION_STATIC=${SGLANG_MEM_FRACTION_STATIC:-0.93} - provenance would be a fabrication"
+  fi
 
   # FreeToken's HTTP front end is live before its model worker is ready. On
   # 2026-09-03 /v1/models and /health both returned 200 while every completion
@@ -1254,7 +1433,14 @@ record_provenance() {
       provenance_graph_max="engine-managed"
       ;;
     sglang)
-      provenance_mem_fraction="${SGLANG_MEM_FRACTION_STATIC:-0.90}"
+      # 0.93, NOT 0.90. This default said 0.90 while the compose has defaulted
+      # to 0.93 since 2026-09-03 and nothing ever set the variable, so every
+      # spec-on artifact RECORDED 0.90 and RAN 0.93 (verified against
+      # quality_sglang_20260904T160940Z: parity says 0.90, server_boot_args says
+      # 0.93). engine_env_map now sets the variable explicitly, so this fallback
+      # should never be reached - it is kept aligned so that if it ever is, it
+      # cannot fabricate a value again.
+      provenance_mem_fraction="${SGLANG_MEM_FRACTION_STATIC:-0.93}"
       provenance_kv_dtype="fp8_e4m3"
       provenance_graph_max="${CUDA_GRAPH_MAX_BS:-1}"
       ;;
@@ -1270,6 +1456,46 @@ record_provenance() {
       ;;
   esac
 
+  # SGLang launch knobs. Empty selector == flag not passed == "engine-default";
+  # anything else is the literal value that reached the renderer. Non-sglang
+  # arms get "not-applicable" - this file's own lesson is that a plausible
+  # default is worse than an explicit absence.
+  local sgl_la_decode sgl_la_prefill sgl_ssm_dtype sgl_spec_quant sgl_sleep_idle
+  local sgl_no_autotune sgl_alloc_conf sgl_conv_dtype sgl_numa sgl_omp sgl_jit_dir
+  if [[ "$ENGINE" == "sglang" ]]; then
+    sgl_la_decode="${SGLANG_LINEAR_ATTN_DECODE_BACKEND:-engine-default}"
+    sgl_la_prefill="${SGLANG_LINEAR_ATTN_PREFILL_BACKEND:-engine-default}"
+    sgl_ssm_dtype="${SGLANG_MAMBA_SSM_DTYPE:-engine-default}"
+    sgl_spec_quant="${SGLANG_SPEC_DRAFT_QUANT:-engine-default}"
+    sgl_sleep_idle="${SGLANG_SLEEP_ON_IDLE:-off}"
+    sgl_no_autotune="${SGLANG_DISABLE_FI_AUTOTUNE:-off}"
+    sgl_alloc_conf="${SGLANG_PYTORCH_ALLOC_CONF:-engine-default}"
+    sgl_conv_dtype="${SGLANG_MAMBA_CONV_DTYPE_VAL:-engine-default}"
+    sgl_numa="${SGLANG_NUMA_BIND_V2_VAL:-engine-default}"
+    sgl_omp="${SGLANG_OMP_NUM_THREADS:-engine-default}"
+    sgl_jit_dir="${SGLANG_JIT_CACHE_HOST_DIR:-none}"
+  else
+    sgl_la_decode="not-applicable";  sgl_la_prefill="not-applicable"
+    sgl_ssm_dtype="not-applicable";  sgl_spec_quant="not-applicable"
+    sgl_sleep_idle="not-applicable"; sgl_no_autotune="not-applicable"
+    sgl_alloc_conf="not-applicable"; sgl_conv_dtype="not-applicable"
+    sgl_numa="not-applicable";       sgl_omp="not-applicable"
+    sgl_jit_dir="not-applicable"
+  fi
+
+  # The resolved launch configuration, as evidence (Auto_Bench.md 5.1). The
+  # SGLang arm has never had one: llama.cpp gets benchmark/dump_compose.sh and
+  # this arm got nothing but argv.
+  if [[ "$ENGINE" == "sglang" ]]; then
+    # SGLang's own resolved ServerArgs dump is ONE ~6KB line, which is why the
+    # server_backend_lines grep excludes it. It goes to a sibling file so the
+    # resolved value of every knob is auditable without bloating provenance.
+    docker logs "$CONTAINER" 2>&1 | grep -a 'server_args=ServerArgs(' | tail -1 \
+      > "$out/server_args.txt" 2>/dev/null || true
+    [[ -n "${SGLANG_GEN_COMPOSE:-}" && -f "${SGLANG_GEN_COMPOSE:-}" ]] && \
+      cp "$SGLANG_GEN_COMPOSE" "$out/docker-compose.sglang.gen.yaml" || true
+  fi
+
   local input_sha256="none"
   [[ -n "${INPUT_FILE:-}" && -f "$INPUT_FILE" ]] && input_sha256="$(sha256sum "$INPUT_FILE" | cut -d' ' -f1)"
 
@@ -1280,7 +1506,13 @@ record_provenance() {
   ENGINE_CTX="${ENGINE_CTX:-262144}" PREFILL_BUDGET="${PREFILL_BUDGET:-8192}" \
   MAX_RUNNING_REQUESTS="${MAX_RUNNING_REQUESTS:-128}" CUDA_GRAPH_MAX_BS="$provenance_graph_max" \
   KV_CACHE_DTYPE="$provenance_kv_dtype" MEM_FRACTION="$provenance_mem_fraction" \
+  SGL_LA_DECODE="$sgl_la_decode" SGL_LA_PREFILL="$sgl_la_prefill" \
+  SGL_SSM_DTYPE="$sgl_ssm_dtype" SGL_SPEC_QUANT="$sgl_spec_quant" \
+  SGL_SLEEP_IDLE="$sgl_sleep_idle" SGL_NO_AUTOTUNE="$sgl_no_autotune" \
+  SGL_ALLOC_CONF="$sgl_alloc_conf" SGL_CONV_DTYPE="$sgl_conv_dtype" \
+  SGL_NUMA="$sgl_numa" SGL_OMP="$sgl_omp" SGL_JIT_DIR="$sgl_jit_dir" \
   ISL="${ISL:-}" OSL="${OSL:-}" CONCURRENCY="${CONCURRENCY:-}" DURATION="${DURATION:-}" \
+  CONTEXT_REQUESTS="${CONTEXT_REQUESTS:-unset}" \
   WARMUP="${WARMUP:-}" SEED="${SEED:-}" GOODPUT="${GOODPUT:-}" \
   UBATCH="${UBATCH:-unset}" LOAD_MODE="${LOAD_MODE:-unset}" LAZY="${LAZY:-unset}" \
   N_CPU_MOE="${N_CPU_MOE:-unset}" NGL="${NGL:-unset}" SPEC_DRAFT_NGL="${SPEC_DRAFT_NGL:-unset}" \
@@ -1314,6 +1546,11 @@ json.dump({
     # 2026-09-04, when an A/B report could not attribute its own arms and the
     # boot args had to be diffed by hand to recover which run was which.
     # RULES.md 2 requires every parity flag in a named field.
+    # How many MEASURED requests the cell asked for. A full-window cell at 1 is
+    # a single sample of a speculative-decode rate, whose spread across
+    # identical boots is 31.6% (B-31) - so this number is needed to know whether
+    # a decode figure can be read at all.
+    "context_requests": e["CONTEXT_REQUESTS"],
     "ubatch": e["UBATCH"], "load_mode": e["LOAD_MODE"],
     # LAZY reaches the server as LLAMA_ARG_TENSOR_READ_LAZY, an env var, which
     # server_boot_args (docker .Args) can NEVER show - the same blind spot that
@@ -1332,6 +1569,27 @@ json.dump({
     "n_cpu_moe": e["N_CPU_MOE"], "ngl": e["NGL"],
     # Where the MTP draft head sits: 0 = CPU (no VRAM cost), 99 = GPU.
     "spec_draft_ngl": e["SPEC_DRAFT_NGL"],
+    # SGLANG LAUNCH KNOBS, one named field each (RULES.md 2). "engine-default"
+    # means the flag was NOT passed and the engine resolved it itself - which is
+    # not the same as knowing what it resolved to, so read these together with
+    # server_backend_lines and server_args.txt. On a non-sglang arm they are
+    # "not-applicable" rather than a plausible-looking false value.
+    #
+    # The container-env ones (alloc conf, conv dtype, numa, omp) can NEVER
+    # appear in server_boot_args, because docker .Args holds argv only. That is
+    # the same blind spot that let LAZY go unattributed for three campaigns
+    # (B-25), so they are named here or they are invisible.
+    "sglang_linear_attn_decode_backend": e["SGL_LA_DECODE"],
+    "sglang_linear_attn_prefill_backend": e["SGL_LA_PREFILL"],
+    "sglang_mamba_ssm_dtype": e["SGL_SSM_DTYPE"],
+    "sglang_spec_draft_quantization": e["SGL_SPEC_QUANT"],
+    "sglang_sleep_on_idle": e["SGL_SLEEP_IDLE"],
+    "sglang_disable_flashinfer_autotune": e["SGL_NO_AUTOTUNE"],
+    "sglang_pytorch_cuda_alloc_conf": e["SGL_ALLOC_CONF"],
+    "sglang_mamba_conv_dtype": e["SGL_CONV_DTYPE"],
+    "sglang_numa_bind_v2": e["SGL_NUMA"],
+    "sglang_omp_num_threads": e["SGL_OMP"],
+    "sglang_jit_cache_host_dir": e["SGL_JIT_DIR"],
     # The intended host-RAM cap. What was ACTUALLY applied is read back from
     # docker and the live cgroup into memory.json - never trust this field alone.
     "mem_cap_bytes_intended": e["MEM_CAP"],
@@ -1357,8 +1615,13 @@ json.dump({
   # matches any 'backend' grep and bloated every artifact when first added.
   "server_backend_lines": sh(
       f"docker logs {e['CONTAINER']} 2>&1 | grep -vE 'server_args=' "
-      "| grep -iE 'attention backend|Use .* backend|Using .*[Bb]ackend|kernel backend' "
-      "| head -6 | cut -c1-200"),
+      # The lines that PROVE a linear-attn backend is live do not all contain
+      # the word "backend" - 'Using FlashInfer GDN kernels' and 'Using CuTe DSL
+      # GDN prefill' are the runtime evidence for the flashinfer GDN path, and
+      # the old pattern could not see either. head raised 6 -> 12 to fit them.
+      "| grep -iE 'attention backend|Use .* backend|Using .*[Bb]ackend|kernel backend"
+      "|GDN kernel|GDN prefill|linear attention|linear-attn|RecoverSSM' "
+      "| head -12 | cut -c1-200"),
   "runtime_route_probe": {
       k: v for k, v in (
           item.split("=", 1) for item in e.get("RUNTIME_ROUTE_STATUS", "").split(";")

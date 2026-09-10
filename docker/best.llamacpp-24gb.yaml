@@ -1,0 +1,137 @@
+# LLAMA.CPP ON A 24 GB CARD (3090 / 4090) IN 64 GB OF SYSTEM RAM - ~34 tok/s.
+#
+#   docker compose -f docker/best.llamacpp-24gb.yaml up -d
+#
+# THE ANSWER IS GENUINELY DIFFERENT AT 24 GB. This is not the 96 GB
+# configuration scaled down - three of the settings that win on the big card
+# lose here:
+#
+#   MTP off        the draft head is 1.61x at --n-cpu-moe 0 and a 0.29-0.38x
+#                  LOSS with expert offload, which this tier needs 42 layers of
+#   mmap           --load-mode none would want more system RAM than 64 GB
+#   --lazy-mode on deliberately stream the PLE table from disk. On the big card
+#                  that is a bug to be switched off; here it is the point
+#   -ub 512        1024 buys prefill this tier has no VRAM to spare for
+#
+# Measured on this repo's hardware ladder, where VRAM is software-limited to
+# reproduce a smaller card's capacity (not its bandwidth). For the other rungs,
+# change --n-cpu-moe only:
+#   8 GiB -> 48    16 GiB -> 45    24 GiB -> 42    32 GiB -> 36    48 GiB -> 23
+# At 8 GiB the model will not load with -ngl 999 at all: --n-cpu-moe relocates
+# expert tensors only, and the ~10.7 GiB floor of attention, hyper-connections
+# and per-block PLE tensors stays on the GPU however high you push it.
+#
+# IF THE MODEL PATH BELOW DOES NOT EXIST the checkpoint was re-uploaded:
+#   ls ~/.cache/huggingface/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/*/UD-IQ4_XS/*-00001-of-*.gguf
+# Pick the snapshot holding ALL THREE shards.
+name: best_llamacpp_24gb_qwen38_flash_next
+
+services:
+  q38n:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    pull_policy: missing
+    container_name: q38n_24gb
+
+    gpus: all
+    ipc: host
+    ports:
+      - "8000:8000"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile: { soft: 1048576, hard: 1048576 }
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+
+      # MTP OFF - see the header. With 42 layers of expert offload the draft
+      # head is a net loss, not a win.
+      LLAMA_ARG_SPEC_TYPE: none
+
+      # The ~27 GiB PLE lookup table on the CPU. Still the single most important
+      # setting, and more so here: on the GPU instead, 55.6x slower to decode.
+      LLAMA_ARG_OVERRIDE_TENSOR: per_layer_token_embd=CPU
+
+      # ON, and deliberately - the opposite of every other file here. There is
+      # not enough RAM at this tier to hold the ~25 GiB PLE table resident, so
+      # it streams from disk on demand. That IS the configuration for anyone
+      # without the RAM, and it is what the ~34 tok/s was measured with. Expect
+      # the SSD to work for it.
+      #
+      # Two names for one flag across builds; an unknown LLAMA_ARG_* is ignored
+      # harmlessly, so setting both is correct on every image.
+      LLAMA_ARG_TENSOR_READ_LAZY: "on"
+      LLAMA_ARG_LAZY_MODE: "on"
+
+      LLAMA_ARG_KV_UNIFIED: "true"
+
+    volumes:
+      - ${HF_HOME:-${HOME}/.cache/huggingface}:/hf:ro
+
+    command:
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --model
+      - /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      - --alias
+      - qwen3.8-flash-next
+
+      # 245,760 tokens is the longest context measured at this tier, at 14.9
+      # tok/s decode. Lower it if the KV cache does not fit alongside the model.
+      - --ctx-size
+      - "262144"
+      - --parallel
+      - "1"
+
+      # Still every layer on the GPU: --n-cpu-moe relocates expert tensors only,
+      # so attention, hyper-connections and the per-block PLE tensors stay
+      # resident regardless.
+      - --n-gpu-layers
+      - "999"
+      # 42 of 48 layers keep their expert tensors in system RAM. THIS is the
+      # line to change for a different card - see the ladder in the header.
+      - --n-cpu-moe
+      - "42"
+
+      - --threads
+      - "16"
+      - --threads-batch
+      - "32"
+
+      - --batch-size
+      - "2048"
+      # 512, not the 1024 the 96 GiB configuration uses: the larger microbatch
+      # costs VRAM this tier needs for the model.
+      - --ubatch-size
+      - "512"
+
+      # mmap, not `none`: copying weights into RAM would want more than 64 GB
+      # once 42 layers of experts are already there.
+      - --load-mode
+      - mmap
+
+      # Unsloth's thinking-mode sampler defaults, from the model card.
+      - --temp
+      - "1.0"
+      - --top-p
+      - "0.95"
+      - --top-k
+      - "20"
+      - --min-p
+      - "0.0"
+
+      - --jinja
+      - --flash-attn
+      - "on"
+      - --metrics
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 360
+      start_period: 60s
+
+    restart: "no"

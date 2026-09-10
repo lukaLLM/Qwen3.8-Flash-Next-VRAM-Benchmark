@@ -114,6 +114,13 @@ driven by environment variables, so a configuration *is* a set of variables.
 | **FreeToken** | 99 / 3,026 tok/s | NVFP4, `--moe-backend offload` **and** `--ple-backend disk` together |
 | **llama.cpp** (stock image) | 69 / 1,859 tok/s | `LOAD_MODE=none`, `-ot per_layer_token_embd=CPU`, `UBATCH=1024`, `-ngl 999`, `--n-cpu-moe 0` |
 
+One departure, deliberately: `docker/best.sglang.yaml` sets
+`--mem-fraction-static` to **0.93**, not the 0.90 the artifact above recorded. A
+later boot probe found 0.90 sizes the KV pool at 166,720 tokens — 36% short of
+the window — while 0.93 reaches the full 262,144 for +1.3 GB of VRAM, with NEXTN
+kept. The table records what was measured; the compose file is what is worth
+running.
+
 Four settings carry most of the difference, and each is a measured pair:
 
 - **`-ot per_layer_token_embd=CPU`** — the 27 GiB lookup table on the CPU. On the
@@ -129,18 +136,50 @@ Four settings carry most of the difference, and each is a measured pair:
 `-ot per_layer_token_embd=CPU`, `--load-mode mmap`, **`--lazy-mode on`**, `-ub 512`,
 and **MTP off**. That runs at ~34 tok/s in 64 GB of system RAM.
 
+### Run any of them with one command
+
+Each row above is a compose file with every value already in it — no env file,
+no override, no wrapper script. The file *is* the answer to "what flags did you
+run":
+
 ```bash
-# llama.cpp, the stock-image baseline
-LOAD_MODE=none UBATCH=1024 ./scripts/serve.sh --ctx 262144
+docker compose -f docker/best.sglang.yaml        up -d   # fastest overall
+docker compose -f docker/best.llamacpp-mtp.yaml  up -d   # fastest llama.cpp
+docker compose -f docker/best.freetoken.yaml     up -d
+docker compose -f docker/best.llamacpp.yaml      up -d   # the stock-image baseline
+docker compose -f docker/best.llamacpp-24gb.yaml up -d   # 3090 / 4090, 64 GB RAM
 
-# llama.cpp with the draft head (build the image first, see below)
-LLAMA_IMAGE=llamacpp-mtp:d1a92352 SPEC_TYPE=draft-mtp SPEC_DRAFT_N_MAX=5 \
-  ./scripts/serve.sh --ctx 262144
-
-# SGLang and FreeToken have their own compose files
-docker compose -f docker/docker-compose.sglang.yaml    up -d
-docker compose -f docker/docker-compose.freetoken.yaml up -d
+docker compose -f docker/best.sglang.yaml down           # stop it
 ```
+
+They are standalone, not overrides — do not stack them with `-f` on the base
+compose files. Each has its own project name, container name and port, so two
+can run side by side.
+
+| File | Port | Image |
+|---|---|---|
+| `best.sglang.yaml` | 8001 | `sglang-flashnext-sm120:local` — **must exist already**, see below |
+| `best.llamacpp-mtp.yaml` | 8000 | built on first `up` from the pinned fork commit |
+| `best.freetoken.yaml` | 8002 | built on first `up` from `docker/freetoken.Dockerfile` |
+| `best.llamacpp.yaml` | 8000 | `ghcr.io/ggml-org/llama.cpp:server-cuda13`, pulled |
+| `best.llamacpp-24gb.yaml` | 8000 | `ghcr.io/ggml-org/llama.cpp:server-cuda13`, pulled |
+
+**There is no separate build step.** Four of the five carry a `build:` block or a
+registry tag, so `up` produces the image if the machine does not have it and
+reuses it if it does. The llama.cpp fork builds straight from its git ref —
+BuildKit clones the pinned commit itself, no source tree to fetch. Both builds
+are CUDA compiles and take a while the first time; `--build` forces a rebuild
+afterwards.
+
+`best.sglang.yaml` is the exception and cannot be fixed here: that image is a
+three-commit overlay plus a local patch that this repo does not yet carry a
+recipe for (PLAN_SGLANG.md records the commits and says so). For anyone but this
+machine that file is the flag list, not a working command.
+
+The model paths are written out in full and pinned to a snapshot commit, which
+is what lets these files skip the glob a script would need. If Unsloth
+re-uploads, a path goes stale and each file's header carries the `ls` that finds
+the current one.
 
 ## Reproduce the second report
 
@@ -591,6 +630,9 @@ arm's VRAM to be released and for the card to cool, then holds a floor delay.
 scripts/download_models.sh   sequential, resumable, sha256-verified. aria2c, not
                              `hf download`, which cannot resume.
 scripts/serve.sh             quant name -> cache path -> server.
+docker/best.*.yaml           one standalone compose file per winning
+                             configuration, every value written out and the model
+                             paths pinned. `docker compose -f <file> up -d`.
 docker/                      one compose file per engine: docker-compose.yaml
                              (llama.cpp), .sglang.yaml, .freetoken.yaml, plus the
                              FreeToken image and the no-speculation override.

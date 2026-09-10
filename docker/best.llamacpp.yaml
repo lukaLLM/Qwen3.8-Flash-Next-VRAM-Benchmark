@@ -1,0 +1,126 @@
+# LLAMA.CPP, STOCK UPSTREAM IMAGE - 69 decode / 1,859 prefill tok/s at 32K.
+# The baseline every other number in the report is measured against.
+#
+#   docker compose -f docker/best.llamacpp.yaml up -d
+#
+# The only configuration here that needs NO local image build: compose pulls the
+# tag on first start. If you want the fastest llama.cpp instead, that is
+# best.llamacpp-mtp.yaml - 1.61x this one's decode, at the cost of a source
+# build of a branch that has not merged upstream.
+#
+# IF THE MODEL PATH BELOW DOES NOT EXIST the checkpoint was re-uploaded:
+#   ls ~/.cache/huggingface/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/*/UD-IQ4_XS/*-00001-of-*.gguf
+# Pick the snapshot holding ALL THREE shards - a partial one is on disk too, and
+# llama.cpp only discovers the missing tail minutes into the load.
+name: best_llamacpp_qwen38_flash_next
+
+services:
+  q38n:
+    # Carries qwen4exp since build b10658. Verify any candidate tag with:
+    #   docker run --rm --entrypoint /bin/sh <image> -c 'grep -qa -r qwen4exp /app'
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    pull_policy: missing
+    container_name: q38n_base
+
+    gpus: all
+    ipc: host
+    ports:
+      - "8000:8000"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile: { soft: 1048576, hard: 1048576 }
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+
+      # No speculation. This is the number everything else must beat.
+      LLAMA_ARG_SPEC_TYPE: none
+
+      # THE SINGLE MOST IMPORTANT SETTING IN THIS FILE. The ~27 GiB PLE lookup
+      # table on the CPU, everything that multiplies against it on the GPU. On
+      # the GPU instead: 55.6x slower to decode. This is why the model fits.
+      # blk.N.ple_* are deliberately not matched, so they stay resident.
+      LLAMA_ARG_OVERRIDE_TENSOR: per_layer_token_embd=CPU
+
+      # OFF. The build default `auto` streams any tensor over 4 GiB from disk on
+      # demand, and the PLE table is ~25 GiB - that measures storage, not the
+      # model. Two names for one flag across builds; an unknown LLAMA_ARG_* is
+      # ignored harmlessly, so setting both is correct on every image.
+      LLAMA_ARG_TENSOR_READ_LAZY: "off"
+      LLAMA_ARG_LAZY_MODE: "off"
+
+      # Must be set here, not in the command list: --kv-unified takes no value
+      # and passing one fails startup with "error: invalid argument: true".
+      LLAMA_ARG_KV_UNIFIED: "true"
+
+    volumes:
+      # Read-only, and the whole snapshot: shard 1 of a split GGUF pulls its
+      # siblings in by relative path.
+      - ${HF_HOME:-${HOME}/.cache/huggingface}:/hf:ro
+
+    command:
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --model
+      - /hf/hub/models--unsloth--Qwen3.8-Flash-Next-GGUF/snapshots/824f539b2710e5a9e47af4952cf6578cf5ee8932/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      - --alias
+      - qwen3.8-flash-next
+
+      - --ctx-size
+      - "262144"
+      # One slot. The server defaults to 4, which splits the KV cache.
+      - --parallel
+      - "1"
+
+      - --n-gpu-layers
+      - "999"
+      # No expert offload: ~60 GiB of compute weights against ~92 GiB of usable
+      # VRAM once the PLE table is on the CPU. It fits outright.
+      - --n-cpu-moe
+      - "0"
+
+      # 16 physical cores for bandwidth-bound decode; all 32 threads for
+      # compute-bound prompt processing.
+      - --threads
+      - "16"
+      - --threads-batch
+      - "32"
+
+      - --batch-size
+      - "2048"
+      # +8.8% prefill over 512. 2048 is no better.
+      - --ubatch-size
+      - "1024"
+
+      # Copy host-side weights into RAM instead of mmap: 1.87x prefill.
+      # Needs the room in system RAM.
+      - --load-mode
+      - none
+
+      # Unsloth's thinking-mode sampler defaults, from the model card.
+      - --temp
+      - "1.0"
+      - --top-p
+      - "0.95"
+      - --top-k
+      - "20"
+      - --min-p
+      - "0.0"
+
+      - --jinja
+      - --flash-attn
+      - "on"
+      - --metrics
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 360        # 90 min: a cold start reads ~87 GiB off disk
+      start_period: 60s
+
+    # "no" on purpose: `unless-stopped` turns an OOM into a silent restart loop.
+    restart: "no"

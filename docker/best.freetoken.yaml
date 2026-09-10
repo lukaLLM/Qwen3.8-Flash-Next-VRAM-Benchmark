@@ -1,0 +1,150 @@
+# THE WINNING FREETOKEN CONFIGURATION - 99 decode / 3,026 prefill tok/s at 32K.
+# One RTX PRO 6000 Blackwell (96 GB) + 96 GB DDR5.
+#
+#   docker compose -f docker/best.freetoken.yaml up -d
+#
+# Self-contained on purpose: no env file, no override, no script. If the image
+# is not on this machine, `up` builds it - that is the `build:` block below, and
+# it is why there is no separate build step to run first. Once built the tag is
+# reused; `--build` forces a rebuild.
+#
+# Same checkpoint and revision as the SGLang arm, which is what makes those two
+# the only genuinely controlled pair in this study: identical weights, so the
+# comparison isolates PLE placement rather than the model.
+#
+# THE TWO FLAGS THAT MAKE THIS ARM POSSIBLE ARE LOAD-BEARING TOGETHER.
+#   --moe-backend offload    experts in host RAM: 63.32 GiB
+#   --ple-backend disk       the 47.68 GiB PLE table streams from NVMe
+# Neither alone fits on this box:
+#   offload + ple pinned   63.32 + 47.68 = 111.00 GiB against ~85 available  NO
+#   offload + ple disk     63.32         =  63.32 GiB                        yes
+# And `--moe-backend fused` is not an option at all, though it looks like the
+# one that should fit: engine.py:1470 refuses any non-offload backend for NVFP4
+# experts outright ("nvfp4 experts require --moe-backend offload or cpu").
+name: best_freetoken_qwen38_flash_next
+
+services:
+  freetoken:
+    image: freetoken:local
+    # Built from this repo's own Dockerfile if the tag is not present. The
+    # FreeToken source revision is pinned inside it (ARG FREETOKEN_REF).
+    build:
+      context: .
+      dockerfile: freetoken.Dockerfile
+    container_name: freetoken
+
+    gpus: all
+    ipc: host
+    shm_size: 32gb
+
+    # Same cap as the SGLang arm on purpose: both serve the same checkpoint, so
+    # an equal ceiling is part of the parity. Equal memory and memory+swap also
+    # stop it spilling into host swap, where it would be measuring the disk
+    # while still looking healthy.
+    mem_limit: 86g
+    memswap_limit: 86g
+
+    ports:
+      - "127.0.0.1:8002:8000"
+
+    ulimits:
+      # THIS IS WHY THE ARM IS CONTAINERISED AND NOT A HOST PROCESS.
+      # FreeToken pins large host-RAM banks. The host's hard RLIMIT_MEMLOCK here
+      # is 11.49 GiB, so a host process would die at 11.5 GiB no matter how much
+      # RAM were free, and raising it needs a root change plus a relogin. In a
+      # container the limit is simply lifted.
+      memlock: -1
+      stack: 67108864
+      nofile:
+        soft: 1048576
+        hard: 1048576
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+      # Never reach for the network mid-run: the checkpoint is already local and
+      # a silent re-download would mean the run no longer used the pinned
+      # revision.
+      HF_HOME: /hf
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+
+    volumes:
+      # Mount the cache ROOT, not just the snapshot: snapshot entries are
+      # relative symlinks into ../../blobs and would dangle in-container.
+      - type: bind
+        source: ${HF_HOME:-${HOME}/.cache/huggingface}
+        target: /hf
+        read_only: true
+
+    # ENTRYPOINT is `ft`, so this starts at the subcommand.
+    command:
+      - serve
+      - --model
+      - /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594
+      - --served-model-name
+      - Qwen3.8-Flash-Next
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+
+      - --nvfp4-backend
+      - auto
+      # The pair. See the header - neither works without the other.
+      - --moe-backend
+      - offload
+      - --ple-backend
+      - disk
+
+      - --memory-ratio
+      - "0.90"
+
+      # One slot: the single-stream configuration that was measured.
+      - --max-running-requests
+      - "1"
+      - --cuda-graph-max-bs
+      - "1"
+
+      - --max-seq-len-override
+      - "262144"
+      - --max-prefill-length
+      - "8192"
+
+      - --cache-type
+      - radix
+      - --sampling-defaults
+      - model
+      - --enable-cache-report
+
+      # Pin the loader the engine picks for itself on this box anyway, so the
+      # run does not depend on how much RAM happened to be free at start.
+      - --expert-load
+      - serial
+
+    # /health, NOT /v1/models - and HTTP 200 alone is not enough.
+    #
+    # Measured 2026-09-02: with /v1/models as the probe the container went
+    # healthy after TEN SECONDS while the engine subprocess had already died
+    # with "Model architecture Qwen4ExpForConditionalGeneration not supported".
+    # Peak memory was 1.65 GiB - nothing had loaded. The HTTP front end answers
+    # /v1/models from static config before, and regardless of whether, the
+    # engine comes up. The payload becomes trustworthy only at
+    # maintenance=serving.
+    #
+    # start_period is generous: 63 GiB of NVFP4 experts have to reach the GPU.
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - >-
+          import json, urllib.request;
+          d=json.load(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5));
+          assert d.get('status') == 'ok' and d.get('maintenance') == 'serving'
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 300s
+
+    # An OOM or a startup error must stay stopped, never become a restart loop.
+    restart: "no"

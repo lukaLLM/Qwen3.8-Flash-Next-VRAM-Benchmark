@@ -12,7 +12,8 @@ R = pathlib.Path(__file__).resolve().parent.parent
 A = R / "artifacts"
 ENGINES = ("sglang", "freetoken", "llamacpp")
 LABEL = {"sglang": "SGLang", "freetoken": "FreeToken", "llamacpp": "llama.cpp",
-         "llamacpp+mtp": "llama.cpp + MTP"}
+         "llamacpp+mtp": "llama.cpp + MTP",
+         "sglang+fi": "SGLang + FlashInfer GDN"}
 
 def _cells(d):
     return [p for p in d.glob("**/profile_export_aiperf.json") if "phases" not in p.parts]
@@ -48,6 +49,27 @@ def _pick(pat, mtp=False):
     return None
 
 MTP_SERIES = "llamacpp+mtp"
+
+# The SGLang arm with the hybrid-GDN linear-attention path moved off Triton.
+# Same engine, one feature switched on - the same relationship llama.cpp has to
+# llama.cpp+MTP, and drawn the same way.
+SGL_TUNED_SERIES = "sglang+fi"
+
+def _is_sgl_tuned(d):
+    """Did this SGLang arm request a linear-attn backend or an ssm dtype?
+
+    Needed for exactly the reason _is_mtp is: a tuned re-run and the control are
+    both `*maxctx*sglang_*`, so without this the newest tuned arm would silently
+    REPLACE the published baseline series and the chart would show one bar where
+    two were measured.
+
+    Artifacts written before 2026-09-09 have none of these keys, so .get()
+    returns None and they read as untuned - which is what they are.
+    """
+    pf = _prov(d).get("parity_flags", {})
+    real = lambda k: pf.get(k) not in (None, "", "engine-default", "not-applicable")
+    return real("sglang_mamba_ssm_dtype") or real("sglang_linear_attn_decode_backend") \
+        or real("sglang_linear_attn_prefill_backend")
 
 NATIVE_CTX = 262144
 
@@ -130,17 +152,32 @@ def ladder():
                 out.setdefault(_rung_key(p.parent, r), {})[MTP_SERIES] = (r["prefill"], r["decode"])
     return dict(sorted(out.items()))
 
+def _best_rung(d):
+    return max((_row(p) for p in _cells(d)), key=lambda r: r["isl"] or 0, default=None)
+
+def _pick_sgl(tuned):
+    """Newest SGLang maxctx arm with the linear-attn knobs either set or unset."""
+    for d in sorted(A.glob("*maxctx*sglang_*"), key=lambda x: x.stat().st_mtime, reverse=True):
+        if _is_sgl_tuned(d) == tuned: return d
+    return None
+
 def full_context():
     out = {}
     for e in ENGINES:
-        d = _pick(f"*maxctx*{e}_*")
+        # SGLang needs the same on/off split llama.cpp has, or a tuned re-run
+        # replaces the baseline bar instead of joining it.
+        d = _pick_sgl(tuned=False) if e == "sglang" else _pick(f"*maxctx*{e}_*")
         if not d: continue
-        best = max((_row(p) for p in _cells(d)), key=lambda r: r["isl"] or 0, default=None)
+        best = _best_rung(d)
         if best: out[e] = best
     d = _pick("*maxctx*llamacpp_*", mtp=True)
     if d:
-        best = max((_row(p) for p in _cells(d)), key=lambda r: r["isl"] or 0, default=None)
+        best = _best_rung(d)
         if best: out[MTP_SERIES] = best
+    d = _pick_sgl(tuned=True)
+    if d:
+        best = _best_rung(d)
+        if best: out[SGL_TUNED_SERIES] = best
     return out
 
 def real_code(isl=32000):

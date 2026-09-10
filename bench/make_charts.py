@@ -26,8 +26,12 @@ OUT.mkdir(exist_ok=True)
 
 BG, PANEL, INK, MUTED, GRID = "#1B2220", "#222B29", "#E7EEEC", "#8FA09D", "#2E3A38"
 BLUE, ORANGE, AQUA = "#3987e5", "#d95926", "#199e70"
-C = {"llama.cpp": BLUE, "llama.cpp + MTP": BLUE, "SGLang": ORANGE, "FreeToken": AQUA}
-HATCH = {"llama.cpp + MTP": "///"}
+C = {"llama.cpp": BLUE, "llama.cpp + MTP": BLUE, "SGLang": ORANGE, "FreeToken": AQUA,
+     # Same engine, one feature switched on - so the same hue in the hatched
+     # treatment, exactly as llama.cpp + MTP relates to llama.cpp. Still three
+     # hues, so the all-pairs palette gate is unaffected.
+     "SGLang + FlashInfer GDN": ORANGE}
+HATCH = {"llama.cpp + MTP": "///", "SGLang + FlashInfer GDN": "///"}
 
 plt.rcParams.update({
     "figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG,
@@ -193,9 +197,11 @@ def chart_boot():
 def chart_full():
     fc = D.full_context()
     if not fc: return
-    order = [e for e in ("sglang", "freetoken", "llamacpp+mtp", "llamacpp") if e in fc]
+    order = [e for e in ("sglang+fi", "sglang", "freetoken", "llamacpp+mtp", "llamacpp") if e in fc]
     lab = {e: D.LABEL[e] for e in order}
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11.5, 4.6))
+    # Height tracks the bar count: the figure was sized for four and a fifth or
+    # sixth arm would crowd the labels.
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11.5, 4.6 + 0.55 * max(0, len(order) - 4)))
     for ax, key, xlabel, fmt in ((a1, "ttft", "time to first token (s)", lambda v: f"{v/1000:,.0f} s"),
                                  (a2, "decode", "decode tok/s", lambda v: f"{v:,.1f}")):
         vals = [(lab[e], fc[e][key] / (1000 if key == "ttft" else 1), C[lab[e]], HATCH.get(lab[e])) for e in order]
@@ -209,7 +215,13 @@ def chart_full():
         ax.xaxis.grid(True, zorder=0); ax.set_axisbelow(True)
         for sp in ("top", "right"): ax.spines[sp].set_visible(False)
         for sp in ("left", "bottom"): ax.spines[sp].set_color(GRID)
-    fig.text(0.012, 0.955, "All four serve the full window. Only the waiting differs.",
+    # The count is drawn from the data, not typed: this headline said "All four"
+    # while the chart was being extended, which is the exact class of drift
+    # Auto_Bench.md 11 forbids (nothing typed by hand).
+    n_word = {1: "One", 2: "Both", 3: "All three", 4: "All four",
+              5: "All five", 6: "All six"}.get(len(order), f"All {len(order)}")
+    verb = "serves" if len(order) == 1 else "serve"
+    fig.text(0.012, 0.955, f"{n_word} {verb} the full window. Only the waiting differs.",
              color=INK, fontsize=15, fontweight="bold", va="top")
     fig.text(0.012, 0.885, "one 262,144-token prompt, 128-token answer", color=MUTED, fontsize=10.5, va="top")
     fig.text(0.012, 0.022, "left: how long before the first token. right: how fast it writes after that.",

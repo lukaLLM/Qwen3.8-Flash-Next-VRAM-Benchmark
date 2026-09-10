@@ -1,3 +1,28 @@
+# SUPERSEDED 2026-09-09 - NOT USED BY ANYTHING. DO NOT USE.
+#
+# SPEC=off is now rendered from docker-compose.sglang.yaml by
+# bench/sglang_render_compose.py, which removes the four --speculative-* flags
+# and changes NOTHING ELSE.
+#
+# Why this file was retired rather than fixed: it had drifted from the base in
+# two ways, and both made a SPEC=off arm quietly incomparable to its control.
+#
+#   1. It defaulted --mem-fraction-static to 0.90 where the base defaults to
+#      0.93, so the spec/nospec A/B was a TWO-VARIABLE comparison.
+#   2. It hard-coded --cuda-graph-max-bs-decode '1' where the base reads
+#      ${SGLANG_CUDA_GRAPH_MAX_BS_DECODE:-1}, so any SPEC=off arm silently
+#      ignored CUDA_GRAPH_MAX_BS.
+#
+# Rendering from the base makes both inherited by construction, so the drift is
+# unrepresentable rather than something to police.
+#
+# Artifacts affected: greedy_specoffrep_sglang_20260906T144959Z genuinely ran at
+# 0.90 against 0.93 controls. Its determinism conclusion (B-21) is robust to
+# that; any CAPACITY or THROUGHPUT comparison drawn from it is not.
+#
+# Kept on disk, unreferenced, so the artifacts above remain explicable.
+# Operator: safe to delete once that trail is no longer needed.
+#
 # SGLang WITHOUT speculation — a compose OVERRIDE, not a second engine.
 #
 #   docker compose -f docker-compose.sglang.yaml -f docker-compose.sglang.nospec.yaml up -d

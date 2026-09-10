@@ -1,0 +1,164 @@
+# THE WINNING SGLANG CONFIGURATION - 183 decode / 8,088 prefill tok/s at 32K.
+# Fastest of the three engines on one RTX PRO 6000 Blackwell (96 GB).
+#
+#   docker compose -f docker/best.sglang.yaml up -d
+#
+# Self-contained on purpose: no env file, no override, no script. Every value
+# that made this configuration win is written out below, so the file IS the
+# answer to "what flags did you run".
+#
+# NEEDS THE IMAGE FIRST. sglang-flashnext-sm120:local is a local build, not a
+# registry tag - see PLAN_SGLANG.md for the three upstream commits and the local
+# QSA patch it is built from. Original recipe:
+# https://github.com/yepapa-nest/qwen38-flashnext-rtx6000
+#
+# IF THE MODEL PATH BELOW DOES NOT EXIST, the checkpoint was re-uploaded and the
+# snapshot hash moved. Find yours and edit both places it appears:
+#   ls -d ~/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/*/
+name: best_sglang_qwen38_flash_next
+
+services:
+  flashnext:
+    image: sglang-flashnext-sm120:local
+    pull_policy: never
+    container_name: flashnext
+
+    gpus: all
+    ipc: host
+    shm_size: 32gb
+
+    # Docker's default seccomp profile blocks io_uring, which is how the PLE
+    # table is read from NVMe. This profile is the default plus exactly
+    # io_uring_setup, io_uring_enter and io_uring_register.
+    security_opt:
+      - seccomp=./sglang/seccomp-io_uring.json
+
+    # Keep an allocator failure inside this container. Equal memory and
+    # memory+swap caps also stop it spilling into host swap, where it would be
+    # measuring the disk while still looking healthy.
+    mem_limit: 86g
+    memswap_limit: 86g
+
+    # SGLang has no authentication layer, so publish on loopback only.
+    ports:
+      - "127.0.0.1:8001:8000"
+
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile:
+        soft: 1048576
+        hard: 1048576
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+      # The 47.68 GiB PLE table stays in the original sharded safetensors
+      # checkpoint and is gathered directly from NVMe with io_uring. It is never
+      # copied into host RAM or a sidecar - that is what makes this arm fit.
+      SGLANG_QWEN4_PLE_NVME_PATH: /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594
+      SGLANG_QWEN4_PLE_NVME_BACKEND: io_uring
+      SGLANG_QWEN4_PLE_NVME_QUEUE_DEPTH: "512"
+      SGLANG_QWEN4_PLE_NVME_LOG_INTERVAL: "1000"
+
+    volumes:
+      # Mount the cache ROOT, not just the snapshot: snapshot files are relative
+      # symlinks into ../../blobs and would dangle if only the snapshot were
+      # visible in-container.
+      - type: bind
+        source: ${HF_HOME:-${HOME}/.cache/huggingface}
+        target: /hf
+        read_only: true
+
+    command:
+      - python
+      - -m
+      - sglang.launch_server
+      - --model-path
+      - /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594
+      - --served-model-name
+      - Qwen3.8-Flash-Next
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+
+      # NVFP4 weights.
+      - --quantization
+      - modelopt_fp4
+      - --fp4-gemm-backend
+      - flashinfer_cudnn
+
+      - --kv-cache-dtype
+      - fp8_e4m3
+      - --page-size
+      - "64"
+      - --mamba-radix-cache-strategy
+      - extra_buffer
+      - --mamba-track-interval
+      - "64"
+
+      - --chunked-prefill-size
+      - "8192"
+
+      # One slot. This is the single-stream configuration that was measured;
+      # for real multi-user serving raise both of these and the KV pool is
+      # shared out across slots instead.
+      - --max-running-requests
+      - "1"
+      - --cuda-graph-max-bs-decode
+      - "1"
+
+      # The full 262,144 window.
+      - --context-length
+      - "262144"
+      - --max-total-tokens
+      - "262144"
+      - --max-mamba-cache-size
+      - "5"
+
+      # 0.93, NOT the 0.90 the published 183/8,088 artifact recorded.
+      # Boot probe (bench/sglang_pool_probe.sh), measured 2026-09-03:
+      #   0.90 -> pool 166,720 tokens, 87,855 MiB VRAM   (36% short of the window)
+      #   0.93 -> pool 262,144 tokens, 89,153 MiB VRAM   (the FULL window)
+      #   0.95 -> pool 262,144, identical: now capped by --context-length
+      # +1.3 GB of VRAM buys +57% pool with NEXTN speculation kept, so this is
+      # the better configuration to run even though the headline pair was taken
+      # at 0.90. Drop to 0.90 to replay that artifact exactly.
+      - --mem-fraction-static
+      - "0.93"
+
+      # NEXTN speculation. Part of SGLang's decode lead at one concurrent
+      # request - the engine alone does not account for it. There is no "none"
+      # value for --speculative-algorithm; removing these four flags is how it
+      # gets switched off.
+      - --speculative-algorithm
+      - NEXTN
+      - --speculative-num-steps
+      - "3"
+      - --speculative-eagle-topk
+      - "1"
+      - --speculative-num-draft-tokens
+      - "4"
+
+      - --cuda-graph-backend-decode
+      - breakable
+      - --cuda-graph-backend-prefill
+      - disabled
+
+      - --reasoning-parser
+      - auto
+      - --tool-call-parser
+      - auto
+      - --enable-metrics
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 180s
+
+    # An OOM or a startup error must stay stopped, never become a restart loop:
+    # that turns a clear failure into a silent hang, because the container never
+    # disappears and anything waiting on health just waits.
+    restart: "no"

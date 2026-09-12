@@ -161,23 +161,33 @@ def _pick_sgl(tuned):
         if _is_sgl_tuned(d) == tuned: return d
     return None
 
+# THE FULL-WINDOW CHART IS PINNED TO NAMED ARTIFACTS. "Newest matching arm" was
+# the selector until 2026-09-12, and on that day it silently swapped the SGLang
+# bar for an OSL-4096 run (decode 169.5) next to three OSL-128 bars - a chart
+# that mixes two workloads on one axis and says "128-token answer" underneath.
+# A chart that names a specific measurement draws from specific evidence.
+#
+# These are the four the README and report describe. Change them here, on
+# purpose, with a note - never by running something newer.
+PINNED_FULL_WINDOW = {
+    "sglang":       "context_fn_maxctx_sglang_20260903T204814Z",
+    "freetoken":    "context_fn_maxctx_freetoken_20260903T162420Z",
+    "llamacpp":     "context_fn_maxctx_llamacpp_20260903T173832Z",
+    MTP_SERIES:     "context_fn_maxctx_llamacpp_20260906T111813Z",
+}
+# Known caveat on the pinned SGLang bar (B-31): OSL 128 measures the NEXTN
+# acceptance ramp, and the same configuration at OSL 4096 decodes at 155-178.
+# The bar is kept because the other three are the same ramp measurement; the
+# official-image comparison (recipe_compare) is where the OSL-4096 numbers live.
+
 def full_context():
     out = {}
-    for e in ENGINES:
-        # SGLang needs the same on/off split llama.cpp has, or a tuned re-run
-        # replaces the baseline bar instead of joining it.
-        d = _pick_sgl(tuned=False) if e == "sglang" else _pick(f"*maxctx*{e}_*")
-        if not d: continue
+    for series, name in PINNED_FULL_WINDOW.items():
+        d = A / name
+        if not d.is_dir():
+            continue
         best = _best_rung(d)
-        if best: out[e] = best
-    d = _pick("*maxctx*llamacpp_*", mtp=True)
-    if d:
-        best = _best_rung(d)
-        if best: out[MTP_SERIES] = best
-    d = _pick_sgl(tuned=True)
-    if d:
-        best = _best_rung(d)
-        if best: out[SGL_TUNED_SERIES] = best
+        if best: out[series] = best
     return out
 
 def real_code(isl=32000):
@@ -506,16 +516,13 @@ def _thermal(name):
 def thermals():
     """GPU temperature, power and clock while each engine serves the FULL window,
     read from the traces the harness already writes beside every arm."""
+    # Same pinned artifacts as full_context(): energy multiplies these watts by
+    # those seconds, so both must come from the same runs. With "newest" here,
+    # the SGLang bar was briefly 09-03 timings x a 09-12 power trace.
     out = {}
-    for e in ENGINES:
-        d = _pick(f"*maxctx*{e}_*")
-        if d:
-            t = _thermal(d.name)
-            if t: out[LABEL[e]] = t
-    d = _pick("*maxctx*llamacpp_*", mtp=True)
-    if d:
-        t = _thermal(d.name)
-        if t: out[LABEL[MTP_SERIES]] = t
+    for series, name in PINNED_FULL_WINDOW.items():
+        t = _thermal(name)
+        if t: out[LABEL[series]] = t
     return out
 
 def energy_per_request():
@@ -769,3 +776,39 @@ if __name__ == "__main__":
             print(f"  {task:8} {LABEL.get(r['a'],r['a'])} {100*r['acc_a']:.2f}% vs "
                   f"{LABEL.get(r['b'],r['b'])} {100*r['acc_b']:.2f}%  "
                   f"discordant {r['discordant']}/{r['n']}  p={r['p']:.4f}")
+
+
+# ---------------------------------------------------------------------------
+# Official-image comparison (bench/sglang_recipe_compare.py), 2026-09-12.
+# A different artifact layout from the rest of the study:
+#   artifacts/recipe_compare_<stamp>/<arm>/isl_<n>/profile_export_aiperf.json
+# Read directly, no parity_flags. Both arms are OSL 4096 greedy with
+# cache-busted prompts, so they are comparable to EACH OTHER and not to the
+# OSL-128 full-window bars (B-31: those measured the acceptance ramp).
+# ---------------------------------------------------------------------------
+RECIPE_ARMS = {"baseline": "SGLang (NVMe PLE, our build)",
+               "radix_context1": "SGLang (official image, PLE in RAM)"}
+
+def recipe_compare():
+    """{isl: {arm: row}} for the newest recipe_compare root that has both arms."""
+    for root in sorted(A.glob("recipe_compare_*"), key=lambda x: x.stat().st_mtime, reverse=True):
+        if not all((root / a).is_dir() for a in RECIPE_ARMS):
+            continue
+        out = {}
+        for arm in RECIPE_ARMS:
+            for cell in (root / arm).glob("isl_*"):
+                ex = cell / "profile_export_aiperf.json"
+                st = cell / "status.json"
+                if not ex.exists() or not st.exists():
+                    continue
+                if json.loads(st.read_text()).get("status") != "completed":
+                    continue
+                r = _row(ex)
+                j = json.loads(ex.read_text())
+                d = j.get("output_token_throughput_per_user") or {}
+                r["decode_min"], r["decode_max"] = d.get("min"), d.get("max")
+                out.setdefault(int(cell.name[4:]), {})[arm] = r
+        both = {k: v for k, v in out.items() if len(v) == 2}
+        if both:
+            return dict(sorted(both.items()))
+    return {}

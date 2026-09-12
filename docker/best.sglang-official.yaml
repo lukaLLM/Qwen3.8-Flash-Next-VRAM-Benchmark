@@ -1,0 +1,184 @@
+# THE OFFICIAL-IMAGE SGLANG CONFIGURATION - 22.4 s to first token at the full
+# 262,144 window, against 34.8 s for best.sglang.yaml. Prefill +56% to +76% at
+# every context length measured (8K to 254K). Decode roughly +5-16%, within
+# what three requests per rung can resolve.
+#
+#   docker pull lmsysorg/sglang:dev-qwen38-next-local
+#   docker compose -f docker/best.sglang-official.yaml up -d
+#
+# Self-contained on purpose, like best.sglang.yaml: every value that produced
+# the numbers above is written out below. Measured 2026-09-12 in
+# artifacts/recipe_compare_20260912T140125Z/radix_context1 (results/BLOCKERS.md
+# R-02); this file is that arm's launch.json rewritten as compose.
+#
+# WHERE IT COMES FROM. The September SGLang cookbook's RTX PRO 6000 recipe for
+# RadixArk/Qwen3.8-Flash-Next-NVFP4, on the image it says the recipe was
+# verified on:
+#   https://docs.sglang.io/cookbook/autoregressive/Qwen/Qwen3.8-Flash-Next#hw=rtx6000&variant=default&quant=nvfp4&strategy=low-latency&nodes=single&pleOffload=on
+# The page has TWO recipes for this card. This is the first (RadixArk). The
+# second is for nvidia/Qwen3.8-Flash-Next-NVFP4 - a different checkpoint with a
+# smaller draft head and a larger reported KV pool - and is NOT what this file
+# runs; see bench/sglang_recipe_compare.py arm nvidia_context1.
+# Two values changed from the published recipe, both deliberate:
+#
+#   --max-running-requests  16 -> 1    The published 16 slots leave a 76,224-
+#                                       token KV pool: 128K and the full window
+#                                       cannot be served at all. One slot gives
+#                                       268,096 - the whole window for one user.
+#   --max-mamba-cache-size  48 -> 5    NEXTN needs FIVE mamba states per
+#                                       request on this model (mamba_ratio=5, a
+#                                       model constant). Scaling the recipe's
+#                                       48/16 linearly to 3 boots and then
+#                                       DEADLOCKS on the first request - it
+#                                       surfaces as a 600 s warmup timeout, not
+#                                       an error. 5 is the floor for one slot.
+#
+# HOW IT DIFFERS FROM best.sglang.yaml, and why this is not "one flag":
+#   PLE table        pinned in HOST RAM (--ple-offload-embedding), not streamed
+#                    from NVMe. This is the difference a viewer pointed at
+#                    ("you are using your SSD"). It is also why this needs the
+#                    memory below.
+#   SGLang build     lmsysorg 2026-09-07 (commit 4ccff141), not the Aug-17
+#                    base + yepapa-nest overlay. Both run the hybrid-GDN
+#                    linear-attention path on Triton; the FlashInfer GDN
+#                    promotion does not fire on either, so that is not the gain.
+#   KV cache dtype   bf16 (the image's `auto`), not fp8_e4m3. HIGHER precision
+#                    and still faster: KV on this model is small (most layers
+#                    are linear-attention), so fp8 was saving ~1.5 GB per side.
+#   CUDA graphs      engine defaults - captures draft decode, draft extend and
+#                    target verify graphs. best.sglang.yaml runs decode
+#                    `breakable` and DISABLES prefill graphs.
+#   FP4 GEMM         flashinfer_cutlass, not flashinfer_cudnn
+#   SSM state        bfloat16, not fp32 (halves the recurrent state)
+#   chunked prefill  4096, not 8192
+#   env              expandable_segments allocator, mamba decode-lock skip
+# The two images bundle their PLE strategies, so which of these carries the
+# prefill gain has NOT been isolated. Treat it as two deployments compared.
+# The full parameter table with what each one does is in the README under
+# "Update: the official SGLang image".
+#
+# MEMORY - READ THIS. The 47.68 GiB PLE table is pinned in host RAM. Measured
+# container memory.peak was 86.0 GiB, i.e. exactly the cap below, and host
+# available fell to 14 GB on a 91 GiB box. It fits. It does not fit with
+# anything else large running. The cookbook says ">= 64 GB free host RAM";
+# on this machine that means: nothing else. A build with the same placement
+# (pennyroyal v2.1.0) OOM'd nine times here; this image's loader fits where
+# that one did not. If it OOMs for you, best.sglang.yaml is the fallback and
+# needs ~30 GB less host RAM.
+#
+# NOT A LOCAL BUILD. This is a registry tag; pin the digest if you want the
+# exact measured image:
+#   lmsysorg/sglang@sha256:9d2a843c706c74bc259c0d9abf360551eb2734e1e7d255ab012a6965f10480b6
+#
+# IF THE MODEL PATH BELOW DOES NOT EXIST, the checkpoint was re-uploaded and the
+# snapshot hash moved. Find yours and edit it:
+#   ls -d ~/.cache/huggingface/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/*/
+name: best_sglang_official_qwen38_flash_next
+
+services:
+  flashnext-official:
+    image: lmsysorg/sglang:dev-qwen38-next-local
+    container_name: flashnext-official
+
+    gpus: all
+    ipc: host
+    shm_size: 32gb
+
+    # Hard cap with NO swap. The pinned PLE table plus runtime sits at this
+    # ceiling; letting it swap would turn a clear OOM into a silent 100x
+    # slowdown that looks like a hang.
+    mem_limit: 86g
+    memswap_limit: 86g
+
+    ports:
+      - "127.0.0.1:8001:8000"
+
+    ulimits:
+      # memlock=-1 is REQUIRED: the PLE table is pinned (mlock'd) host memory.
+      # The cookbook says so; without it the pin fails and loading falls back
+      # or dies.
+      memlock: -1
+      stack: 67108864
+      nofile:
+        soft: 1048576
+        hard: 1048576
+
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+      SGLANG_OPT_MAMBA_SKIP_DECODE_LOCK: "1"
+
+    volumes:
+      # Mount the cache ROOT, not just the snapshot: snapshot files are relative
+      # symlinks into ../../blobs and would dangle if only the snapshot were
+      # visible in-container.
+      - type: bind
+        source: ${HF_HOME:-${HOME}/.cache/huggingface}
+        target: /hf
+        read_only: true
+
+    entrypoint: ["sglang"]
+    command:
+      - serve
+      - --model-path
+      - /hf/hub/models--RadixArk--Qwen3.8-Flash-Next-NVFP4/snapshots/7b719225242aacd3dbd3f9407468c2ee9a9d2594
+      - --served-model-name
+      - Qwen3.8-Flash-Next
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --tp
+      - "1"
+      - --quantization
+      - modelopt_fp4
+      - --fp4-gemm-backend
+      - flashinfer_cutlass
+      - --moe-runner-backend
+      - flashinfer_cutlass
+      - --page-size
+      - "64"
+      - --mamba-track-interval
+      - "64"
+      - --chunked-prefill-size
+      - "4096"
+      - --context-length
+      - "262144"
+      - --speculative-algorithm
+      - NEXTN
+      - --speculative-num-steps
+      - "3"
+      - --speculative-eagle-topk
+      - "1"
+      - --speculative-num-draft-tokens
+      - "4"
+      - --mamba-radix-cache-strategy
+      - extra_buffer_lazy
+      # ONE slot, FIVE mamba states. See the header for why both numbers.
+      - --max-running-requests
+      - "1"
+      - --max-mamba-cache-size
+      - "5"
+      - --mamba-ssm-dtype
+      - bfloat16
+      - --mem-fraction-static
+      - "0.96"
+      - --cuda-graph-max-bs-decode
+      - "1"
+      # The PLE table in pinned host RAM. This is the line that costs the memory.
+      - --ple-offload-embedding
+      - --reasoning-parser
+      - qwen3
+      - --enable-metrics
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      # Measured boot: load_weight 102 s + scheduler, healthy at ~2.5 min.
+      # First boot on a cold JIT cache is longer.
+      start_period: 300s
+
+    # An OOM or a startup error must stay stopped, never become a restart loop.
+    restart: "no"

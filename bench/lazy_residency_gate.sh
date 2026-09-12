@@ -148,14 +148,40 @@ for a, d in rows.items():
     print(f"  LAZY={a:<5} faults={d.get('major_faults')} "
           f"faults/s={d.get('major_faults_per_s')} MB/s={d.get('nvme_read_mbs')} "
           f"verdict={d.get('verdict')}")
+# RESIDENCY is read from RssAnon, not inferred from I/O. The first corrected
+# run (lazyres_20260912T121739Z) showed why: auto had ZERO major faults and
+# 0.24 MB/s NVMe - and RssAnon of 0.56 GB against 28.7 GB for off. The table
+# was NOT resident; its on-demand reads were simply served from a warm page
+# cache (62 GB cached, GGUF just read by the previous arm). I/O alone would
+# have called that "inert". It is not inert; it is deferred and cache-hit.
+def rss_anon_gb(a):
+    try:
+        for line in (o / a / "rss.txt").read_text().splitlines():
+            if line.startswith("RssAnon"):
+                return int(line.split()[1]) / 1e6
+    except Exception:
+        pass
+    return None
+r_off, r_auto = rss_anon_gb("off"), rss_anon_gb("auto")
 f_off = rows["off"].get("major_faults_per_s") or 0
 f_auto = rows["auto"].get("major_faults_per_s") or 0
-if f_auto > 50 and f_auto > 5 * max(f_off, 0.01):
-    print("\n  CONCLUSION: `auto` DOES stream under --load-mode none. The "
-          "2026-09-06 full-window MTP bar is a disk-streamed number.")
+print(f"\n  RssAnon  off={r_off if r_off is None else f'{r_off:.1f} GB'}  "
+      f"auto={r_auto if r_auto is None else f'{r_auto:.1f} GB'}")
+if r_off and r_auto and r_auto < 0.5 * r_off:
+    print("\n  CONCLUSION: `auto` DEFERS the PLE table under --load-mode none - "
+          "it is NOT resident (RssAnon above).")
+    if f_auto > 50:
+        print("  In this run the deferred reads HIT THE SSD (sustained major faults). "
+              "The 2026-09-06 MTP bar is a disk-streamed number.")
+    else:
+        print("  In this run the deferred reads were served from PAGE CACHE (no "
+              "faults, no NVMe). No SSD traffic was measured - but that is a "
+              "warm-cache result. Under a cold cache or RAM pressure the same "
+              "configuration WOULD stream from disk. The published MTP bar was "
+              "not resident either; it was not SSD-streaming only because the "
+              "GGUF was warm from the arms before it.")
 else:
-    print("\n  CONCLUSION: `auto` is inert under --load-mode none (help text "
-          "'requires mmap' holds). The published MTP bar was NOT SSD-streaming; "
-          "B-25 is closed for that artifact.")
+    print("\n  CONCLUSION: `auto` and `off` are both resident - `auto` is inert "
+          "under --load-mode none for this build.")
 PY
 say "evidence in $OUT"

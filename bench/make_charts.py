@@ -415,8 +415,42 @@ def chart_tier_mtp():
               labelcolor=INK, fontsize=10)
     save(fig, "eb_tier_mtp.png", bottom=0.28)
 
+# ---------------------------------------------------------------- 11. official image
+def chart_recipe():
+    rc = D.recipe_compare()
+    if not rc: return
+    # 253,952 is the window minus the 4,096-token answer and a template margin;
+    # "248K" (binary) or "254K" (decimal) would both be true and both mislead.
+    lab = lambda isl: "full\nwindow" if isl > 250_000 else f"{isl//1024}K"
+    rows = [(lab(isl), v["baseline"]["ttft"] / 1000, v["radix_context1"]["ttft"] / 1000)
+            for isl, v in rc.items()]
+    fig, ax = plt.subplots(figsize=(9.5, 4.8))
+    xmax = max(r[1] for r in rows) * 1.28
+    for i, (lab, ours, new) in enumerate(rows):
+        # Same engine, one deployment change: one hue, solid vs hatched, as the
+        # palette policy at the top of this file requires.
+        ax.barh(i - 0.19, ours, height=0.34, color=ORANGE, alpha=0.45, edgecolor=BG, zorder=3)
+        ax.barh(i + 0.19, new, height=0.34, color=ORANGE, hatch="///", edgecolor=BG, linewidth=1.2, zorder=3)
+        ax.text(ours + xmax * 0.01, i - 0.19, f"{ours:.1f} s", va="center", color=MUTED, fontsize=9)
+        ax.text(new + xmax * 0.01, i + 0.19, f"{new:.1f} s", va="center", color=INK, fontsize=9, fontweight="bold")
+        ax.text(xmax * 0.93, i, f"-{100*(1-new/ours):.0f}%", va="center", ha="right",
+                color=INK, fontsize=12, fontweight="bold")
+    ax.set_yticks(range(len(rows))); ax.set_yticklabels([r[0] for r in rows])
+    ax.set_xlabel("time to first token (s)"); ax.set_xlim(0, xmax)
+    ax.invert_yaxis(); ax.xaxis.grid(True, zorder=0); ax.set_axisbelow(True)
+    ax.legend(handles=[Patch(facecolor=ORANGE, alpha=0.45, edgecolor=BG,
+                             label="our build  ·  sglang-flashnext-sm120, PLE streamed from NVMe"),
+                       Patch(facecolor=ORANGE, hatch="///", edgecolor=BG,
+                             label="official image  ·  lmsysorg dev-qwen38-next-local, PLE pinned in host RAM")],
+              frameon=False, ncol=1, loc="upper center", bbox_to_anchor=(0.5, -0.16),
+              labelcolor=INK, fontsize=9.5)
+    frame(ax, "The official image halves the wait",
+          "SGLang, same NVFP4 checkpoint, one request, 4,096-token output, 3 requests per rung",
+          "every rung the published 16-slot recipe can reach is faster; the 1-slot re-tune reaches all five")
+    save(fig, "eb_official_image.png", bottom=0.30)
+
 if __name__ == "__main__":
     print("charts ->")
     chart_ladder(); chart_mtp(); chart_energy(); chart_boot()
     chart_full(); chart_accuracy(); chart_loadmode(); chart_thermal(); chart_ftcache()
-    chart_tier_mtp()
+    chart_tier_mtp(); chart_recipe()

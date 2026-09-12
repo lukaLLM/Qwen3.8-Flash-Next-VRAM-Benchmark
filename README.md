@@ -101,6 +101,79 @@ Every number in that report is generated from saved evidence by
 `bench/report_data.py` — nothing is typed in by hand. The runs it reads are in
 [`artifacts/`](artifacts/README.md), with the void ones listed and explained.
 
+## Update: the official SGLang image, and a viewer who was right
+
+A viewer said the SGLang arm was "missing a ton of speed optimizations" and
+"using your SSD for engrams." Both were tested. His fork's launch flags do not
+transfer to our build — 22 of 23 exist, one hangs, the rest are inside noise
+(`results/BLOCKERS.md` B-27 to B-30). But his *mechanism* was right: the
+47.68 GiB lookup table was streaming from NVMe because nothing that pinned it
+in host RAM had ever booted on 91 GiB. The September SGLang cookbook's
+[RTX PRO 6000 recipe](https://docs.sglang.io/cookbook/autoregressive/Qwen/Qwen3.8-Flash-Next#hw=rtx6000&variant=default&quant=nvfp4&strategy=low-latency&nodes=single&pleOffload=on)
+(single node, NVFP4, low-latency, PLE offload on) on
+`lmsysorg/sglang:dev-qwen38-next-local` does boot with the table pinned — at
+the 86 GB container cap, with nothing to spare — and this is what it changes:
+
+The cookbook page carries **two** recipes for this card. The one measured here
+is the first, for `RadixArk/Qwen3.8-Flash-Next-NVFP4` — the same checkpoint
+every SGLang number in this repo uses, so the comparison is image-against-image.
+The second, for `nvidia/Qwen3.8-Flash-Next-NVFP4` (NVIDIA's own mixed-precision
+export, which needs this image's loader and reports a ~170k-token pool at 16
+slots against RadixArk's ~78k), is in `bench/sglang_recipe_compare.py` as the
+`nvidia_context1` arm and has not been run yet — it is a 133 GB download.
+
+<img alt="Time to first token at five context lengths, our NVMe-PLE build against the official image: 1.1 vs 0.6 s at 8K, 4.2 vs 2.4 at 32K, 8.6 vs 4.9 at 64K, 16.8 vs 10.2 at 128K, 34.9 vs 22.4 at the full window" src="assets/eb_official_image.png">
+
+| ISL | TTFT ours → official | prefill ours → official | decode ours → official |
+|---:|---|---|---|
+| 8K | 1.1 s → **0.6 s** | 7,768 → 12,997 (+67%) | 175 → 199 |
+| 32K | 4.2 s → **2.4 s** | 7,742 → 13,662 (+76%) | 227 → 238 |
+| 64K | 8.6 s → **4.9 s** | 7,602 → 13,381 (+76%) | 181 → 200 |
+| 128K | 16.8 s → **10.2 s** | 7,811 → 12,806 (+64%) | 222 → 242 |
+| **full window** | **34.8 s → 22.4 s** | 7,284 → 11,352 (+56%) | 186 → 217 |
+
+Same checkpoint, same 4,096-token output, three requests per rung, no thermal
+or memory void. **Prefill is 1.6–1.8× faster at every length; the full-window
+first token arrives 12 seconds sooner.** Decode is higher at all five rungs but
+inside the ~15% request-to-request spread three requests can resolve, so no
+figure is claimed for it.
+
+Three things to know before running it (`docker/best.sglang-official.yaml`):
+
+- **The published recipe cannot serve the full window.** Its default 16 slots
+  leave a 76,224-token pool; 128K and above are refused. The compose file drops
+  it to one slot (pool 268,096) and sets `--max-mamba-cache-size 5` — scaling
+  the recipe's 48 linearly gives 3, and NEXTN needs five states per request on
+  this model, so 3 boots and then deadlocks on the first request.
+- **It is not one flag.** Every parameter that differs, read from both servers'
+  resolved arguments, with what each does and what is known about its effect:
+
+  | parameter | ours | official | what it does | known effect |
+  |---|---|---|---|---|
+  | **PLE table placement** | streamed from NVMe (`io_uring`, queue depth 512) | `--ple-offload-embedding`: pinned in host RAM | The 47.68 GiB per-layer embedding table — 128 tensors, 320M FP8 rows — gathered at every layer for every token. Cannot fit in VRAM beside the model. | **Likely the largest term.** Prefill gathers rows for every prompt token, and the gain is largest exactly where prompts are long. Not isolated: the two images *are* their PLE strategies. |
+  | **KV cache dtype** | `fp8_e4m3` | `auto` → **bf16** | Precision of the attention K/V cache on the QSA layers. | The official image runs *higher* precision and is still faster. KV on this model is small — most layers are linear-attention with no KV — so fp8 saved only 1.5 GB per side at 262K, for an unverified quality cost. |
+  | **CUDA graphs** | decode `breakable`, prefill `disabled` | defaults: captures draft decode, draft extend, target verify | Replays a recorded kernel sequence instead of launching kernels one by one. | The official image graphs the whole speculative loop; ours disables prefill graphs. A real decode/verify lever. |
+  | **SGLang build** | Aug 17 base + yepapa-nest overlay + 3 PRs | lmsysorg Sep 7 (`4ccff141`) | Three weeks of upstream work. | Unknown share. Both run the hybrid-GDN path on **Triton** — the FlashInfer GDN promotion fires on neither. |
+  | **FP4 GEMM** | `flashinfer_cudnn` | `flashinfer_cutlass` | Kernel library for the NVFP4 matmuls. Prefill is GEMM-bound. | Plausible prefill contributor. Untested alone. |
+  | **SSM state dtype** | fp32 | `bfloat16` | Precision of the linear-attention recurrent state. | Measured on our image: halves the state, frees 756 MiB, **no speed change**. |
+  | **chunked prefill** | 8192 | 4096 | Prompt processed in chunks of N tokens. | Normally slightly slower per token. Contribution unknown. |
+  | **mem-fraction-static** | 0.93 | 0.96 | Share of VRAM for weights + KV. | Needed for their bf16 KV; pool 268,096 vs 262,144. |
+  | **mamba radix strategy** | `extra_buffer` | `extra_buffer_lazy` | How recurrent state is snapshotted for prefix reuse. | Irrelevant here: every request is cache-busted. |
+  | **env** | — | `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`, `SGLANG_OPT_MAMBA_SKIP_DECODE_LOCK=1` | Allocator hint; skips a lock in mamba decode. | `expandable_segments` measured +1.7% on our image (noise). The lock skip is untested. |
+
+  Unchanged between the two: checkpoint and snapshot, `attention_backend=flashinfer`,
+  `moe_runner_backend=flashinfer_cutlass` (ours auto-resolves to it), NEXTN 3/1/4,
+  page size 64, mamba track interval 64, context 262,144, 1 slot, 5 mamba
+  states, no HiCache. By mechanism, the ranking would be PLE-in-RAM first, CUDA
+  graphs on the speculative path second, cutlass GEMM third — that is reasoning,
+  not measurement.
+- **The full-window chart above still shows 126.9 decode for SGLang, and that
+  number measured the acceptance ramp.** With a 128-token answer after a
+  35-second prefill, NEXTN has not warmed into the text; the same server and
+  sampler at 4,096 tokens decode at 155–178 (B-31). The bar is kept because the
+  other three bars are the same kind of measurement. Prefill and TTFT are
+  unaffected and reproduce to 2.5%.
+
 ## The configuration that won, per engine
 
 Every number below is the configuration its own artifact recorded, not a
@@ -109,7 +182,8 @@ driven by environment variables, so a configuration *is* a set of variables.
 
 | Engine | Decode / prefill at 32K | The settings that made it |
 |---|---|---|
-| **SGLang** — fastest overall | **183 / 8,088 tok/s** | NVFP4, `ENGINE_CTX=262144`, `MEM_FRACTION=0.90`, `PREFILL_BUDGET=8192`, KV `fp8_e4m3`, NEXTN speculation on |
+| **SGLang, official image** — fastest to first token | **13,662 prefill** vs 7,742 for our build on the *same* run (different workload from the rows below: greedy, 4,096-token output) | `docker/best.sglang-official.yaml`: `lmsysorg/sglang:dev-qwen38-next-local`, PLE pinned in host RAM, 1 slot, `--max-mamba-cache-size 5`, `flashinfer_cutlass`, bf16 SSM state. Needs 86 GB host RAM and nothing else running |
+| **SGLang** — our build, NVMe PLE | **183 / 8,088 tok/s** | NVFP4, `ENGINE_CTX=262144`, `MEM_FRACTION=0.90`, `PREFILL_BUDGET=8192`, KV `fp8_e4m3`, NEXTN speculation on. ~30 GB less host RAM than the row above |
 | **llama.cpp + MTP** — fastest llama.cpp | **160 tok/s at 2K** (1.61× over the same build without it) | `LLAMA_IMAGE=llamacpp-mtp:d1a92352`, `SPEC_TYPE=draft-mtp`, `SPEC_DRAFT_N_MAX=5`, `SPEC_DRAFT_NGL=99`, **and `--n-cpu-moe 0`** |
 | **FreeToken** | 99 / 3,026 tok/s | NVFP4, `--moe-backend offload` **and** `--ple-backend disk` together |
 | **llama.cpp** (stock image) | 69 / 1,859 tok/s | `LOAD_MODE=none`, `-ot per_layer_token_embd=CPU`, `UBATCH=1024`, `-ngl 999`, `--n-cpu-moe 0` |
@@ -661,6 +735,7 @@ Model and weights:
 - Unsloth GGUFs: https://huggingface.co/unsloth/Qwen3.8-Flash-Next-GGUF
 - llama.cpp qwen4exp support, merged as `6c84c7d5d`; first tagged build `b10658`
 - Independent quality benchmarks: https://artificialanalysis.ai/models/qwen3-8-flash-next
+- SGLang cookbook, RTX PRO 6000 recipes (both checkpoints; the RadixArk one is measured here): https://docs.sglang.io/cookbook/autoregressive/Qwen/Qwen3.8-Flash-Next#hw=rtx6000&variant=default&quant=nvfp4&strategy=low-latency&nodes=single&pleOffload=on
 
 Architecture and prior art:
 

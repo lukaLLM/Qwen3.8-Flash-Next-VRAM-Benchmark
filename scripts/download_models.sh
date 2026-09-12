@@ -169,7 +169,20 @@ GGUF_MODELS=(
 # since the upstream converter drops it. Left commented so nobody starts a
 # 355 GB transfer by answering "all" at the prompt.
 HF_MODELS=(
-
+  # NVIDIA's own NVFP4 export of Qwen3.8-Flash-Next, 133 GB. The September
+  # SGLang cookbook has an RTX PRO 6000 recipe for it (arm 4 of
+  # bench/sglang_recipe_compare.py). It is a ModelOpt MIXED_PRECISION export
+  # and needs the loader from sgl-project/sglang#38121, i.e. the
+  # lmsysorg/sglang:dev-qwen38-next-local image - our sglang-flashnext-sm120
+  # image cannot load it. Its draft head is smaller than RadixArk's, which is
+  # the reason to measure it: more room for KV at the same mem-fraction.
+  #
+  # Pinned snapshot the comparison script expects:
+  #   fc694b54fb0174e0913e6adf86691ef85a4ead47
+  # A first attempt on 2026-09-12 via huggingface_hub stalled at 8.5 GB and
+  # could not resume (hf_xet); that partial is in the cache as *.incomplete
+  # blobs and this script's aria2c -c path will pick up any it can use.
+  "nvidia/Qwen3.8-Flash-Next-NVFP4"
 
   # The BF16 safetensors are 355 GB and are only worth pulling if we end up
   # converting our own GGUF - see the note above.

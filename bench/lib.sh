@@ -1227,9 +1227,16 @@ preflight() {
       laline="$(docker logs "$CONTAINER" 2>&1 | grep -a 'Linear attention kernel backend:' | tail -1)"
       [[ -n "$laline" ]] || die "no 'Linear attention kernel backend:' line - cannot prove which kernel is live"
       echo "  ${laline#*] }"
-      # bfloat16 ssm dtype auto-promotes decode AND verify to flashinfer, so a
-      # run that asked for either and still reports triton did not take effect.
-      if [[ "${SGLANG_MAMBA_SSM_DTYPE:-}" == "bfloat16" ]]; then
+      # bfloat16 ssm dtype auto-promotes decode AND verify to flashinfer - but
+      # ONLY when no decode backend was named. An explicit backend suppresses
+      # the promotion (the engine checks `linear_attn_decode_backend is None`),
+      # which is exactly how the bf16-state capacity arm keeps decode on the
+      # Triton kernels that work. So: assert the promotion when it is expected,
+      # assert the named backend when one was named.
+      if [[ -n "${SGLANG_LINEAR_ATTN_DECODE_BACKEND:-}" ]]; then
+        grep -q "decode=${SGLANG_LINEAR_ATTN_DECODE_BACKEND}" <<<"$laline" \
+          || die "requested decode=${SGLANG_LINEAR_ATTN_DECODE_BACKEND} but engine resolved: $laline"
+      elif [[ "${SGLANG_MAMBA_SSM_DTYPE:-}" == "bfloat16" ]]; then
         grep -q 'decode=flashinfer' <<<"$laline" \
           || die "mamba-ssm-dtype=bfloat16 did not promote decode to flashinfer - got: $laline"
       fi

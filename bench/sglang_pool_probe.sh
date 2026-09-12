@@ -74,6 +74,13 @@ probe() { # $1=spec on|off  $2=mem-fraction
 }
 
 echo "  spec mem   mamba pool      vram   status"
-for mf in 0.90 0.93 0.95; do probe on  "$mf"; done
-for mf in 0.90 0.93;      do probe off "$mf"; done
+# POOL_PROBE_SPEC=on|off limits the sweep to one arm. The spec=on rows were
+# reproduced to the token on 2026-09-09; the spec=off rows had never booted
+# (B-30), so re-running only those is the honest minimum.
+if [[ "${POOL_PROBE_SPEC:-}" != "off" ]]; then
+  for mf in 0.90 0.93 0.95; do probe on  "$mf"; done
+fi
+if [[ "${POOL_PROBE_SPEC:-}" != "on" ]]; then
+  for mf in 0.90 0.93;      do probe off "$mf"; done
+fi
 echo "  -> $OUT"
